@@ -1,7 +1,4 @@
-from json import dumps
 from igraph import InternalError
-from backend.utils import append_to_dictionary as append_to_dict
-
 
 def get_shortest_paths(graph, source, target=None, weights=None, mode="OUT", output="vpath"):
     """
@@ -25,7 +22,7 @@ def get_shortest_paths(graph, source, target=None, weights=None, mode="OUT", out
         - a call to get_shortest_paths(graph, 0, 1120, output="epath") returns
             [[0, 30, 541, 523, 524, 867, 1360, 1357, 1364, 1423, 1427, 1430]]  #<-- edge ids
     """
-    return dumps(graph.get_shortest_paths(source, target, weights, mode, output))
+    return graph.get_shortest_paths(source, target, weights, mode, output)
 
 
 def bottleneck(graph, source, target, capacity=None, output="e"):
@@ -44,7 +41,7 @@ def bottleneck(graph, source, target, capacity=None, output="e"):
 
     if output == "v":
         partition_list = [cut[0], cut[1]]
-        return dumps(partition_list)
+        return partition_list
 
     if output == "e":
         bottleneck_edge = []
@@ -58,4 +55,4 @@ def bottleneck(graph, source, target, capacity=None, output="e"):
                     continue
                 bottleneck_edge.append(edge_id)
 
-        return dumps(bottleneck_edge)
+        return bottleneck_edge

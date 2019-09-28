@@ -1,5 +1,4 @@
 from collections import Iterable
-from json import dumps
 from backend.utils import append_to_dictionary as append_to_dict
 
 
@@ -10,7 +9,7 @@ def read_edges(graph, list_edge_id=None):
 
     :param graph: igraph.Graph object
     :param list_edge_id: list of ids of edges to be retrieved; if None, retrieve all of them
-    :return: jsonified dictionary of edges, e.g.
+    :return: dictionary of edges, e.g.
             {"0": {
                 "this_attribute": "0",
                 "that_attribute": "1"
@@ -31,7 +30,7 @@ def read_edges(graph, list_edge_id=None):
         for vertex_id in list_edge_id:
             append_to_dict(vertex_dict, vertices[vertex_id])
 
-    return dumps(vertex_dict)
+    return vertex_dict
 
 
 def create_edges(graph, list_st_id):

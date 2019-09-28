@@ -1,5 +1,4 @@
 from collections import Iterable
-from json import dumps
 from backend.utils import append_to_dictionary as append_to_dict
 
 
@@ -10,7 +9,7 @@ def read_vertices(graph, list_vertex_id=None):
 
     :param graph: igraph.Graph object
     :param list_vertex_id: list of ids of vertices to be retrieved; if None, retrieve all of them
-    :return: jsonified dictionary of vertices, e.g.
+    :return: dictionary of vertices, e.g.
             {"0": {
                 "this_attribute": "0",
                 "that_attribute": "1"
@@ -31,7 +30,7 @@ def read_vertices(graph, list_vertex_id=None):
         for vertex_id in list_vertex_id:
             append_to_dict(vertex_dict, vertices[vertex_id])
 
-    return dumps(vertex_dict)
+    return vertex_dict
 
 
 def create_vertices(graph, n=None, name=None, **kwargs):
