@@ -1,36 +1,4 @@
 from collections import Iterable
-from backend.utils import append_to_dictionary as append_to_dict
-
-
-def read_vertices(graph, list_vertex_id=None):
-    """
-
-    Read vertex data, this includes their attributes and each attribute's assigned value
-
-    :param graph: igraph.Graph, graph to work on
-    :param list_vertex_id: [int], list of ids of vertices to be retrieved; if None, retrieve all of them
-    :return: dictionary of vertices, e.g.
-            {"0": {
-                "this_attribute": "0",
-                "that_attribute": "1"
-                },
-            "1": {
-                "this_attribute": "2",
-                "that_attribute": "3"
-                }
-            }
-    """
-    vertex_dict = {}
-    vertices = graph.vs
-
-    if list_vertex_id is None:
-        for vertex in vertices:
-            append_to_dict(vertex_dict, vertex)
-    else:
-        for vertex_id in list_vertex_id:
-            append_to_dict(vertex_dict, vertices[vertex_id])
-
-    return vertex_dict
 
 
 def create_vertices(graph, n=None, name=None, **kwargs):
@@ -47,36 +15,39 @@ def create_vertices(graph, n=None, name=None, **kwargs):
     """
     if name is None and not kwargs:
         graph.add_vertices(n)
-        return 0
+    else:
+        graph.add_vertex(name, **kwargs)
 
-    graph.add_vertex(name, **kwargs)
-    return 0
+    return graph
 
 
-def update_vertex(vertex, **kwargs):
+def update_vertex(graph, vertex, **kwargs):
     """
 
     Edit a vertex's attributes
 
+    :param graph: igraph.Graph, graph to work on
     :param vertex: igraph.Vertex, vertex to be updated
     :param kwargs: keyword arguments will be assigned as vertex attributes
     :return:
     """
     vertex.update_attributes(**kwargs)
-    return 0
+
+    return graph
 
 
-def delete_vertices(vertex):
+def delete_vertices(graph, vertex):
     """
 
     Remove vertices and their edges
 
+    :param graph: igraph.Graph, graph to work on
     :param vertex: igraph.Vertex or igraph.VertexSeq, vertex or vertices to be deleted
     :return:
     """
     if isinstance(vertex, Iterable):
-        vertex[0].graph.delete_vertices(vertex)
+        graph.delete_vertices(vertex)
     else:
         vertex.delete()
 
-    return 0
+    return graph

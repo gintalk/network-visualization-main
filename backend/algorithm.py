@@ -1,5 +1,6 @@
 from igraph import InternalError
 
+
 def get_shortest_paths(graph, source, target=None, weights=None, mode="OUT", output="vpath"):
     """
 
