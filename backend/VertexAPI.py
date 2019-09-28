@@ -1,99 +1,83 @@
+from collections import Iterable
 from json import dumps
+from backend.Shared import append_to_dictionary as append_to_dict
 
 
-def get_vertices(graph, list_vertex_id=None):
+def read_vertices(graph, list_vertex_id=None):
     """
-    returns a jsonified dictionary of vertices and their attribute-value pairs
+
+    Read vertex data, this includes their attributes and each attribute's assigned value
+
     :param graph: igraph.Graph object
     :param list_vertex_id: list of ids of vertices to be retrieved; if None, retrieve all of them
-    :return: jsonified dictionary of vertices
+    :return: jsonified dictionary of vertices, e.g.
+            {"0": {
+                "this_attribute": "0",
+                "that_attribute": "1"
+                },
+            "1": {
+                "this_attribute": "2",
+                "that_attribute": "3"
+                }
+            }
     """
-    vertex_dict = vertex_dictify(list_vertex_id)
+    vertex_dict = {}
+    vertices = graph.vs
+
+    if list_vertex_id is None:
+        for vertex in vertices:
+            append_to_dict(vertex_dict, vertex)
+    else:
+        for vertex_id in list_vertex_id:
+            append_to_dict(vertex_dict, vertices[vertex_id])
 
     return dumps(vertex_dict)
 
 
-def add_vertices():
-    #   args = {
-    #      "vertices": int
-    #   }
+def create_vertices(graph, n=None, name=None, **kwargs):
+    """
 
-    args = request.json
-    vertex_count = args["vertices"]
+    If n is present, add n vertices to graph. If name and kwargs are present, add one single vertex to graph
 
-    graph_as_input.add_vertices(vertex_count)
+    :param graph: igraph.Graph object
+    :param n: number of vertices to add. If n is present, name and kwargs must be absent
+    :param name: if a graph has C{name} as a vertex attribute, it allows one  to refer to vertices by their names in
+    most places where igraph expects a vertex ID. If name is present, n must be absent
+    :param kwargs: keyword arguments will be assigned as vertex attributes. If kwargs is present, n must be absent
+    :return:
+    """
+    if name is None and not kwargs:
+        graph.add_vertices(n)
+        return 0
 
-    response = {"action": "Create", "code": "Success"}
-    return make_response(jsonify(response), 201)
-
-
-def edit_vertex():  # for now, can only edit one vertex at a time
-    #    args = {
-    #       "vertex": int,
-    #       "attribute_name": string,
-    #       "new_value": string or int
-    #    }
-
-    args = request.json
-    vertex_id = args["vertex"]
-    attr = args["attribute_name"]
-    new_value = args["new_value"]
-
-    vertex = graph_as_input.vs[vertex_id]
-    vertex[attr] = new_value
-
-    response = {"action": "Edit", "code": "Success"}
-    return make_response(jsonify(response), 201)
+    graph.add_vertex(name, **kwargs)
+    return 0
 
 
-def delete_vertices():
-    #    args = {
-    #       "attribute_name": string,
-    #       "value": string or int
-    #    }
+def update_vertex(vertex, **kwargs):
+    """
 
-    args = request.json
-    attr = args["attribute_name"]
-    value = args["value"]
+    Edit a vertex's attributes
 
-    if attr == "index":
-        vertex_list = value
-        edge_list = [edge.index for edge in graph_as_input.es if edge.source == value or edge.target == value]
+    :param vertex: igraph.Vertex object
+    :param kwargs: keyword arguments will be assigned as vertex attributes
+    :return:
+    """
+    vertex.update_attributes(**kwargs)
+    return 0
+
+
+def delete_vertices(vertex):
+    """
+
+    Remove vertices and their edges
+
+    :param vertex: igraph.Vertex object or igraph.VertexSeq object
+    :return:
+    """
+    if isinstance(vertex, Iterable):
+        vertex[0].graph.delete_vertices(vertex)
     else:
-        vertex_list = [vertex.index for vertex in graph_as_input.vs if vertex[attr] == value]
-        edge_list = [edge.index for edge in graph_as_input.es if edge.source in vertex_list
-                     or edge.target in vertex_list]
+        vertex.delete()
 
-    graph_as_input.delete_vertices(vertex_list)
-    graph_as_input.delete_edges(edge_list)
-
-    return str(graph_as_input)
-
-
-""" Auxiliary functions """
-
-
-def vertex_dictify(vertex_list):
-    vertex_dict = {}
-    attributes = graph_as_input.vs.attributes()
-
-    if len(vertex_list) == 0:
-        vertex_list = graph_as_input.vs
-
-    for vertex_id in vertex_list:
-        if isinstance(vertex_id, Vertex):
-            vertex = vertex_id
-        else:
-            vertex = graph_as_input.vs[vertex_id]
-        append_vertex_to_dictionary(vertex_dict, attributes, vertex)
-
-    return vertex_dict
-
-
-def append_vertex_to_dictionary(dictionary, attributes, vertex):
-    index = str(vertex.index)
-
-    dictionary[index] = {}
-
-    for attr in attributes:
-        dictionary[index][attr] = str(vertex[attr])
+    return 0
