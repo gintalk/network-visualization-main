@@ -1,6 +1,6 @@
 from collections import Iterable
 from json import dumps
-from backend.Shared import append_to_dictionary as append_to_dict
+from backend.shared import append_to_dictionary as append_to_dict
 
 
 def read_vertices(graph, list_vertex_id=None):
