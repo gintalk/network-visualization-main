@@ -1,6 +1,6 @@
 from json import dumps
 from igraph import InternalError
-from backend.shared import append_to_dictionary as append_to_dict
+from backend.utils import append_to_dictionary as append_to_dict
 
 
 def get_shortest_paths(graph, source, target=None, weights=None, mode="OUT", output="vpath"):

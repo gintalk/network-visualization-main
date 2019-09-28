@@ -1,6 +1,6 @@
 from collections import Iterable
 from json import dumps
-from backend.shared import append_to_dictionary as append_to_dict
+from backend.utils import append_to_dictionary as append_to_dict
 
 
 def read_edges(graph, list_edge_id=None):
