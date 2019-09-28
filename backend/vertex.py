@@ -7,8 +7,8 @@ def read_vertices(graph, list_vertex_id=None):
 
     Read vertex data, this includes their attributes and each attribute's assigned value
 
-    :param graph: igraph.Graph object
-    :param list_vertex_id: list of ids of vertices to be retrieved; if None, retrieve all of them
+    :param graph: igraph.Graph, graph to work on
+    :param list_vertex_id: [int], list of ids of vertices to be retrieved; if None, retrieve all of them
     :return: dictionary of vertices, e.g.
             {"0": {
                 "this_attribute": "0",
@@ -38,8 +38,8 @@ def create_vertices(graph, n=None, name=None, **kwargs):
 
     If n is present, add n vertices to graph. If name and kwargs are present, add one single vertex to graph
 
-    :param graph: igraph.Graph object
-    :param n: number of vertices to add. If n is present, name and kwargs must be absent
+    :param graph: igraph.Graph, graph to work on
+    :param n: int, number of vertices to add. If n is present, name and kwargs must be absent
     :param name: if a graph has C{name} as a vertex attribute, it allows one  to refer to vertices by their names in
     most places where igraph expects a vertex ID. If name is present, n must be absent
     :param kwargs: keyword arguments will be assigned as vertex attributes. If kwargs is present, n must be absent
@@ -58,7 +58,7 @@ def update_vertex(vertex, **kwargs):
 
     Edit a vertex's attributes
 
-    :param vertex: igraph.Vertex object
+    :param vertex: igraph.Vertex, vertex to be updated
     :param kwargs: keyword arguments will be assigned as vertex attributes
     :return:
     """
@@ -71,7 +71,7 @@ def delete_vertices(vertex):
 
     Remove vertices and their edges
 
-    :param vertex: igraph.Vertex object or igraph.VertexSeq object
+    :param vertex: igraph.Vertex or igraph.VertexSeq, vertex or vertices to be deleted
     :return:
     """
     if isinstance(vertex, Iterable):

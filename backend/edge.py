@@ -7,8 +7,8 @@ def read_edges(graph, list_edge_id=None):
 
     Read edge data, this includes their attributes and each attribute's assigned value
 
-    :param graph: igraph.Graph object
-    :param list_edge_id: list of ids of edges to be retrieved; if None, retrieve all of them
+    :param graph: igraph.Graph
+    :param list_edge_id: [int], list of ids of edges to be retrieved; if None, retrieve all of them
     :return: dictionary of edges, e.g.
             {"0": {
                 "this_attribute": "0",
@@ -38,8 +38,8 @@ def create_edges(graph, list_st_id):
 
     Add edges to graph
 
-    :param graph: igraph.Graph object
-    :param list_st_id: list of (source vertex id - target vertex id) tuples
+    :param graph: igraph.Graph, graph to work on
+    :param list_st_id: [(int,int)], list of (source vertex id - target vertex id) tuples
     :return:
     """
     graph.add_edges(list_st_id)
@@ -52,7 +52,7 @@ def update_edge(edge, **kwargs):
 
     Edit a edge's attributes
 
-    :param edge: igraph.Vertex object
+    :param edge: igraph.Edge, edge to be updated
     :param kwargs: keyword arguments will be assigned as vertex attributes
     :return:
     """
@@ -66,7 +66,7 @@ def delete_edges(edge):
 
     Remove edges
 
-    :param edge: igraph.Edge object or igraph.EdgeSeq object
+    :param edge: igraph.Edge or igraph.EdgeSeq, edge(s) to be deleted
     :return:
     """
     if isinstance(edge, Iterable):

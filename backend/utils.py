@@ -6,8 +6,8 @@ def append_to_dictionary(dictionary, item):
 
         Make an entry in a dictionary for a given item
 
-        :param dictionary: dictionary of edge_id-(attribute-value)
-        :param item: igraph.Edge object or igraph.Vertex object
+        :param dictionary: dict, dictionary of edge_id-(attribute-value)
+        :param item: igraph.Edge or igraph.Vertex, vertex or edge to work on
         :return:
     """
     index = str(item.index)
