@@ -35,6 +35,15 @@ class Window(QMainWindow):
         close_button = self.findChild(QAction, 'actionExit')
         close_button.triggered.connect(self.close)
 
+        # View -> Zoom In
+        self.findChild(QAction, 'actionZoom_In').triggered.connect(self.graph_object.zoomInEvent)
+
+        # View -> Zoom Out
+        self.findChild(QAction, 'actionZoom_Out').triggered.connect(self.graph_object.zoomOutEvent)
+
+        # View -> Reset Zoom
+        self.findChild(QAction, 'actionReset_Zoom').triggered.connect(self.graph_object.zoomResetEvent)
+
     # File -> Open
     def open_file_dialog(self):
         options = QFileDialog.Options()
