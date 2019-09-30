@@ -41,5 +41,5 @@ class MainScene(QGraphicsScene):
         for edge in g.es:
             point_a = self.points[edge.source]
             point_b = self.points[edge.target]
-            line = MainEdge(point_a, point_b, r, pen)
+            line = MainEdge(point_a, point_b, pen)
             self.addItem(line)

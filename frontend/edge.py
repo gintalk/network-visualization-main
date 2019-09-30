@@ -2,11 +2,11 @@ from PyQt5.QtWidgets import QGraphicsLineItem
 
 
 class MainEdge(QGraphicsLineItem):
-    def __init__(self, point_a, point_b, radius, pen):
+    def __init__(self, point_a, point_b, pen):
         x_a, y_a = (point_a.x(), point_a.y())
         x_b, y_b = (point_b.x(), point_b.y())
-        self.radius = radius
         super().__init__(x_a, y_a, x_b, y_b)
+
         self.setPen(pen)
 
         self.point_a = point_a
