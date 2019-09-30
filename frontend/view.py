@@ -10,13 +10,13 @@ class MainView(QGraphicsView):
 
     def __init__(self, parent, main_window):
         super().__init__(parent)
-
         self.main_window = main_window
+
         self._zoom = 0
 
     def update_view(self):
         scene = MainScene(self)
-        scene.display(self.main_window.graph)
+        scene.display()
         self.setScene(scene)
 
     def wheelEvent(self, event):
