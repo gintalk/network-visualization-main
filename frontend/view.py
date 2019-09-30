@@ -1,3 +1,5 @@
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QTransform, QKeySequence
 from PyQt5.QtWidgets import QGraphicsView
 from frontend.scene import MainScene
 
@@ -23,3 +25,11 @@ class MainView(QGraphicsView):
             self._zoom -= 1
         if self._zoom != 0:
             self.scale(factor, factor)
+
+    def keyPressEvent(self, event):
+        if event.key() == 32:
+            self.reset_zoom()
+
+    def reset_zoom(self):
+        self.setTransform(QTransform())
+        self._zoom = 0
