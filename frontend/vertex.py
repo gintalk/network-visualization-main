@@ -27,7 +27,7 @@ class MainVertex(QGraphicsEllipseItem):
         return self.rect.y() + self.radius / 2
 
     def mousePressEvent(self, event):
-        pass
+        print(self.vertex)
 
     def mouseMoveEvent(self, event):
         cursor_pos = event.scenePos()
