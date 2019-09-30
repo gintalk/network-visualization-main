@@ -15,10 +15,15 @@ class MainScene(QGraphicsScene):
         self.lines = []
 
     def display(self, g):
-        def dilate(_x, _y, origin, dilate_factor):
-            new_x = origin.x() + dilate_factor * (_x - origin.x())
-            new_y = origin.y() + dilate_factor * (_y - origin.y())
+        def dilate(_x, _y):
+            new_x = graph_center.x() + scale_factor * (_x - graph_center.x())
+            new_y = graph_center.y() + scale_factor * (_y - graph_center.y())
             return new_x, new_y
+
+        def undilate(_x, _y):
+            old_x = _x / (1 + scale_factor)
+            old_y = _y / (1 + scale_factor)
+            return old_x, old_y
 
         def scale_factor_hint(outer_rect, inner_rect, ratio):
             return (outer_rect.width() / ratio) / inner_rect.size().width()
@@ -31,7 +36,7 @@ class MainScene(QGraphicsScene):
         brush = QBrush(pen.color().darker(150))
         r = self.RADIUS
         for vertex in g.vs:
-            x, y = dilate(vertex['x'], vertex['y'], graph_center, scale_factor)
+            x, y = dilate(vertex['x'], vertex['y'])
             vertex['pos'] = {'x': x, 'y': y}
             point = MainVertex(vertex, r, pen, brush)
             self.addItem(point)

@@ -13,9 +13,6 @@ class MainVertex(QGraphicsEllipseItem):
         self.setBrush(brush)
         self.lines = []
 
-    def vertex(self):
-        return self.vertex
-
     def attach_line(self, line):
         self.lines.append(line)
 
@@ -25,8 +22,10 @@ class MainVertex(QGraphicsEllipseItem):
     def y(self):
         return self.rect.y() + self.radius/2
 
+    def setPos(self, ):
+
     def mousePressEvent(self, event):
-        pass
+        print(self.vertex['pos'])
 
     def mouseMoveEvent(self, event):
         cursor_pos = event.scenePos()
