@@ -14,5 +14,5 @@ class MainEdge(QGraphicsLineItem):
         point_a.attach_line(self)
         point_b.attach_line(self)
 
-    def mouseMoveEvent(self, moved_point, event):
+    def mouseMoveEvent(self, event):
         self.setLine(self.point_a.x(), self.point_a.y(), self.point_b.x(), self.point_b.y())

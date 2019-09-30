@@ -1,34 +1,29 @@
 from PyQt5 import uic
-from PyQt5.QtWidgets import QApplication, QMainWindow, QGraphicsView
-from frontend.scene import MainScene
+from PyQt5.QtCore import QRect
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget
+from igraph import Graph
+from frontend.view import MainView
 
 
 class MainWindow(QMainWindow):
+    DEFAULT_GRAPH = "./NREN.graphml"
+
     def __init__(self):
         super().__init__()
 
         uic.loadUi('frontend/resource/GUI.ui', self)
         self.setWindowTitle("Network Visualization")
-        # self.setWindowFlag(QtCore.Qt.WindowMaximizeButtonHint, False)
 
-        # self.graphLayout = 'large'
-        self._zoom = 0
+        self.central_widget = self.findChild(QWidget, 'centralwidget')
+        self.view = MainView(self.central_widget, self)
+        self.view.setGeometry(QRect(0, 0, self.central_widget.width(), self.central_widget.height()))
 
-        self.view = self.findChild(QGraphicsView, 'graphicsView')
-        self.scene = MainScene(self.view)
-        self.view.setScene(self.scene)
+        self.graph = None
+        self.set_graph(self.DEFAULT_GRAPH)
 
-    def wheelEvent(self, event):
-        if event.angleDelta().y() > 0:
-            factor = 1.25
-            self._zoom += 1
-        else:
-            factor = 0.8
-            self._zoom -= 1
-        if self._zoom != 0:
-            self.view.scale(factor, factor)
-        else:
-            self._zoom = 0
+    def set_graph(self, graph_path):
+        self.graph = Graph.Read_GraphML(graph_path)
+        self.view.update_view()
 
 
 if __name__ == "__main__":

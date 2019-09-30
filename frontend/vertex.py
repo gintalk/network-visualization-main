@@ -36,7 +36,7 @@ class MainVertex(QGraphicsEllipseItem):
         self.rect.setTopLeft(adjusted_cursor_pos)
 
         self.setRect(self.rect)
-        [line.mouseMoveEvent(self, event) for line in self.lines]
+        [line.mouseMoveEvent(event) for line in self.lines]
 
     def mouseReleaseEvent(self, event):
         pass

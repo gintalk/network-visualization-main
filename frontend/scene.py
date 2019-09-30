@@ -1,24 +1,20 @@
 from PyQt5.QtCore import *
-from PyQt5.QtGui import QPen, QColor, QBrush, QTransform
-from PyQt5.QtWidgets import QGraphicsScene, QGraphicsView
+from PyQt5.QtGui import QPen, QColor, QBrush
+from PyQt5.QtWidgets import QGraphicsScene
 from frontend.vertex import MainVertex
 from frontend.edge import MainEdge
-from igraph import Graph
 
 
 class MainScene(QGraphicsScene):
-    DEFAULT_GRAPH = "./NREN.graphml"
     RADIUS = 10
 
     def __init__(self, parent):
-        super().__init__()
-        self.parent = parent
-        self.g = Graph.Read_GraphML(self.DEFAULT_GRAPH)
+        super().__init__(parent)
+
         self.points = []
         self.lines = []
-        self.draw(self.g)
 
-    def draw(self, g):
+    def display(self, g):
         def dilate(_x, _y, origin, dilate_factor):
             new_x = origin.x() + dilate_factor * (_x - origin.x())
             new_y = origin.y() + dilate_factor * (_y - origin.y())
@@ -29,7 +25,7 @@ class MainScene(QGraphicsScene):
 
         graph_rect = QRect(QPoint(min(g.vs['x']), min(g.vs['y'])), QPoint(max(g.vs['x']), max(g.vs['y'])))
         graph_center = QPoint(graph_rect.center())
-        scale_factor = scale_factor_hint(self.parent.geometry(), graph_rect, 1.1)
+        scale_factor = scale_factor_hint(self.parent().geometry(), graph_rect, 1.1)
 
         pen = QPen(QColor(Qt.green))
         brush = QBrush(pen.color().darker(150))
@@ -47,6 +43,3 @@ class MainScene(QGraphicsScene):
             point_b = self.points[edge.target]
             line = MainEdge(point_a, point_b, r, pen)
             self.addItem(line)
-
-    # def mousePressEvent(self, event):
-    #     self.parent.setDragMode(QGraphicsView.ScrollHandDrag)
