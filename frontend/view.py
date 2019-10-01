@@ -10,7 +10,7 @@ class MainView(QGraphicsView):
         self._zoom = 0
 
     def update_view(self):
-        scene = MainScene(self)
+        scene = MainScene(self, self.main_window)
         scene.display(self.main_window.graph)
         self.setScene(scene)
 

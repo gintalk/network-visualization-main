@@ -1,15 +1,15 @@
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import QGraphicsEllipseItem
-from math import sqrt
 
 
 class MainVertex(QGraphicsEllipseItem):
-    def __init__(self, vertex, diameter, pen, brush):
+    def __init__(self, vertex, diameter, pen, brush, main_window):
         self.vertex = vertex
         self.diameter = diameter
         self.rect = QRectF(QPointF(self.vertex['pos']['x'], self.vertex['pos']['y']), QSizeF(self.diameter, self.diameter))
         super().__init__(self.rect.x(), self.rect.y(), diameter, diameter)
 
+        self.main_window = main_window
         self.setPen(pen)
         self.setBrush(brush)
         self.lines = []
@@ -36,8 +36,7 @@ class MainVertex(QGraphicsEllipseItem):
         def click_vertex_check():
             return (self.x() - event.scenePos().x()) ** 2 + (self.y() - event.scenePos().y()) ** 2 <= (self.diameter / 2) ** 2
 
-        if (click_vertex_check()):
-            print(self.vertex)
+        #if (click_vertex_check()):
 
 
     def mouseMoveEvent(self, event):

@@ -8,9 +8,10 @@ from frontend.edge import MainEdge
 class MainScene(QGraphicsScene):
     DIAMETER = 8
 
-    def __init__(self, parent):
+    def __init__(self, parent, main_window):
         super().__init__(parent)
 
+        self.main_window = main_window
         self.points = []
         self.lines = []
 
@@ -33,7 +34,7 @@ class MainScene(QGraphicsScene):
         for vertex in g.vs:
             x, y = dilate(vertex['x'], vertex['y'], graph_center, scale_factor)
             vertex['pos'] = {'x': x, 'y': y}
-            point = MainVertex(vertex, d, pen, brush)
+            point = MainVertex(vertex, d, pen, brush, self.main_window)
             self.addItem(point)
             self.points.append(point)
 
