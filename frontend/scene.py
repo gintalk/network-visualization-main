@@ -10,9 +10,15 @@ class MainScene(QGraphicsScene):
 
     def __init__(self, parent):
         super().__init__(parent)
+        self.parent = parent
 
         self.points = []
         self.lines = []
+        self.graph_to_display = None
+
+    def init_variables(self):
+        self.graph_to_display = self.parent.main_window.graph
+
 
     def display(self, g):
         def dilate(_x, _y, origin, dilate_factor):
