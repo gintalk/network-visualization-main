@@ -1,5 +1,6 @@
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import QGraphicsEllipseItem
+from math import sqrt
 
 
 class MainVertex(QGraphicsEllipseItem):
@@ -26,7 +27,18 @@ class MainVertex(QGraphicsEllipseItem):
         return self.rect.y() + self.diameter/2
 
     def mousePressEvent(self, event):
-        pass
+        self.click_for_information(event)
+
+    def click_for_information(self, event):
+
+        # Return true if the distance between the point clicked and the center of vertex
+        # is smaller than or equal to the vertex radius
+        def click_vertex_check():
+            return (self.x() - event.scenePos().x()) ** 2 + (self.y() - event.scenePos().y()) ** 2 <= (self.diameter / 2) ** 2
+
+        if (click_vertex_check()):
+            print(self.vertex)
+
 
     def mouseMoveEvent(self, event):
         cursor_pos = event.scenePos()

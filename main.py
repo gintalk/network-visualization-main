@@ -1,8 +1,9 @@
 from igraph import read, write
 from PyQt5 import uic
 from PyQt5.QtCore import QRect
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QAction, QFileDialog
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QAction, QFileDialog, QGridLayout
 from frontend.view import MainView
+from frontend.infoview import InfoView
 
 
 class MainWindow(QMainWindow):
@@ -18,8 +19,12 @@ class MainWindow(QMainWindow):
         self.view = MainView(self.central_widget, self)
         self.view.setGeometry(QRect(0, 0, self.central_widget.width(), self.central_widget.height()))
 
+        self.info_widget = self.findChild(QWidget, 'infowidget')
+        self.info_view = InfoView(self.info_widget, self)
+        self.info_view.setGeometry(QRect(self.central_widget.width(), 0, self.info_widget.width(), self.info_widget.height()))
+
         self.graph = None
-        # self.set_graph(self.DEFAULT_GRAPH)
+        self.set_graph(self.DEFAULT_GRAPH)
 
         # Bind action into menu button
         self.menu_action()
@@ -68,6 +73,7 @@ class MainWindow(QMainWindow):
             if ".graphml" not in file_name:
                 file_name = file_name + ".graphml"
             self.get_graph(file_name)
+
 
 if __name__ == "__main__":
     app = QApplication([])

@@ -24,7 +24,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QWidget" name="subwidget" native="true">
+   <widget class="QWidget" name="infowidget" native="true">
     <property name="geometry">
      <rect>
       <x>824</x>
