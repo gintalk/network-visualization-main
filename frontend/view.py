@@ -15,6 +15,12 @@ class MainView(QGraphicsView):
         self.scene = None
         self._zoom = 0
 
+        # Constants to be passed to scene
+        self.point_diameter = 8
+        self.point_border_width = 0.5
+        self.edge_color = 'black'
+        self.edge_width = 0.5
+
     def update_view(self):
         self.scene = MainScene(self)
         self.setScene(self.scene)
@@ -61,15 +67,15 @@ class MainView(QGraphicsView):
         self.setTransform(QTransform())
         self._zoom = 0
 
-    def set_details(self, point_diameter, point_border_width, edge_color, edge_width):
+    def settings(self, point_diameter, point_border_width, edge_color, edge_width):
         if point_diameter is not None:
-            self.scene.point_diameter = point_diameter
+            self.point_diameter = point_diameter
 
         if point_border_width is not None:
-            self.scene.point_border_width = point_border_width
+            self.point_border_width = point_border_width
 
         if edge_color is not None:
-            self.scene.edge_color = edge_color
+            self.edge_color = edge_color
 
         if edge_width is not None:
-            self.scene.edge_width = edge_width
+            self.edge_width = edge_width

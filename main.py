@@ -35,15 +35,15 @@ class MainWindow(QMainWindow):
         # Set up data to work with
         self.graph = None
         self.clustering_algorithm = None
+        self.set_up(self.DEFAULT_GRAPH, None, self.DEFAULT_CLUSTERING_ALGORITHM)
 
         # Set up GUI
         self.central_widget = self.findChild(QWidget, 'centralwidget')
         self.view = MainView(self.central_widget, self)
         self.view.setGeometry(QRect(0, 0, self.central_widget.width(), self.central_widget.height()))
-        self.set_up(self.DEFAULT_GRAPH, None, self.DEFAULT_CLUSTERING_ALGORITHM)
 
-        # Set up small details in scene
-        self.set_details(edge_color='Red')
+        # Set up settings details in scene
+        # self.choose_settings()
 
         self.view.update_view()
 
@@ -76,8 +76,8 @@ class MainWindow(QMainWindow):
     def set_clustering_algorithm(self, clustering_algorithm):
         self.clustering_algorithm = clustering_algorithm
 
-    def set_details(self, point_diameter=None, point_border_width=None, edge_color=None, edge_width=None):
-        self.view.set_details(point_diameter, point_border_width, edge_color, edge_width)
+    def choose_settings(self, point_diameter=None, point_border_width=None, edge_color=None, edge_width=None):
+        self.view.settings(point_diameter, point_border_width, edge_color, edge_width)
 
 
 if __name__ == "__main__":

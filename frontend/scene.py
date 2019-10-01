@@ -32,10 +32,10 @@ class MainScene(QGraphicsScene):
         self.lines = []
 
         # Constants
-        self.point_diameter = 8
-        self.point_border_width = 0.5
-        self.edge_color = 'black'
-        self.edge_width = 0.5
+        # self.point_diameter = 8
+        # self.point_border_width = 0.5
+        # self.edge_color = 'black'
+        # self.edge_width = 0.5
 
         self.init_variables()
 
@@ -49,10 +49,9 @@ class MainScene(QGraphicsScene):
         )
         self.graph_center = QPoint(graph_rect.center())
         self.scale_factor = scale_factor_hint(self.parent.geometry(), graph_rect, 1.05)
-        print(self.scale_factor)
 
         for edge in self.graph_to_display.es:
-            edge['edge_color'] = self.edge_color
+            edge['edge_color'] = self.parent.edge_color
 
     def display(self):
         def assign_color_to_vertex():
@@ -91,8 +90,8 @@ class MainScene(QGraphicsScene):
 
     def display_vertices(self):
         point_pen = QPen(self.COLORS['black'])
-        point_pen.setWidth(self.point_diameter)
-        d = self.point_diameter
+        point_pen.setWidth(self.parent.point_border_width)
+        d = self.parent.point_diameter
         for vertex in self.graph_to_display.vs:
             x, y = dilate(vertex['x'], vertex['y'], self.graph_center, self.scale_factor)
             vertex['pos'] = {'x': x, 'y': y}
@@ -105,7 +104,7 @@ class MainScene(QGraphicsScene):
             point_a = self.points[edge.source]
             point_b = self.points[edge.target]
             line_pen = QPen(self.COLORS[edge['edge_color']])
-            line_pen.setWidth(self.edge_width)
+            line_pen.setWidth(self.parent.edge_width)
             line = MainEdge(edge, point_a, point_b, line_pen, self)
             self.addItem(line)
             self.lines.append(line)
