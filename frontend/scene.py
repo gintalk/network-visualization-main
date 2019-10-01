@@ -6,7 +6,7 @@ from frontend.edge import MainEdge
 
 
 class MainScene(QGraphicsScene):
-    RADIUS = 10
+    DIAMETER = 8
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -29,11 +29,11 @@ class MainScene(QGraphicsScene):
 
         pen = QPen(QColor(Qt.green))
         brush = QBrush(pen.color().darker(150))
-        r = self.RADIUS
+        d = self.DIAMETER
         for vertex in g.vs:
             x, y = dilate(vertex['x'], vertex['y'], graph_center, scale_factor)
             vertex['pos'] = {'x': x, 'y': y}
-            point = MainVertex(vertex, r, pen, brush)
+            point = MainVertex(vertex, d, pen, brush)
             self.addItem(point)
             self.points.append(point)
 
