@@ -1,3 +1,4 @@
+from PyQt5.QtCore import QRect
 from PyQt5.QtGui import QTransform
 from PyQt5.QtWidgets import QGraphicsView
 
@@ -11,18 +12,20 @@ class MainView(QGraphicsView):
     def __init__(self, parent, main_window):
         super().__init__(parent)
         self.main_window = main_window
+        self.setGeometry(QRect(0, 0, self.parent().width(), self.parent().height()))
 
-        self.scene = None
-        self._zoom = 0
-
-        # Constants to be passed to scene
+        # Constants to be used by self.scene
+        self.background_color = 'light_gray'
         self.point_diameter = 8
         self.point_border_width = 0.5
         self.edge_color = 'black'
         self.edge_width = 0.5
+        self.highlight_color = 'green'
+
+        self.scene = MainScene(self)
+        self._zoom = 0
 
     def update_view(self):
-        self.scene = MainScene(self)
         self.setScene(self.scene)
         self.scene.display()
 
@@ -67,7 +70,10 @@ class MainView(QGraphicsView):
         self.setTransform(QTransform())
         self._zoom = 0
 
-    def settings(self, point_diameter, point_border_width, edge_color, edge_width):
+    def settings(self, background_color, point_diameter, point_border_width, edge_color, edge_width, highlight_color):
+        if background_color is not None:
+            self.background_color = background_color
+
         if point_diameter is not None:
             self.point_diameter = point_diameter
 
@@ -79,3 +85,17 @@ class MainView(QGraphicsView):
 
         if edge_width is not None:
             self.edge_width = edge_width
+
+        if highlight_color is not None:
+            self.highlight_color = highlight_color
+
+    def highlight_path(self, edge_path):
+        vertices_along_the_way = []
+        for i in range(0, len(edge_path)):
+            vertex_id = self.main_window.graph.es[edge_path[i]].source
+            vertices_along_the_way.append(vertex_id)
+        last_vertex_id = self.main_window.graph.es[edge_path[-1]].target
+        vertices_along_the_way.append(last_vertex_id)
+
+        self.scene.highlight_edges(edge_path)
+        self.scene.highlight_vertices(vertices_along_the_way)

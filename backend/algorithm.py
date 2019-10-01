@@ -1,7 +1,7 @@
 from igraph import InternalError
 
 
-def get_shortest_paths(graph, source, target=None, weights=None, mode="OUT", output="vpath"):
+def get_shortest_paths(graph, source, target=None, weights=None, mode="OUT", output="epath"):
     """
 
     Calculates the shortest paths from/to a given node in a graph.

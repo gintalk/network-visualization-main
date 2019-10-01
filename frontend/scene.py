@@ -10,6 +10,7 @@ from frontend.edge import MainEdge
 
 class MainScene(QGraphicsScene):
     COLORS = {
+        # Yellow is used as highlight color for nodes
         'black': QColor(Qt.black), 'white': QColor(Qt.white), 'red': QColor(Qt.red),
         'green': QColor(Qt.green), 'blue': QColor(Qt.blue), 'bark_red': QColor(Qt.darkRed),
         'dark_green': QColor(Qt.darkGreen), 'dark_blue': QColor(Qt.darkBlue), 'cyan': QColor(Qt.cyan),
@@ -31,12 +32,6 @@ class MainScene(QGraphicsScene):
         self.points = []
         self.lines = []
 
-        # Constants
-        # self.point_diameter = 8
-        # self.point_border_width = 0.5
-        # self.edge_color = 'black'
-        # self.edge_width = 0.5
-
         self.init_variables()
 
     def init_variables(self):
@@ -50,8 +45,16 @@ class MainScene(QGraphicsScene):
         self.graph_center = QPoint(graph_rect.center())
         self.scale_factor = scale_factor_hint(self.parent.geometry(), graph_rect, 1.05)
 
+        self.init_edge_color_to_black()
+        self.set_background_color()
+
+    def init_edge_color_to_black(self, ):
         for edge in self.graph_to_display.es:
             edge['edge_color'] = self.parent.edge_color
+
+    def set_background_color(self):
+        background_color = QBrush(QColor(self.COLORS[self.parent.background_color]))
+        self.setBackgroundBrush(background_color)
 
     def display(self):
         def assign_color_to_vertex():
@@ -59,6 +62,8 @@ class MainScene(QGraphicsScene):
 
             for v in self.graph_to_display.vs:
                 color_index = v['cluster'] % len(colors)
+                if colors[color_index] == self.parent.highlight_color:  # so that node color won't match highlight color
+                    color_index = (color_index+1) % len(colors)
                 q_color = self.COLORS[colors[color_index]]
                 cluster_color = QBrush(q_color)
                 v['color'] = cluster_color
@@ -108,6 +113,19 @@ class MainScene(QGraphicsScene):
             line = MainEdge(edge, point_a, point_b, line_pen, self)
             self.addItem(line)
             self.lines.append(line)
+
+    def highlight_edges(self, edge_path):
+        for edge_id in edge_path:
+            line = self.lines[edge_id]
+            line_pen = QPen(self.COLORS[self.parent.highlight_color])
+            line_pen.setWidth(self.parent.edge_width * 5)
+            line.setPen(line_pen)
+
+    def highlight_vertices(self, vertex_path):
+        for vertex_id in vertex_path:
+            point = self.points[vertex_id]
+            point.setBrush(QBrush(QColor(self.COLORS[self.parent.highlight_color])))
+            point.setPen(QPen(self.COLORS[self.parent.highlight_color]))
 
     def update_vertex(self, point):
         dilated_x, dilated_y = point.x(), point.y()

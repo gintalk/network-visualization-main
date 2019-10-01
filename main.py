@@ -1,9 +1,9 @@
 from PyQt5 import uic
-from PyQt5.QtCore import QRect
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget
 from igraph import Graph
 
 from frontend.view import MainView
+from backend.algorithm import get_shortest_paths
 
 
 class MainWindow(QMainWindow):
@@ -40,12 +40,16 @@ class MainWindow(QMainWindow):
         # Set up GUI
         self.central_widget = self.findChild(QWidget, 'centralwidget')
         self.view = MainView(self.central_widget, self)
-        self.view.setGeometry(QRect(0, 0, self.central_widget.width(), self.central_widget.height()))
 
         # Set up settings details in scene
         # self.choose_settings()
 
         self.view.update_view()
+
+        # Test: getting shortest path between node 0 and node 1120. Note that the function inside returns a list within
+        # a list, hence in order to get the actual edge list we need to get the element at 0, which is a list of edges
+        # on the path
+        self.highlight_path(get_shortest_paths(self.graph, 0, 1120)[0])
 
     def set_up(self, graph=None, layout=None, cluster=None):
         if graph is None:
@@ -76,8 +80,18 @@ class MainWindow(QMainWindow):
     def set_clustering_algorithm(self, clustering_algorithm):
         self.clustering_algorithm = clustering_algorithm
 
-    def choose_settings(self, point_diameter=None, point_border_width=None, edge_color=None, edge_width=None):
-        self.view.settings(point_diameter, point_border_width, edge_color, edge_width)
+    def choose_settings(
+            self, background_color=None, point_diameter=None, point_border_width=None,
+            edge_color=None, edge_width=None, highlight_color=None
+    ):
+        self.view.settings(
+            background_color, point_diameter, point_border_width,
+            edge_color, edge_width, highlight_color
+        )
+
+    # To see shortest path, feed it a list of edges on the path
+    def highlight_path(self, edge_path):
+        self.view.highlight_path(edge_path)
 
 
 if __name__ == "__main__":
