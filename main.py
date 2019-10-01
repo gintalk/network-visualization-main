@@ -2,6 +2,8 @@ from PyQt5 import uic
 from PyQt5.QtCore import QRect
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget
 from igraph import Graph
+
+from frontend.databar import DataBar
 from frontend.view import MainView
 
 
@@ -24,6 +26,12 @@ class MainWindow(QMainWindow):
     def set_graph(self, graph_path):
         self.graph = Graph.Read_GraphML(graph_path)
         self.view.update_view()
+
+    #pop data bar, data in list, try g.es['label']
+    #stackoverflow.com/questions/940555/pyqt-sending-parameter-to-slot-when-connecting-to-a-signal
+    def popupBar(self, data):
+        bar = DataBar(data)
+        bar.show()
 
 
 if __name__ == "__main__":
