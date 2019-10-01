@@ -19,20 +19,21 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>824</width>
+      <width>781</width>
       <height>746</height>
      </rect>
     </property>
    </widget>
-   <widget class="QWidget" name="infowidget" native="true">
+   <widget class="QWidget" name="gridLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>824</x>
+      <x>780</x>
       <y>0</y>
-      <width>200</width>
-      <height>746</height>
+      <width>241</width>
+      <height>721</height>
      </rect>
     </property>
+    <layout class="QGridLayout" name="infolayout"/>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
