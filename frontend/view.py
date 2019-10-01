@@ -12,12 +12,13 @@ class MainView(QGraphicsView):
         super().__init__(parent)
         self.main_window = main_window
 
+        self.scene = None
         self._zoom = 0
 
     def update_view(self):
-        scene = MainScene(self)
-        scene.display()
-        self.setScene(scene)
+        self.scene = MainScene(self)
+        self.setScene(self.scene)
+        self.scene.display()
 
     def wheelEvent(self, event):
         old_cursor_pos = self.mapToScene(event.pos())
@@ -58,3 +59,17 @@ class MainView(QGraphicsView):
 
     def reset_zoom(self):
         self.setTransform(QTransform())
+        self._zoom = 0
+
+    def set_details(self, point_diameter, point_border_width, edge_color, edge_width):
+        if point_diameter is not None:
+            self.scene.point_diameter = point_diameter
+
+        if point_border_width is not None:
+            self.scene.point_border_width = point_border_width
+
+        if edge_color is not None:
+            self.scene.edge_color = edge_color
+
+        if edge_width is not None:
+            self.scene.edge_width = edge_width
