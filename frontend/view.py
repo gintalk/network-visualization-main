@@ -23,8 +23,8 @@ class MainView(QGraphicsView):
         self.highlight_color = 'green'
 
         self.scene = MainScene(self)
-        self._zoom = 0
-        self._rotate = 0
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
     def update_view(self):
         self.setScene(self.scene)
@@ -45,10 +45,7 @@ class MainView(QGraphicsView):
         delta = new_cursor_pos - old_cursor_pos
         self.translate(delta.x(), delta.y())
 
-        if self._zoom > 0:
-            self.setDragMode(QGraphicsView.ScrollHandDrag)
-        else:
-            self.setDragMode(QGraphicsView.NoDrag)
+        self.setDragMode(self.drag_mode_hint())
 
     def keyPressEvent(self, event):
         # print(event.key())
@@ -63,29 +60,31 @@ class MainView(QGraphicsView):
         elif event.key() == Qt.Key_Right:
             self.rotate_clockwise()
 
+        self.setDragMode(self.drag_mode_hint())
+
     def zoom_in(self):
         self.scale(self.ZOOM_IN_FACTOR, self.ZOOM_IN_FACTOR)
-        self._zoom += 1
-        print(self.viewport().size())
 
     def zoom_out(self):
         self.scale(self.ZOOM_OUT_FACTOR, self.ZOOM_OUT_FACTOR)
-        self._zoom -= 1
-        print(self.viewport().size())
-
 
     def rotate_clockwise(self):
         self.rotate(1)
-        self._rotate += 1
 
     def rotate_anti_clockwise(self):
         self.rotate(-1)
-        self._rotate -= 1
 
     def reset_view(self):
         self.setTransform(QTransform())
-        self._zoom = 0
-        self._rotate = 0
+
+    def drag_mode_hint(self):
+        if(
+            self.verticalScrollBar().value() != 0 or
+            self.horizontalScrollBar().value() != 0
+        ):
+            return QGraphicsView.ScrollHandDrag
+        else:
+            return QGraphicsView.NoDrag
 
     def settings(self, background_color, point_diameter, point_border_width, edge_color, edge_width, highlight_color):
         if background_color is not None:
