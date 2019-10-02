@@ -3,39 +3,41 @@ from PyQt5.QtWidgets import QGraphicsEllipseItem
 
 
 class MainVertex(QGraphicsEllipseItem):
-    def __init__(self, vertex, radius, pen, brush):
+    def __init__(self, vertex, radius, pen, brush, parent):
         self.vertex = vertex
         self.radius = radius
-        self.rect = QRectF(QPointF(self.vertex['pos']['x'], self.vertex['pos']['y']), QSizeF(self.radius, self.radius))
-        super().__init__(self.rect.x(), self.rect.y(), radius, radius)
+        self.rect = QRectF(
+            QPointF(self.vertex['pos']['x'] - self.radius / 2.0, self.vertex['pos']['y'] - self.radius / 2.0),
+            QSizeF(self.radius, self.radius)
+        )
+        super().__init__(self.rect.x(), self.rect.y(), self.radius, self.radius)
 
+        self.parent = parent
         self.setPen(pen)
         self.setBrush(brush)
         self.lines = []
-
-    def vertex(self):
-        return self.vertex
 
     def attach_line(self, line):
         self.lines.append(line)
 
     def x(self):
-        return self.rect.x() + self.radius/2
+        return self.rect.x() + self.radius / 2
 
     def y(self):
-        return self.rect.y() + self.radius/2
+        return self.rect.y() + self.radius / 2
 
     def mousePressEvent(self, event):
         pass
 
     def mouseMoveEvent(self, event):
         cursor_pos = event.scenePos()
-        adjusted_cursor_pos = QPointF(cursor_pos.x() - self.radius/2, cursor_pos.y() - self.radius/2)
+        adjusted_cursor_pos = QPointF(cursor_pos.x() - self.radius / 2, float(cursor_pos.y() - self.radius / 2))
 
         self.rect.moveTopLeft(adjusted_cursor_pos)
         self.rect.setTopLeft(adjusted_cursor_pos)
 
         self.setRect(self.rect)
+        self.parent.update_vertex(self)
         [line.mouseMoveEvent(event) for line in self.lines]
 
     def mouseReleaseEvent(self, event):
