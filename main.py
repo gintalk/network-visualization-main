@@ -1,7 +1,6 @@
-from igraph import write
 from PyQt5 import uic
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QAction, QFileDialog, QGridLayout
-from igraph import Graph
+from igraph import *
 
 from frontend.view import MainView
 from backend.algorithm import get_shortest_paths
@@ -151,14 +150,15 @@ class MainWindow(QMainWindow):
     # Display vertex information
     def display_vertex(self, vertex):
         self.clear_layout(self.info_layout)
-        vertex_info = VertexInfo(vertex)
+        vertex_info = VertexInfo(vertex, self)
         self.info_layout.addWidget(vertex_info)
 
     # Display edge information
     def display_edge(self, edge):
         self.clear_layout(self.info_layout)
-        edge_info = EdgeInfo(edge)
+        edge_info = EdgeInfo(edge, self)
         self.info_layout.addWidget(edge_info)
+
 
 if __name__ == "__main__":
     app = QApplication([])
