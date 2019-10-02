@@ -44,15 +44,10 @@ class MainWindow(QMainWindow):
         # Pull it up
         self.set_up(graph=self.DEFAULT_GRAPH)
 
-        # Set up settings details in scene
-        # self.choose_settings(edge_color='red')
-
-        # self.view.update_view()
-
         # Test: getting shortest path between node 0 and node 1120. Note that the function inside returns a list within
         # a list, hence in order to get the actual edge list we need to get the element at 0, which is a list of edges
         # on the path
-        # self.highlight_path(get_shortest_paths(self.graph, 0, 1120)[0])
+        self.highlight_path(get_shortest_paths(self.graph, 0, 1120)[0])
 
     def set_up(self, graph=None, layout=None, cluster=None):
         if graph is not None:
@@ -83,16 +78,8 @@ class MainWindow(QMainWindow):
         self.clustering_algorithm = self.CLUSTERING_ALGORITHMS[clustering_algorithm]
         self.view.update_view()
 
-    # def choose_settings(
-    #         self, background_color=None, point_diameter=None, point_border_width=None,
-    #         edge_color=None, edge_width=None, highlight_color=None
-    # ):
-    #     self.view.settings(
-    #         background_color, point_diameter, point_border_width,
-    #         edge_color, edge_width, highlight_color
-    #     )
-    # def choose_settings(self, **kwargs):
-    #     self.view.settings(kwargs)
+    def settings(self, **kwargs):
+        self.view.settings(kwargs)
 
     # To see shortest path, feed it a list of edges on the path
     def highlight_path(self, edge_path):
