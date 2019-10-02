@@ -1,8 +1,6 @@
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import QGraphicsEllipseItem
 
-from igraph import Graph
-
 
 class MainVertex(QGraphicsEllipseItem):
     def __init__(self, vertex, diameter, pen, brush, parent):

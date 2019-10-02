@@ -1,5 +1,5 @@
-from PyQt5.QtCore import QRect
-from PyQt5.QtGui import QTransform
+from PyQt5.QtCore import QRect, Qt
+from PyQt5.QtGui import QTransform, QKeySequence
 from PyQt5.QtWidgets import QGraphicsView
 
 from frontend.scene import MainScene
@@ -24,6 +24,7 @@ class MainView(QGraphicsView):
 
         self.scene = MainScene(self)
         self._zoom = 0
+        self._rotate = 0
 
     def update_view(self):
         self.setScene(self.scene)
@@ -51,24 +52,40 @@ class MainView(QGraphicsView):
 
     def keyPressEvent(self, event):
         # print(event.key())
-        if event.key() == 16777238:  # page up
+        if event.key() == Qt.Key_PageUp:
             self.zoom_in()
-        elif event.key() == 16777239:  # page down
+        elif event.key() == Qt.Key_PageDown:
             self.zoom_out()
-        elif event.key() == 32:  # space bar
-            self.reset_zoom()
+        elif event.key() == Qt.Key_Space:
+            self.reset_view()
+        elif event.key() == Qt.Key_Left:
+            self.rotate_anti_clockwise()
+        elif event.key() == Qt.Key_Right:
+            self.rotate_clockwise()
 
     def zoom_in(self):
         self.scale(self.ZOOM_IN_FACTOR, self.ZOOM_IN_FACTOR)
         self._zoom += 1
+        print(self.viewport().size())
 
     def zoom_out(self):
         self.scale(self.ZOOM_OUT_FACTOR, self.ZOOM_OUT_FACTOR)
         self._zoom -= 1
+        print(self.viewport().size())
 
-    def reset_zoom(self):
+
+    def rotate_clockwise(self):
+        self.rotate(1)
+        self._rotate += 1
+
+    def rotate_anti_clockwise(self):
+        self.rotate(-1)
+        self._rotate -= 1
+
+    def reset_view(self):
         self.setTransform(QTransform())
         self._zoom = 0
+        self._rotate = 0
 
     def settings(self, background_color, point_diameter, point_border_width, edge_color, edge_width, highlight_color):
         if background_color is not None:
