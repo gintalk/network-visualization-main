@@ -1,5 +1,5 @@
 from PyQt5 import uic
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget ,QInputDialog, QLineEdit
 from igraph import Graph
 
 from frontend.view import MainView
@@ -41,13 +41,14 @@ class MainWindow(QMainWindow):
         self.central_widget = self.findChild(QWidget, 'centralwidget')
         self.view = MainView(self.central_widget, self)
 
+        self.button = self.findChild(QWidget, 'pushButton')
+        self.button.clicked.connect(self.getText)
         # Set up settings details in scene
         # self.choose_settings()
 
         self.view.update_view()
 
-        self.button = self.findChild(QWidget, 'pushButton')
-        self.button.clicked.connect(self.getText)
+
 
         # Test: getting shortest path between node 0 and node 1120. Note that the function inside returns a list within
         # a list, hence in order to get the actual edge list we need to get the element at 0, which is a list of edges

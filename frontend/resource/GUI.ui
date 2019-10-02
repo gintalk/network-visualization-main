@@ -38,7 +38,6 @@
     </property>
    </widget>
   </widget>
-  </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
