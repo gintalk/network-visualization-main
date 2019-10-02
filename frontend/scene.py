@@ -6,6 +6,7 @@ from igraph import VertexDendrogram, Graph
 from frontend.utils import *
 from frontend.vertex import MainVertex
 from frontend.edge import MainEdge
+from frontend.event_filter import EventFilter
 
 
 class MainScene(QGraphicsScene):
@@ -31,6 +32,8 @@ class MainScene(QGraphicsScene):
         self.points = []
         self.lines = []
 
+        self.event_filter = EventFilter()
+        self.addItem(self.event_filter)
         self.init_variables()
 
     def init_variables(self):
@@ -102,6 +105,7 @@ class MainScene(QGraphicsScene):
             point = MainVertex(vertex, d, point_pen, vertex['color'], self)
             self.addItem(point)
             self.points.append(point)
+            point.installSceneEventFilter(self.event_filter)
 
     def display_edges(self):
         for edge in self.graph_to_display.es:
@@ -112,19 +116,17 @@ class MainScene(QGraphicsScene):
             line = MainEdge(edge, point_a, point_b, line_pen, self)
             self.addItem(line)
             self.lines.append(line)
+            line.installSceneEventFilter(self.event_filter)
 
     def highlight_edges(self, edge_path):
         for edge_id in edge_path:
             line = self.lines[edge_id]
-            line_pen = QPen(self.COLORS[self.parent.SETTINGS['highlight_color']])
-            line_pen.setWidth(self.parent.SETTINGS['edge_width'] * 5)
-            line.setPen(line_pen)
+            line.highlight_self()
 
     def highlight_vertices(self, vertex_path):
         for vertex_id in vertex_path:
             point = self.points[vertex_id]
-            point.setBrush(QBrush(QColor(self.COLORS[self.parent.SETTINGS['highlight_color']])))
-            point.setPen(QPen(self.COLORS[self.parent.SETTINGS['highlight_color']]))
+            point.highlight_self()
 
     def update_vertex(self, point):
         dilated_x, dilated_y = point.x(), point.y()

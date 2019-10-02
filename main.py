@@ -47,7 +47,7 @@ class MainWindow(QMainWindow):
         # Test: getting shortest path between node 0 and node 1120. Note that the function inside returns a list within
         # a list, hence in order to get the actual edge list we need to get the element at 0, which is a list of edges
         # on the path
-        self.highlight_path(get_shortest_paths(self.graph, 0, 1120)[0])
+        # self.highlight_path(get_shortest_paths(self.graph, 0, 1120)[0])
 
     def set_up(self, graph=None, layout=None, cluster=None):
         if graph is not None:

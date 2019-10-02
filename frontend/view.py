@@ -14,7 +14,7 @@ class MainView(QGraphicsView):
         'point_diameter': 8,
         'point_border_width': 0.5,
         'edge_color': 'black',
-        'edge_width': 0.5,
+        'edge_width': 1,
         'highlight_color': 'green'
     }
 
