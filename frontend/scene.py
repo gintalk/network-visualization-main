@@ -31,6 +31,7 @@ class MainScene(QGraphicsScene):
         self.scene_graph_rect = None
         self.points = []
         self.lines = []
+        self.show_availability = True
 
         self.init_variables()
 
@@ -57,6 +58,13 @@ class MainScene(QGraphicsScene):
         self.setBackgroundBrush(background_color)
 
     def display(self):
+        def availability_color_to_vertex():
+            for v in self.graph_to_display.vs:
+                if v['availability']:
+                    v['color'] = QBrush(self.COLORS['green'])
+                else:
+                    v['color'] = QBrush(self.COLORS['red'])
+
         def assign_color_to_vertex():
             colors = list(self.COLORS.keys())
 
@@ -89,6 +97,8 @@ class MainScene(QGraphicsScene):
         clusters = clusters.subgraphs()
         assign_vertex_to_cluster()
         assign_color_to_vertex()  # based on the cluster it belongs to
+        if self.show_availability:
+            availability_color_to_vertex()
 
         self.display_vertices()
         self.display_edges()
@@ -132,3 +142,6 @@ class MainScene(QGraphicsScene):
         original_x, original_y = undilate(dilated_x, dilated_y, self.graph_center, self.scale_factor
                                           )
         point.vertex.update_attributes(x=original_x, y=original_y, pos={'x': dilated_x, 'y': dilated_y})
+
+    def set_availability(self, availability):
+        self.show_availability = availability

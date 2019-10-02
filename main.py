@@ -5,6 +5,7 @@ from igraph import Graph
 from frontend.databar import DataBar
 from frontend.view import MainView
 from backend.algorithm import get_shortest_paths
+import numpy as np
 
 
 class MainWindow(QMainWindow):
@@ -68,6 +69,9 @@ class MainWindow(QMainWindow):
             self.clustering_algorithm = self.DEFAULT_CLUSTERING_ALGORITHM
         else:
             self.set_clustering_algorithm(cluster)
+
+        np.random.seed(0)
+        self.graph.vs["availability"] = np.random.randint(2, size=len(self.graph.vs))
 
     def set_graph(self, graph_path):
         self.graph = Graph.Read_GraphML(graph_path)
