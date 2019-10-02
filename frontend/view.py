@@ -1,7 +1,8 @@
 from PyQt5.QtCore import QRect, Qt
-from PyQt5.QtGui import QTransform, QKeySequence
+from PyQt5.QtGui import QTransform
 from PyQt5.QtWidgets import QGraphicsView
 
+from backend.algorithm import get_shortest_paths
 from frontend.scene import MainScene
 
 
@@ -22,11 +23,12 @@ class MainView(QGraphicsView):
         self.edge_width = 0.5
         self.highlight_color = 'green'
 
-        self.scene = MainScene(self)
+        self.scene = None
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
     def update_view(self):
+        self.scene = MainScene(self)
         self.setScene(self.scene)
         self.scene.display()
 
@@ -86,24 +88,28 @@ class MainView(QGraphicsView):
         else:
             return QGraphicsView.NoDrag
 
-    def settings(self, background_color, point_diameter, point_border_width, edge_color, edge_width, highlight_color):
-        if background_color is not None:
-            self.background_color = background_color
-
-        if point_diameter is not None:
-            self.point_diameter = point_diameter
-
-        if point_border_width is not None:
-            self.point_border_width = point_border_width
-
-        if edge_color is not None:
-            self.edge_color = edge_color
-
-        if edge_width is not None:
-            self.edge_width = edge_width
-
-        if highlight_color is not None:
-            self.highlight_color = highlight_color
+    # def settings(self, background_color=None, point_diameter=None, point_border_width=None, edge_color=None,
+    # edge_width=None, highlight_color=None): if background_color is not None: self.background_color = background_color
+    #
+    #     if point_diameter is not None:
+    #         self.point_diameter = point_diameter
+    #
+    #     if point_border_width is not None:
+    #         self.point_border_width = point_border_width
+    #
+    #     if edge_color is not None:
+    #         self.edge_color = edge_color
+    #
+    #     if edge_width is not None:
+    #         self.edge_width = edge_width
+    #
+    #     if highlight_color is not None:
+    #         self.highlight_color = highlight_color
+    # def settings(self, kwargs):
+    #     for key in kwargs.keys():
+    #         setter = 'set_' + str(key)
+    #         getattr(self, setter)(kwargs[key])
+    #     self.update_view()
 
     def highlight_path(self, edge_path):
         vertices_along_the_way = []

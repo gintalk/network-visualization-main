@@ -38,17 +38,17 @@ class MainScene(QGraphicsScene):
         self.graph_to_display = self.parent.main_window.graph
         self.clustering_algorithm = self.parent.main_window.clustering_algorithm
 
-        graph_rect = QRect(
-            QPoint(min(self.graph_to_display.vs['x']), min(self.graph_to_display.vs['y'])),
-            QPoint(max(self.graph_to_display.vs['x']), max(self.graph_to_display.vs['y']))
+        graph_rect = QRectF(
+            QPointF(min(self.graph_to_display.vs['x']), min(self.graph_to_display.vs['y'])),
+            QPointF(max(self.graph_to_display.vs['x']), max(self.graph_to_display.vs['y']))
         )
-        self.graph_center = QPoint(graph_rect.center())
+        self.graph_center = QPointF(graph_rect.center())
         self.scale_factor = scale_factor_hint(self.parent.geometry(), graph_rect, 1.05)
 
-        self.init_edge_color_to_black()
+        self.init_edge_color_to_default()
         self.set_background_color()
 
-    def init_edge_color_to_black(self, ):
+    def init_edge_color_to_default(self, ):
         for edge in self.graph_to_display.es:
             edge['edge_color'] = self.parent.edge_color
 
@@ -63,7 +63,7 @@ class MainScene(QGraphicsScene):
             for v in self.graph_to_display.vs:
                 color_index = v['cluster'] % len(colors)
                 if colors[color_index] == self.parent.highlight_color:  # so that node color won't match highlight color
-                    color_index = (color_index+1) % len(colors)
+                    color_index = (color_index + 1) % len(colors)
                 q_color = self.COLORS[colors[color_index]]
                 cluster_color = QBrush(q_color)
                 v['color'] = cluster_color
