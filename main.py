@@ -46,6 +46,9 @@ class MainWindow(QMainWindow):
 
         self.view.update_view()
 
+        self.button = self.findChild(QWidget, 'pushButton')
+        self.button.clicked.connect(self.getText)
+
         # Test: getting shortest path between node 0 and node 1120. Note that the function inside returns a list within
         # a list, hence in order to get the actual edge list we need to get the element at 0, which is a list of edges
         # on the path
@@ -80,6 +83,11 @@ class MainWindow(QMainWindow):
     def set_clustering_algorithm(self, clustering_algorithm):
         self.clustering_algorithm = clustering_algorithm
 
+    def show_vertex_id(vertex):
+        # print(vertex)
+        # print(vertex)
+        print("Hahaha")
+
     def choose_settings(
             self, background_color=None, point_diameter=None, point_border_width=None,
             edge_color=None, edge_width=None, highlight_color=None
@@ -92,6 +100,15 @@ class MainWindow(QMainWindow):
     # To see shortest path, feed it a list of edges on the path
     def highlight_path(self, edge_path):
         self.view.highlight_path(edge_path)
+
+    ## input id
+    def getText(self):
+        x, okPressed = QInputDialog.getText(self, "Get Source Node","Source:", QLineEdit.Normal, "")
+        y, okPressed = QInputDialog.getText(self, "Get Destination Node","Destination:", QLineEdit.Normal, "")
+        if okPressed and x != '' and y != '':
+            print({x,y})
+
+
 
 
 if __name__ == "__main__":
