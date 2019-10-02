@@ -25,7 +25,7 @@ class MainWindow(QMainWindow):
         'Random 3D': 'random3d', 'Reingold Tilford': 'rt',
         'Reingold Tilford Circular': 'rt_circular', 'Sphere': 'sphere'
     }
-
+    selectedNodes = []
     def __init__(self):
         super().__init__()
 
@@ -42,7 +42,8 @@ class MainWindow(QMainWindow):
         self.view = MainView(self.central_widget, self)
 
         self.button = self.findChild(QWidget, 'pushButton')
-        self.button.clicked.connect(self.getText)
+        # self.button.clicked.connect(self.getText)
+        self.button.clicked.connect(self.get_2_vertex_id)
         # Set up settings details in scene
         # self.choose_settings()
 
@@ -53,7 +54,7 @@ class MainWindow(QMainWindow):
         # Test: getting shortest path between node 0 and node 1120. Note that the function inside returns a list within
         # a list, hence in order to get the actual edge list we need to get the element at 0, which is a list of edges
         # on the path
-        self.highlight_path(get_shortest_paths(self.graph, 0, 1120)[0])
+        # self.highlight_path(get_shortest_paths(self.graph, 0, 1120)[0])
 
     def set_up(self, graph=None, layout=None, cluster=None):
         if graph is None:
@@ -84,11 +85,22 @@ class MainWindow(QMainWindow):
     def set_clustering_algorithm(self, clustering_algorithm):
         self.clustering_algorithm = clustering_algorithm
 
+    #SHOW
     def show_vertex_id(self, vertex):
-        # print(vertex)
-        # print(vertex)
-        print("Hahaha")
+        self.selectedNodes.append(vertex.index)
+        # print(self.selectedNodes)
 
+
+    def get_2_vertex_id(self):
+        #selected nodes length
+        snl = len(self.selectedNodes)
+        print(snl)
+        if snl == 0 or snl > 2:
+            self.selectedNodes = []
+        elif snl == 2:
+            sp_edge_ids = get_shortest_paths(self.graph,self.selectedNodes[0],self.selectedNodes[1])
+            self.highlight_path(sp_edge_ids[0])
+            self.selectedNodes = []
     def choose_settings(
             self, background_color=None, point_diameter=None, point_border_width=None,
             edge_color=None, edge_width=None, highlight_color=None
@@ -102,12 +114,13 @@ class MainWindow(QMainWindow):
     def highlight_path(self, edge_path):
         self.view.highlight_path(edge_path)
 
+
     ## input id
-    def getText(self):
-        x, okPressed = QInputDialog.getText(self, "Get Source Node","Source:", QLineEdit.Normal, "")
-        y, okPressed = QInputDialog.getText(self, "Get Destination Node","Destination:", QLineEdit.Normal, "")
-        if okPressed and x != '' and y != '':
-            print({x,y})
+    # def getText(self):
+    #     x, okPressed = QInputDialog.getText(self, "Get Source Node","Source:", QLineEdit.Normal, "")
+    #     y, okPressed = QInputDialog.getText(self, "Get Destination Node","Destination:", QLineEdit.Normal, "")
+    #     if okPressed and x != '' and y != '':
+    #         print({x,y})
 
 
 
