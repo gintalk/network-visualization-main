@@ -84,7 +84,7 @@ class MainWindow(QMainWindow):
     def set_clustering_algorithm(self, clustering_algorithm):
         self.clustering_algorithm = clustering_algorithm
 
-    def show_vertex_id(vertex):
+    def show_vertex_id(self, vertex):
         # print(vertex)
         # print(vertex)
         print("Hahaha")

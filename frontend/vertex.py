@@ -28,7 +28,7 @@ class MainVertex(QGraphicsEllipseItem):
     def y(self):
         return self.rect.y() + self.diameter / 2
 
-    def mousePressEvent(self,event):
+    def mousePressEvent(self, event):
         self.parent.parent.main_window.show_vertex_id(self.vertex)
 
     def mouseMoveEvent(self, event):
