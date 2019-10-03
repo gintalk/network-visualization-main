@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1165</width>
-    <height>752</height>
+    <width>1260</width>
+    <height>768</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -23,18 +23,29 @@
    <widget class="QWidget" name="centralwidget" native="true">
     <property name="geometry">
      <rect>
-      <x>50</x>
-      <y>60</y>
-      <width>1061</width>
-      <height>611</height>
+      <x>0</x>
+      <y>0</y>
+      <width>991</width>
+      <height>751</height>
      </rect>
     </property>
+   </widget>
+   <widget class="QWidget" name="gridLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>990</x>
+      <y>160</y>
+      <width>271</width>
+      <height>561</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="infolayout"/>
    </widget>
    <widget class="QPushButton" name="pushButton">
     <property name="geometry">
      <rect>
-      <x>50</x>
-      <y>10</y>
+      <x>990</x>
+      <y>130</y>
       <width>31</width>
       <height>31</height>
      </rect>
@@ -55,12 +66,36 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1165</width>
+     <width>1260</width>
      <height>22</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionOpen"/>
+    <addaction name="actionSave"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <addaction name="menuFile"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionOpen">
+   <property name="text">
+    <string>Open</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
