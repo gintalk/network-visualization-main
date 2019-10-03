@@ -105,11 +105,11 @@ class MainScene(QGraphicsScene):
         if self.show_availability:
             availability_color_to_vertex()
 
-        for vertex in self.graph_to_display.vs:
+        """for vertex in self.graph_to_display.vs:
             if vertex["attribute"] and vertex["min"] <= vertex[vertex["attribute"]] <= vertex["max"]:
                 self.vertex_to_display.append(vertex)
             else:
-                self.vertex_to_display.append(vertex)
+                self.vertex_to_display.append(vertex)"""
 
         self.display_vertices()
         self.display_edges()

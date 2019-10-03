@@ -1,5 +1,3 @@
-import sys
-
 from PyQt5 import uic
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QFileDialog, QMessageBox, QAction
 from igraph import *
@@ -188,8 +186,8 @@ class MainWindow(QMainWindow):
         edge_info = EdgeInfo(edge, self)
         self.info_layout.addWidget(edge_info)
 
-    #pop data bar, data in list, try g.es['label']
-    #stackoverflow.com/questions/940555/pyqt-sending-parameter-to-slot-when-connecting-to-a-signal
+    # pop data bar, data in list, try g.es['label']
+    # stackoverflow.com/questions/940555/pyqt-sending-parameter-to-slot-when-connecting-to-a-signal
     def popupBar(self, data):
         bar = DataBar(data)
         bar.show()
