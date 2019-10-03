@@ -31,7 +31,9 @@ class MainScene(QGraphicsScene):
         self.scene_graph_rect = None
         self.points = []
         self.lines = []
-        self.show_availability = True
+        self.show_availability = False
+        self.vertex_to_display = []
+        self.edge_to_display = []
 
         self.init_variables()
 
@@ -99,6 +101,12 @@ class MainScene(QGraphicsScene):
         assign_color_to_vertex()  # based on the cluster it belongs to
         if self.show_availability:
             availability_color_to_vertex()
+
+        for vertex in self.graph_to_display.vs:
+            if vertex["attribute"] and vertex["min"] <= vertex[vertex["attribute"]] <= vertex["max"]:
+                self.vertex_to_display.append(vertex)
+            else:
+                self.vertex_to_display.append(vertex)
 
         self.display_vertices()
         self.display_edges()

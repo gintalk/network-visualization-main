@@ -1,3 +1,5 @@
+import sys
+
 from PyQt5 import uic
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget
 from igraph import Graph
@@ -72,6 +74,9 @@ class MainWindow(QMainWindow):
 
         np.random.seed(0)
         self.graph.vs["availability"] = np.random.randint(2, size=len(self.graph.vs))
+        self.graph.vs["attribute"] = [None] * len(self.graph.vs)
+        self.graph.vs["max"] = sys.maxsize * np.ones(len(self.graph.vs))
+        self.graph.vs["min"] = (-sys.maxint - 1) * np.ones(len(self.graph.vs))
 
     def set_graph(self, graph_path):
         self.graph = Graph.Read_GraphML(graph_path)
