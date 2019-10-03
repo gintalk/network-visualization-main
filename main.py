@@ -1,5 +1,5 @@
 from PyQt5 import uic
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QAction, QFileDialog, QGridLayout
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QAction, QFileDialog, QGridLayout, QMessageBox
 from igraph import *
 
 from frontend.view import MainView
@@ -100,7 +100,7 @@ class MainWindow(QMainWindow):
     def highlight_path(self, edge_path):
         self.view.highlight_path(edge_path)
 
-    def get_graph(self, graph_path):
+    def save_graph(self, graph_path):
         write(self.graph, graph_path)
 
     # Bind action into menu button
@@ -140,7 +140,16 @@ class MainWindow(QMainWindow):
         if file_name:
             if ".graphml" not in file_name:
                 file_name = file_name + ".graphml"
-            self.get_graph(file_name)
+            self.save_graph(file_name)
+
+    # File -> Exit and the top right 'x' button
+    def closeEvent(self, event):
+        reply = QMessageBox.question(self, '', 'Are you sure want to exit the program?',
+                                     QMessageBox.Yes, QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            event.accept()
+        else:
+            event.ignore()
 
     @staticmethod
     def clear_layout(layout):
