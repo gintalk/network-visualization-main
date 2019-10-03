@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1024</width>
+    <width>1260</width>
     <height>768</height>
    </rect>
   </property>
@@ -18,16 +18,16 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>0</y>
-      <width>751</width>
-      <height>746</height>
+      <y>-5</y>
+      <width>991</width>
+      <height>751</height>
      </rect>
     </property>
    </widget>
    <widget class="QWidget" name="gridLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>750</x>
+      <x>990</x>
       <y>160</y>
       <width>271</width>
       <height>561</height>
@@ -35,13 +35,26 @@
     </property>
     <layout class="QGridLayout" name="infolayout"/>
    </widget>
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>990</x>
+      <y>130</y>
+      <width>100</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Shortest Path</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1024</width>
+     <width>1260</width>
      <height>22</height>
     </rect>
    </property>

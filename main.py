@@ -1,5 +1,5 @@
 from PyQt5 import uic
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QAction, QFileDialog, QGridLayout, QMessageBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QFileDialog, QMessageBox, QAction
 from igraph import *
 
 from frontend.view import MainView
@@ -27,7 +27,7 @@ class MainWindow(QMainWindow):
         'Random 3D': 'random3d', 'Reingold Tilford': 'rt',
         'Reingold Tilford Circular': 'rt_circular', 'Sphere': 'sphere'
     }
-
+    selectedNodes = []
     def __init__(self):
         super().__init__()
 
@@ -45,6 +45,9 @@ class MainWindow(QMainWindow):
 
         self.info_layout = self.findChild(QGridLayout, 'infolayout')
 
+        self.button = self.findChild(QWidget, 'pushButton')
+        # self.button.clicked.connect(self.getText)
+        self.button.clicked.connect(self.get_2_vertex_id)
         # Set up settings details in scene
 
         # Pull it up
@@ -89,6 +92,20 @@ class MainWindow(QMainWindow):
 
     def settings(self, **kwargs):
         self.view.settings(kwargs)
+
+    def show_vertex_id(self, vertex):
+        self.selectedNodes.append(vertex)
+
+    def get_2_vertex_id(self):
+        #selected nodes length
+        snl = len(self.selectedNodes)
+        print(snl)
+        if snl == 0 or snl > 2:
+            self.selectedNodes = []
+        elif snl == 2:
+            sp_edge_ids = get_shortest_paths(self.graph,self.selectedNodes[0],self.selectedNodes[1])
+            self.highlight_path(sp_edge_ids[0])
+            self.selectedNodes = []
 
     # To see shortest path, feed it a list of edges on the path
     def highlight_path(self, edge_path):

@@ -32,6 +32,7 @@ class MainVertex(QGraphicsEllipseItem):
 
     def mousePressEvent(self, event):
         self.parent.parent.main_window.display_vertex(self.vertex)
+        self.parent.parent.main_window.show_vertex_id(self.vertex)
 
     def mouseMoveEvent(self, event):
         cursor_pos = event.scenePos()
