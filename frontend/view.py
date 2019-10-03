@@ -62,7 +62,7 @@ class MainView(QGraphicsView):
         elif event.key() == Qt.Key_Right:
             self.rotate_clockwise()
         # elif event.key() == Qt.Key_R:
-        #     self.main_window.settings()
+        #     self.scene.display_edges_by_gradient()
 
         self.setDragMode(self.drag_mode_hint())
 
