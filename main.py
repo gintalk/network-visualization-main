@@ -36,8 +36,8 @@ class MainWindow(QMainWindow):
 
         # Set up data to work with
         self.graph = None
-        self.clustering_algorithm = None
-        self.set_up(self.DEFAULT_GRAPH, None, self.DEFAULT_CLUSTERING_ALGORITHM)
+        self.layout = self.DEFAULT_LAYOUT
+        self.clustering_algorithm = self.DEFAULT_CLUSTERING_ALGORITHM
 
         # Set up GUI
         self.central_widget = self.findChild(QWidget, 'centralwidget')
@@ -46,30 +46,23 @@ class MainWindow(QMainWindow):
         self.info_layout = self.findChild(QGridLayout, 'infolayout')
 
         # Set up settings details in scene
-        self.choose_settings()
 
-        self.view.update_view()
+        # Pull it up
+        self.set_up(graph=self.DEFAULT_GRAPH)
 
         # Test: getting shortest path between node 0 and node 1120. Note that the function inside returns a list within
         # a list, hence in order to get the actual edge list we need to get the element at 0, which is a list of edges
         # on the path
-        self.highlight_path(get_shortest_paths(self.graph, 0, 1120)[0])
+        # self.highlight_path(get_shortest_paths(self.graph, 0, 1120)[0])
 
     def set_up(self, graph=None, layout=None, cluster=None):
-        if graph is None:
-            self.set_graph(self.DEFAULT_GRAPH)
-        else:
+        if graph is not None:
             self.set_graph(graph)
 
-        if layout is None:
-            if 'x' not in self.graph.vs.attributes():
-                self.set_layout(self.DEFAULT_LAYOUT)
-        else:
+        if layout is not None:
             self.set_layout(layout)
 
-        if cluster is None:
-            self.clustering_algorithm = self.DEFAULT_CLUSTERING_ALGORITHM
-        else:
+        if cluster is not None:
             self.set_clustering_algorithm(cluster)
 
         # Bind action into menu button
@@ -78,23 +71,24 @@ class MainWindow(QMainWindow):
     def set_graph(self, graph_path):
         self.graph = Graph.Read_GraphML(graph_path)
 
+        if 'x' not in self.graph.vs.attributes() or 'nan' in str(self.graph.vs['x']):
+            self.set_layout('Random')
+        else:
+            self.view.update_view()
+
     def set_layout(self, layout):
-        graph_layout = self.graph.layout(layout=layout)
+        graph_layout = self.graph.layout(layout=self.LAYOUTS[layout])
         for c, v in zip(graph_layout.coords, self.graph.vs):
             v['x'] = c[0]
             v['y'] = c[1]
+        self.view.update_view()
 
     def set_clustering_algorithm(self, clustering_algorithm):
-        self.clustering_algorithm = clustering_algorithm
+        self.clustering_algorithm = self.CLUSTERING_ALGORITHMS[clustering_algorithm]
+        self.view.update_view()
 
-    def choose_settings(
-            self, background_color=None, point_diameter=None, point_border_width=None,
-            edge_color=None, edge_width=None, highlight_color=None
-    ):
-        self.view.settings(
-            background_color, point_diameter, point_border_width,
-            edge_color, edge_width, highlight_color
-        )
+    def settings(self, **kwargs):
+        self.view.settings(kwargs)
 
     # To see shortest path, feed it a list of edges on the path
     def highlight_path(self, edge_path):
