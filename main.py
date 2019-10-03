@@ -1,5 +1,6 @@
 from PyQt5 import uic
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget ,QInputDialog, QLineEdit
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget ,QInputDialog, QLineEdit , QDialog
 from igraph import Graph
 
 from frontend.view import MainView
@@ -42,8 +43,10 @@ class MainWindow(QMainWindow):
         self.view = MainView(self.central_widget, self)
 
         self.button = self.findChild(QWidget, 'pushButton')
-        # self.button.clicked.connect(self.getText)
-        self.button.clicked.connect(self.get_2_vertex_id)
+        # self.spi = QIcon('/frontend/resource/shortestpath.png')
+        self.button.setIcon(QIcon('frontend/resource/path_32.png'))
+        self.button.clicked.connect(self.openInputWindow)
+        # self.button.clicked.connect(self.get_2_vertex_id)
         # Set up settings details in scene
         # self.choose_settings()
 
@@ -101,6 +104,14 @@ class MainWindow(QMainWindow):
             sp_edge_ids = get_shortest_paths(self.graph,self.selectedNodes[0],self.selectedNodes[1])
             self.highlight_path(sp_edge_ids[0])
             self.selectedNodes = []
+
+    #Open second window
+    def openInputWindow(self):
+        Input_Page = Input()
+        self.hide()
+        Input_Page.exec_()
+
+
     def choose_settings(
             self, background_color=None, point_diameter=None, point_border_width=None,
             edge_color=None, edge_width=None, highlight_color=None
@@ -115,14 +126,43 @@ class MainWindow(QMainWindow):
         self.view.highlight_path(edge_path)
 
 
-    ## input id
-    # def getText(self):
-    #     x, okPressed = QInputDialog.getText(self, "Get Source Node","Source:", QLineEdit.Normal, "")
-    #     y, okPressed = QInputDialog.getText(self, "Get Destination Node","Destination:", QLineEdit.Normal, "")
-    #     if okPressed and x != '' and y != '':
-    #         print({x,y})
+#INPUT
+class Input(QDialog):
+    def __init__(self):
+        super().__init__()
+        uic.loadUi('frontend/resource/INPUT.ui', self)
+        self.setWindowTitle("Input")
 
+        self.button= self.findChild(QWidget,'buttonBox')
+        self.button.rejected.connect(self.closeWindow_cancel)
+        self.button.accepted.connect(self.closeWindow_ok)
 
+        self.source = self.findChild(QWidget,'lineEdit_2')
+
+        # self.source.clicked.connect(lineEdit1_function)
+
+        self.destination = self.findChild(QWidget, 'lineEdit')
+
+        # self.destination.clicked.connect(lineEdit2_function)
+
+    def lineEdit1_function(self):
+
+        print("lineEdit1")
+
+    def lineEdit2_function(self):
+        print("lineEdit2")
+
+    def closeWindow_cancel(self):
+        print("Cancel")
+        self.hide()
+        Home_Page = MainWindow()
+        Home_Page.show()
+
+    def closeWindow_ok(self):
+        print("OK")
+        self.hide()
+        Home_Page = MainWindow()
+        Home_Page.show()
 
 
 if __name__ == "__main__":
