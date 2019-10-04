@@ -1,7 +1,7 @@
 import sys
 
 from PyQt5 import uic
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QFileDialog, QMessageBox, QAction
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QFileDialog, QMessageBox, QAction, QComboBox
 from igraph import *
 
 from frontend.databar import DataBar
@@ -56,10 +56,37 @@ class MainWindow(QMainWindow):
         # Pull it up
         self.set_up(graph=self.DEFAULT_GRAPH)
 
+    def bind_buttons(self):
+        self.thickness_button = self.findChild(QWidget, 'drawthickness_button')
+        self.thickness_button.clicked.connect(self.view.scene.display_edges_by_thickness)
+
+        self.gradient_button = self.findChild(QWidget, 'drawgradient_button')
+        self.gradient_button.clicked.connect(self.view.scene.display_edges_by_gradient)
+
+        self.combobox_button = self.findChild(QComboBox, 'comboBox')
+        self.combobox_button.activated.connect(self.get_attribute)
+
+    # def save_attribute(self):line_pen = QPen(self.COLORS[edge['edge_color']])
+    #     comboText = self.'combobox'self.view.scene.display
+    def get_attribute(self):
+        attribute = self.combobox_button.currentText()
+        if not hasattr(self.graph, attribute):
+            print('Fuck you')
+            # self.about_message()
+            attribute = 'LinkSpeedRaw'
+        #     QMessageBox.about(self, 'Sorry bruh' ,'This attribute is not available for this graph')
+        #
+        # else:
+        return attribute
+
+
         # Test: getting shortest path between node 0 and node 1120. Note that the function inside returns a list within
         # a list, hence in order to get the actual edge list we need to get the element at 0, which is a list of edges
         # on the path
         # self.highlight_path(get_shortest_paths(self.graph, 0, 1120)[0])
+    def about_message(self):
+        QMessageBox.about(self, 'Sorry bruh', 'This attribute is not available for this graph')
+
 
     def set_up(self, graph=None, layout=None, cluster=None):
         if graph is not None:
@@ -164,7 +191,7 @@ class MainWindow(QMainWindow):
 
     # File -> Exit and the top right 'x' button
     def closeEvent(self, event):
-        reply = QMessageBox.question(self, '', 'Are you sure want to exit the program?',
+        reply = QMessageBox.questession(self, '', 'Are you sure want to exit the program?',
                                      QMessageBox.Yes, QMessageBox.No)
         if reply == QMessageBox.Yes:
             event.accept()
