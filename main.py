@@ -1,5 +1,6 @@
 from PyQt5 import uic
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QFileDialog, QMessageBox, QAction
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QFileDialog, QMessageBox, QAction, \
+    QPushButton
 from igraph import *
 
 from frontend.databar import DataBar
@@ -30,6 +31,9 @@ class MainWindow(QMainWindow):
         'Reingold Tilford Circular': 'rt_circular', 'Sphere': 'sphere'
     }
     selectedNodes = []
+
+    ADD_VERTEX_STATE = False
+
     def __init__(self):
         super().__init__()
 
@@ -47,12 +51,20 @@ class MainWindow(QMainWindow):
 
         self.info_layout = self.findChild(QGridLayout, 'infolayout')
 
-        self.button = self.findChild(QWidget, 'pushButton')
-        # self.button.clicked.connect(self.getText)
-        self.button.clicked.connect(self.get_2_vertex_id)
+        self.shortest_path_button = self.findChild(QWidget, 'shortestpath')
+        # self.shortest_path_button.clicked.connect(self.getText)
+        self.shortest_path_button.clicked.connect(self.get_2_vertex_id)
+
+        self.add_vertex_button = self.findChild(QPushButton, 'addvertex')
+        self.add_vertex_button.clicked.connect(lambda: self.add_vertex())
+        self.cancel_add_vertex_button = self.findChild(QPushButton, 'canceladdvertex')
+        self.cancel_add_vertex_button.clicked.connect(lambda: self.add_vertex())
+        self.add_vertex_button.show()
+        self.cancel_add_vertex_button.hide()
 
         # Pull it up
         self.set_up(graph=self.DEFAULT_GRAPH)
+        self.view.update_view()
 
         # Test: getting shortest path between node 0 and node 1120. Note that the function inside returns a list within
         # a list, hence in order to get the actual edge list we need to get the element at 0, which is a list of edges
@@ -106,7 +118,7 @@ class MainWindow(QMainWindow):
     def get_2_vertex_id(self):
         #selected nodes length
         snl = len(self.selectedNodes)
-        print(snl)
+        # print(snl)
         if snl == 0 or snl > 2:
             self.selectedNodes = []
         elif snl == 2:
@@ -191,6 +203,16 @@ class MainWindow(QMainWindow):
     def popupBar(self, data):
         bar = DataBar(data)
         bar.show()
+
+    def add_vertex(self):
+        if self.ADD_VERTEX_STATE == False:
+            self.ADD_VERTEX_STATE = True
+            self.add_vertex_button.hide()
+            self.cancel_add_vertex_button.show()
+        else:
+            self.ADD_VERTEX_STATE = False
+            self.add_vertex_button.show()
+            self.cancel_add_vertex_button.hide()
 
 
 if __name__ == "__main__":
