@@ -30,7 +30,12 @@ class MainWindow(QMainWindow):
         'Random 3D': 'random3d', 'Reingold Tilford': 'rt',
         'Reingold Tilford Circular': 'rt_circular', 'Sphere': 'sphere'
     }
-    selectedNodes = []
+
+    # selected_nodes = []
+    # MODE FOR SHORTEST PATH
+    is_shortest_path_mode = False
+    is_source = True
+
     def __init__(self):
         super().__init__()
 
@@ -50,7 +55,9 @@ class MainWindow(QMainWindow):
 
         self.button = self.findChild(QWidget, 'pushButton')
         self.button.setIcon(QIcon('frontend/resource/path_32.png'))
-        self.button.clicked.connect(self.openInputWindow)
+        self.button.clicked.connect(self.open_input_window)
+
+        self.input_page = Input(self)
 
         # Pull it up
         self.set_up(graph=self.DEFAULT_GRAPH)
@@ -60,10 +67,10 @@ class MainWindow(QMainWindow):
         # on the path
         # self.highlight_path(get_shortest_paths(self.graph, 0, 1120)[0])
 
-    def openInputWindow(self):
-        Input_Page = Input()
-        self.hide()
-        Input_Page.exec_()
+    def open_input_window(self):
+        self.is_shortest_path_mode = True
+        self.input_page.show()
+        # self.hide()
 
     def set_up(self, graph=None, layout=None, cluster=None):
         if graph is not None:
@@ -107,8 +114,17 @@ class MainWindow(QMainWindow):
         self.view.settings(kwargs)
 
     def show_vertex_id(self, vertex):
-        self.selectedNodes.append(vertex)
-
+        # self.selected_nodes.append(vertex)
+        # input_page = Input()
+        if self.is_shortest_path_mode is True and self.is_source is True:
+            self.input_page.source_node = vertex.index
+            self.input_page.source.setText(str(vertex.index))
+            self.input_page.show()
+        elif self.is_shortest_path_mode is True and self.is_source is False:
+            self.input_page.destination_node = vertex.index
+            # print(self.input_page.destination_node)
+            self.input_page.destination.setText(str(vertex.index))
+            self.input_page.show()
     # def get_2_vertex_id(self):
     #     #selected nodes length
     #     snl = len(self.selectedNodes)
@@ -200,41 +216,53 @@ class MainWindow(QMainWindow):
 
 #INPUT
 class Input(QDialog):
-    def __init__(self):
-        super().__init__()
+    def __init__(self,parent=None):
+        super( Input ,self).__init__()
+        self.parent = parent
         uic.loadUi('frontend/resource/INPUT.ui', self)
         self.setWindowTitle("Input")
 
-        self.button= self.findChild(QWidget,'buttonBox')
+        self.source_node = 0
+        self.destination_node = 0
+
+        self.button = self.findChild(QWidget, 'buttonBox')
         self.button.rejected.connect(self.closeWindow_cancel)
         self.button.accepted.connect(self.closeWindow_ok)
 
-        self.source = self.findChild(QWidget,'lineEdit_2')
+        self.source_button = self.findChild(QWidget, 'pushButton')
+        self.source_button.clicked.connect(self.picking_source)
+        self.destination_button = self.findChild(QWidget, 'pushButton_2')
+        self.destination_button.clicked.connect(self.picking_destination)
 
-        # self.source.clicked.connect(lineEdit1_function)
+        self.source = self.findChild(QWidget, 'lineEdit')
+        self.destination = self.findChild(QWidget, 'lineEdit_2')
 
-        self.destination = self.findChild(QWidget, 'lineEdit')
+    def picking_source(self):
+        self.hide()
+        self.parent.is_source = True
+        self.parent.show
 
-        # self.destination.clicked.connect(lineEdit2_function)
-
-    def lineEdit1_function(self):
-
-        print("lineEdit1")
-
-    def lineEdit2_function(self):
-        print("lineEdit2")
+    def picking_destination(self):
+        self.hide()
+        self.parent.is_source = False
+        self.parent.show
 
     def closeWindow_cancel(self):
-        print("Cancel")
         self.hide()
-        Home_Page = MainWindow()
-        Home_Page.show()
+        self.parent.is_shortest_path_mode = False
+        self.parent.show
+
 
     def closeWindow_ok(self):
-        print("OK")
+        # Check if Source value or Destination Value is None ?
+        # If 1 of them is none ,
+
+        self.sp_edge_ids = get_shortest_paths(self.parent.graph,self.source_node,self.destination_node)
+        self.parent.highlight_path(self.sp_edge_ids[0])
+        self.parent.is_shortest_path_mode = False
         self.hide()
-        Home_Page = MainWindow()
-        Home_Page.show()
+        self.parent.show
+
 
 
 
