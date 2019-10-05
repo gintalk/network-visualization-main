@@ -57,10 +57,6 @@ class MainWindow(QMainWindow):
 
         self.add_vertex_button = self.findChild(QPushButton, 'addvertex')
         self.add_vertex_button.clicked.connect(lambda: self.add_vertex())
-        self.cancel_add_vertex_button = self.findChild(QPushButton, 'canceladdvertex')
-        self.cancel_add_vertex_button.clicked.connect(lambda: self.add_vertex())
-        self.add_vertex_button.show()
-        self.cancel_add_vertex_button.hide()
 
         # Pull it up
         self.set_up(graph=self.DEFAULT_GRAPH)
@@ -157,6 +153,7 @@ class MainWindow(QMainWindow):
         )
         if file_name:
             self.set_graph(file_name)
+            self.clear_layout(self.info_layout)
             self.view.update_view()
 
     # File -> Save
@@ -207,12 +204,10 @@ class MainWindow(QMainWindow):
     def add_vertex(self):
         if self.ADD_VERTEX_STATE == False:
             self.ADD_VERTEX_STATE = True
-            self.add_vertex_button.hide()
-            self.cancel_add_vertex_button.show()
+            self.add_vertex_button.setText("Exit add vertex mode")
         else:
             self.ADD_VERTEX_STATE = False
-            self.add_vertex_button.show()
-            self.cancel_add_vertex_button.hide()
+            self.add_vertex_button.setText("Enter add vertex mode")
 
 
 if __name__ == "__main__":

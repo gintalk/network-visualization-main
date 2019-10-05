@@ -52,26 +52,13 @@
     <property name="geometry">
      <rect>
       <x>990</x>
-      <y>100</y>
-      <width>141</width>
-      <height>25</height>
+      <y>70</y>
+      <width>181</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>Add Vertex</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="canceladdvertex">
-    <property name="geometry">
-     <rect>
-      <x>990</x>
-      <y>100</y>
-      <width>141</width>
-      <height>25</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Cancel Add Vertex</string>
+     <string>Enter add Vertex Mode</string>
     </property>
    </widget>
   </widget>
