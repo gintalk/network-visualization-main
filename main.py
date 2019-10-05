@@ -54,6 +54,7 @@ class MainWindow(QMainWindow):
         self.info_layout = self.findChild(QGridLayout, 'infolayout')
 
         self.button = self.findChild(QWidget, 'pushButton')
+        self.button.setToolTip("Shortest Path")
         self.button.setIcon(QIcon('frontend/resource/path_32.png'))
         self.button.clicked.connect(self.open_input_window)
 
@@ -259,9 +260,10 @@ class Input(QDialog):
 
         self.sp_edge_ids = get_shortest_paths(self.parent.graph,self.source_node,self.destination_node)
         self.parent.highlight_path(self.sp_edge_ids[0])
-        self.parent.is_shortest_path_mode = False
+        # self.parent.is_shortest_path_mode = False
         self.hide()
         self.parent.show
+
 
 
 
