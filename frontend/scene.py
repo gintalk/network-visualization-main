@@ -142,11 +142,13 @@ class MainScene(QGraphicsScene):
     #     a_attribute
 
     def scalling(self):
+
         bandwidth = []
         n = 0
         attribute = self.parent.main_window.get_attribute()
-
-        # if not hasattr(self.graph_to_display, attribute):
+        if not self.parent.main_window.search_attribute():
+            attribute = 'LinkSpeedRaw'
+            # if not hasattr(self.graph_to_display, attribute):
         #     QMessageBox.about(self, 'Sorry bruh', 'This attribute is not available for this graph')
 
         # print(attribute)
@@ -161,6 +163,8 @@ class MainScene(QGraphicsScene):
         return bandwidth
 
     def display_edges_by_thickness(self):
+        if not self.parent.main_window.search_attribute():
+            return
         bandwidth = self.scalling()
         n = 0
 
@@ -178,7 +182,8 @@ class MainScene(QGraphicsScene):
 
     # This is a more complete way of showing gradient in the edge
     def display_edges_by_gradient(self):
-        # scalling graph attribute by min-max scalling
+        if not self.parent.main_window.search_attribute():
+            return
         bandwidth = self.scalling()
         n = 0
 

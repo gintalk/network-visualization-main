@@ -85,17 +85,12 @@
     </property>
     <item>
      <property name="text">
-      <string>choose attribute</string>
+      <string>LinkSpeedRaw</string>
      </property>
     </item>
     <item>
      <property name="text">
       <string>delay</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>LinkSpeedRaw</string>
      </property>
     </item>
     <item>

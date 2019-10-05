@@ -1,7 +1,8 @@
 import sys
 
 from PyQt5 import uic
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QFileDialog, QMessageBox, QAction, QComboBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QFileDialog, QMessageBox, QAction, \
+    QComboBox, QLabel
 from igraph import *
 
 from frontend.databar import DataBar
@@ -70,14 +71,28 @@ class MainWindow(QMainWindow):
     #     comboText = self.'combobox'self.view.scene.display
     def get_attribute(self):
         attribute = self.combobox_button.currentText()
-        if not hasattr(self.graph, attribute):
-            print('Fuck you')
-            # self.about_message()
-            attribute = 'LinkSpeedRaw'
-        #     QMessageBox.about(self, 'Sorry bruh' ,'This attribute is not available for this graph')
+        # print(dir(self.graph.es.summary))
+        # if not hasattr(self.graph.es.summary, attribute):
+        #     # print(hasattr(self.graph, attribute))
+        #     # self.about_message()
+        #     print(attribute)
         #
-        # else:
-        return attribute
+        #     # attribute = 'LinkSpeedRaw'
+        if self.search_attribute() == False:
+            QMessageBox.about(self, 'Sorry bruh' ,'This attribute is not available for this graph')
+
+        else:
+            return attribute
+    def search_attribute(self):
+        attribute = self.combobox_button.currentText()
+        self.dictionary = self.graph.es[0].attributes()
+        # print(self.graph.es[0])
+        for key, value in self.dictionary.items():
+            # print(key)
+            if str(key) == attribute:
+                return True
+        else:
+            return False
 
 
         # Test: getting shortest path between node 0 and node 1120. Note that the function inside returns a list within
