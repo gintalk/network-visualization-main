@@ -66,7 +66,34 @@
     <addaction name="actionSave"/>
     <addaction name="actionExit"/>
    </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <widget class="QMenu" name="menuStatistics">
+     <property name="title">
+      <string>Statistics</string>
+     </property>
+     <widget class="QMenu" name="menuBar">
+      <property name="title">
+       <string>Bar</string>
+      </property>
+      <addaction name="actionVertex_Label"/>
+      <addaction name="actionVertex_Country"/>
+      <addaction name="actionEdge_Link_Speed_Raw"/>
+      <addaction name="actionEdge_Weight"/>
+      <addaction name="actionEdge_Key"/>
+      <addaction name="actionEdge_Label"/>
+     </widget>
+     <addaction name="menuBar"/>
+     <addaction name="actionPie_Chart"/>
+    </widget>
+    <addaction name="menuStatistics"/>
+    <addaction name="actionAvailability"/>
+    <addaction name="actionRevert"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuView"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionOpen">
@@ -82,6 +109,51 @@
   <action name="actionExit">
    <property name="text">
     <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionPie_Chart">
+   <property name="text">
+    <string>Pie Chart</string>
+   </property>
+  </action>
+  <action name="actionVertex_Label">
+   <property name="text">
+    <string>Vertex Label</string>
+   </property>
+  </action>
+  <action name="actionVertex_Country">
+   <property name="text">
+    <string>Vertex Country</string>
+   </property>
+  </action>
+  <action name="actionEdge_Link_Speed_Raw">
+   <property name="text">
+    <string>Edge Link Speed Raw</string>
+   </property>
+  </action>
+  <action name="actionEdge_Weight">
+   <property name="text">
+    <string>Edge Weight</string>
+   </property>
+  </action>
+  <action name="actionEdge_Key">
+   <property name="text">
+    <string>Edge Key</string>
+   </property>
+  </action>
+  <action name="actionEdge_Label">
+   <property name="text">
+    <string>Edge Label</string>
+   </property>
+  </action>
+  <action name="actionAvailability">
+   <property name="text">
+    <string>Availability</string>
+   </property>
+  </action>
+  <action name="actionRevert">
+   <property name="text">
+    <string>Revert</string>
    </property>
   </action>
  </widget>

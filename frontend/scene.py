@@ -106,9 +106,9 @@ class MainScene(QGraphicsScene):
             availability_color_to_vertex()
 
         for vertex in self.graph_to_display.vs:
-            if vertex["attribute"] and vertex["min"] <= vertex[vertex["attribute"]] <= vertex["max"]:
-                self.vertex_to_display.append(vertex)
-            else:
+            # if vertex["attribute"] and vertex["min"] <= vertex[vertex["attribute"]] <= vertex["max"]:
+            #     self.vertex_to_display.append(vertex)
+            # else:
                 self.vertex_to_display.append(vertex)
 
         self.display_vertices()
@@ -154,4 +154,8 @@ class MainScene(QGraphicsScene):
         point.vertex.update_attributes(x=original_x, y=original_y, pos={'x': dilated_x, 'y': dilated_y})
 
     def set_availability(self, availability):
-        self.show_availability = availability
+        self.show_availability = True
+
+    def unset_availability(self, availability):
+        self.show_availability = False
+

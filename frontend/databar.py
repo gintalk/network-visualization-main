@@ -8,8 +8,6 @@ import matplotlib.pyplot as plt
 
 
 class DataBar(FigureCanvas):
-    node_list = []
-    edge_list = []
 
     def __init__(self, data, parent=None, width=5, height=4, dpi=100):
         self.fig = Figure(figsize=(width, height), dpi=dpi)

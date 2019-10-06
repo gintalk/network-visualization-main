@@ -82,8 +82,8 @@ class MainWindow(QMainWindow):
 
         np.random.seed(0)
         self.graph.vs["availability"] = np.random.randint(2, size=len(self.graph.vs))
-        self.graph.vs["attribute"] = [None] * len(self.graph.vs)
-        self.graph.vs["max"] = sys.maxsize * np.ones(len(self.graph.vs))
+        # self.graph.vs["attribute"] = [None] * len(self.graph.vs)
+        # self.graph.vs["max"] = sys.maxsize * np.ones(len(self.graph.vs))
         # self.graph.vs["min"] = (-sys.maxint - 1) * np.ones(len(self.graph.vs))
 
         self.view.update()
@@ -137,16 +137,44 @@ class MainWindow(QMainWindow):
         close_button = self.findChild(QAction, 'actionExit')
         close_button.triggered.connect(self.close)
 
+        # View -> Statistics -> Bar -> Vertex Label
+        vertex_label_bar_button = self.findChild(QAction, 'actionVertex_Label')
+        vertex_label_bar_button.triggered.connect(self.display_vertex_label_bar)
+
+        # View -> Statistics -> Bar -> Vertex Country
+        vertex_country_bar_button = self.findChild(QAction, 'actionVertex_Country')
+        vertex_country_bar_button.triggered.connect(self.display_vertex_country_bar)
+
+        # View -> Statistics -> Bar -> Edge Link Speed Raw
+        edge_linkspeedraw_bar_button = self.findChild(QAction, 'actionEdge_Link_Speed_Raw')
+        edge_linkspeedraw_bar_button.triggered.connect(self.display_edge_linkspeedraw_bar)
+
+        # View -> Statistics -> Bar -> Edge Weight
+        edge_weight_bar_button = self.findChild(QAction, 'actionEdge_Weight')
+        edge_weight_bar_button.triggered.connect(self.display_edge_weight_bar)
+
+        # View -> Statistics -> Bar -> Edge Label
+        edge_label_bar_button = self.findChild(QAction, 'actionEdge_Label')
+        edge_label_bar_button.triggered.connect(self.display_edge_label_bar)
+
+        # View -> Statistics -> Bar -> Vertex Label
+        edge_key_bar_button = self.findChild(QAction, 'actionEdge_Key')
+        edge_key_bar_button.triggered.connect(self.display_edge_key_bar)
+
+        # View -> Revert View
+        revert_button = self.findChild(QAction, 'actionRevert')
+        revert_button.triggered.connect(self.revert_view)
+
     # File -> Open
     def open_file_dialog(self):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        file_name, _ = QFileDialog.getOpenFileName(
+        self.file_name, _ = QFileDialog.getOpenFileName(
             self, "QFileDialog.getOpenFileName()", "",
             "All Files (*);;GraphML Files (*.graphml)", options=options
         )
-        if file_name:
-            self.set_graph(file_name)
+        if self.file_name:
+            self.set_graph(self.file_name)
             self.view.update_view()
 
     # File -> Save
@@ -171,6 +199,36 @@ class MainWindow(QMainWindow):
         else:
             event.ignore()
 
+    # View -> Statistic -> Bar -> Vertex Label
+    def display_vertex_label_bar(self):
+        data = self.graph.vs['label']
+        self.popup_bar(data)
+
+    # View -> Statistic -> Bar -> Vertex Label
+    def display_vertex_country_bar(self):
+        data = self.graph.vs['Country']
+        self.popup_bar(data)
+
+    # View -> Statistic -> Bar -> Vertex Country
+    def display_edge_linkspeedraw_bar(self):
+        data = self.graph.es['LinkSpeedRaw']
+        self.popup_bar(data)
+
+    # View -> Statistic -> Bar ->  Edge LinkSpeedRaw
+    def display_edge_weight_bar(self):
+        data = self.graph.es['weight']
+        self.popup_bar(data)
+
+    # View -> Statistic -> Bar ->  Edge LinkSpeedRaw
+    def display_edge_label_bar(self):
+        data = self.graph.es['label']
+        self.popup_bar(data)
+
+    # View -> Statistic -> Bar ->  Edge LinkSpeedRaw
+    def display_edge_key_bar(self):
+        data = self.graph.es['key']
+        self.popup_bar(data)
+
     @staticmethod
     def clear_layout(layout):
         for i in range(layout.count()):
@@ -190,9 +248,16 @@ class MainWindow(QMainWindow):
 
     #pop data bar, data in list, try g.es['label']
     #stackoverflow.com/questions/940555/pyqt-sending-parameter-to-slot-when-connecting-to-a-signal
-    def popupBar(self, data):
+    def popup_bar(self, data):
         bar = DataBar(data)
         bar.show()
+
+    def revert_view(self):
+        if self.file_name:
+            self.set_graph(self.file_name)
+        else:
+            self.set_graph(self.DEFAULT_GRAPH)
+        self.view.update_view()
 
 
 if __name__ == "__main__":
