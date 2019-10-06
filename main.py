@@ -69,8 +69,9 @@ class MainWindow(QMainWindow):
 
     # def save_attribute(self):line_pen = QPen(self.COLORS[edge['edge_color']])
     #     comboText = self.'combobox'self.view.scene.display
+
     def get_attribute(self):
-        attribute = self.combobox_button.currentText()
+        self.attribute = self.combobox_button.currentText()
         # print(dir(self.graph.es.summary))
         # if not hasattr(self.graph.es.summary, attribute):
         #     # print(hasattr(self.graph, attribute))
@@ -78,15 +79,16 @@ class MainWindow(QMainWindow):
         #     print(attribute)
         #
         #     # attribute = 'LinkSpeedRaw'
-        if self.search_attribute() == False:
+        if not self.search_attribute():
             QMessageBox.about(self, 'Sorry bruh' ,'This attribute is not available for this graph')
-
         else:
-            return attribute
+            return self.attribute
+
     def search_attribute(self):
         attribute = self.combobox_button.currentText()
         self.dictionary = self.graph.es[0].attributes()
         # print(self.graph.es[0])
+
         for key, value in self.dictionary.items():
             # print(key)
             if str(key) == attribute:
@@ -99,9 +101,6 @@ class MainWindow(QMainWindow):
         # a list, hence in order to get the actual edge list we need to get the element at 0, which is a list of edges
         # on the path
         # self.highlight_path(get_shortest_paths(self.graph, 0, 1120)[0])
-    def about_message(self):
-        QMessageBox.about(self, 'Sorry bruh', 'This attribute is not available for this graph')
-
 
     def set_up(self, graph=None, layout=None, cluster=None):
         if graph is not None:
