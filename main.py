@@ -33,6 +33,8 @@ class MainWindow(QMainWindow):
         'Reingold Tilford Circular': 'rt_circular', 'Sphere': 'sphere'
     }
 
+    file_name = 'frontend/resource/NREN.graphml'
+
     selectedNodes = []
 
     ADD_VERTEX_STATE = False
@@ -63,6 +65,8 @@ class MainWindow(QMainWindow):
 
         # Pull it up
         self.set_up(graph=self.DEFAULT_GRAPH)
+
+        # DO NOT REMOVE THIS LINE
         self.view.update_view()
 
         # Bind action into menu button
