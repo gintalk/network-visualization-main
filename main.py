@@ -33,6 +33,7 @@ class MainWindow(QMainWindow):
     }
 
     ADD_VERTEX_STATE = False
+    SELECTION_MODE = True
 
     # MODE FOR SHORTEST PATH
     is_shortest_path_mode = False

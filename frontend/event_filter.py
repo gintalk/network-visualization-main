@@ -8,7 +8,7 @@ class EventFilter(QGraphicsItem):
         self.setVisible(False)
 
     def sceneEventFilter(self, item, event):
-        # print(event.type())
+        # print(event.type(), item)
         event_type = event.type()
         if event_type == 161:               # hover enter
             item.highlight_self()
