@@ -1,10 +1,9 @@
 import matplotlib
 from PyQt5.QtWidgets import QSizePolicy
-
-matplotlib.use("Qt5Agg")
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
+matplotlib.use("Qt5Agg")
 
 
 class DataBar(FigureCanvas):

@@ -7,6 +7,7 @@ from frontend.utils import *
 from frontend.vertex import MainVertex
 from frontend.edge import MainEdge
 from frontend.event_filter import EventFilter
+from backend.vertex import create_vertices
 
 
 class MainScene(QGraphicsScene):
@@ -159,3 +160,24 @@ class MainScene(QGraphicsScene):
     def unset_availability(self, availability):
         self.show_availability = False
 
+
+    def mouseDoubleClickEvent(self, event):
+        if self.parent.main_window.ADD_VERTEX_STATE == True:
+            self.parent.main_window.graph = create_vertices(self.parent.main_window.graph, 1)
+
+            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['x'], \
+            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['y'] = \
+                undilate(event.scenePos().x(), event.scenePos().y(), self.graph_center, self.scale_factor)
+
+            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['pos'] = \
+                {'x': event.scenePos().x(), 'y': event.scenePos().y()}
+
+            self.vertex_to_display.append(self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1])
+
+            point_pen = QPen(self.COLORS['black'])
+            point_pen.setWidth(self.parent.SETTINGS['point_border_width'])
+            d = self.parent.SETTINGS['point_diameter']
+            point = MainVertex(self.vertex_to_display[-1], d, point_pen, QColor(Qt.darkMagenta), self)
+            self.addItem(point)
+            self.points.append(point)
+            point.installSceneEventFilter(self.event_filter)

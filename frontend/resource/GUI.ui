@@ -35,17 +35,30 @@
     </property>
     <layout class="QGridLayout" name="infolayout"/>
    </widget>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="shortestpath">
     <property name="geometry">
      <rect>
       <x>990</x>
       <y>130</y>
-      <width>100</width>
+      <width>101</width>
       <height>25</height>
      </rect>
     </property>
     <property name="text">
      <string>Shortest Path</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="addvertex">
+    <property name="geometry">
+     <rect>
+      <x>990</x>
+      <y>70</y>
+      <width>181</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Enter add Vertex Mode</string>
     </property>
    </widget>
   </widget>

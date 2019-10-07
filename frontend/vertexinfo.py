@@ -26,7 +26,7 @@ class VertexInfo(QWidget):
 
         count = 2
         for key, value in self.dictionary.items():
-            if str(key) != "color" and str(key) != "pos":
+            if str(key) != "color" and str(key) != "pos" and str(key) != "max" and str(key) != "attribute":
                 # Key label
                 key_label = QLabel(str(key) + ":")
                 key_label.setStyleSheet("QLabel {  font-size: 11px; color: #000000 }")
