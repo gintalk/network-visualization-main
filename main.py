@@ -73,29 +73,29 @@ class MainWindow(QMainWindow):
         self.menu_action()
 
         # Icon buttons
-        self.button = self.findChild(QWidget, 'shortest_path')
-        self.button.setToolTip("Shortest Path")
-        self.button.setIcon(QIcon('frontend/resource/path_32.png'))
-        self.button.clicked.connect(self.open_input_window)
+        self.button_shortest_path = self.findChild(QWidget, 'shortest_path')
+        self.button_shortest_path.setToolTip("Shortest Path")
+        self.button_shortest_path.setIcon(QIcon('frontend/resource/path_32.png'))
+        self.button_shortest_path.clicked.connect(self.open_input_window)
 
-        self.button2 = self.findChild(QWidget, 'zoom_in')
-        self.button2.setToolTip("Zoom In")
-        self.button2.setIcon(QIcon('frontend/resource/zoom_in.png'))
-        self.button2.clicked.connect(self.zoom_in_button)
+        self.button_zoom_in = self.findChild(QWidget, 'zoom_in')
+        self.button_zoom_in.setToolTip("Zoom In")
+        self.button_zoom_in.setIcon(QIcon('frontend/resource/zoom_in.png'))
+        self.button_zoom_in.clicked.connect(self.zoom_in_button)
 
-        self.button3 = self.findChild(QWidget, 'zoom_out')
-        self.button3.setToolTip("Zoom Out")
-        self.button3.setIcon(QIcon('frontend/resource/zoom_out.png'))
-        self.button3.clicked.connect(self.zoom_out_button)
+        self.button_zoom_out = self.findChild(QWidget, 'zoom_out')
+        self.button_zoom_out.setToolTip("Zoom Out")
+        self.button_zoom_out.setIcon(QIcon('frontend/resource/zoom_out.png'))
+        self.button_zoom_out.clicked.connect(self.zoom_out_button)
 
-        self.button4 = self.findChild(QWidget, 'reset_zoom')
-        self.button4.setToolTip("Reset Zoom")
-        self.button4.setIcon(QIcon('frontend/resource/zoom_out.png'))
-        self.button4.clicked.connect(self.reset_zoom_button)
+        self.button_reset_zoom = self.findChild(QWidget, 'reset_zoom')
+        self.button_reset_zoom.setToolTip("Reset Zoom")
+        self.button_reset_zoom.setIcon(QIcon('frontend/resource/zoom_out.png'))
+        self.button_reset_zoom.clicked.connect(self.reset_zoom_button)
 
-        self.button5 = self.findChild(QWidget, 'addvertex')
-        self.button5.setToolTip("Add Vertex")
-        self.button5.clicked.connect(self.add_vertex)
+        self.button_add_vertex = self.findChild(QWidget, 'addvertex')
+        self.button_add_vertex.setToolTip("Add Vertex")
+        self.button_add_vertex.clicked.connect(self.add_vertex)
 
         self.input_page = Input(self)
 
@@ -173,7 +173,6 @@ class MainWindow(QMainWindow):
             self.input_page.destination.setText(str(vertex.index))
             self.input_page.show()
 
-    # To see shortest path, feed it a list of edges on the path
     def highlight_path(self, edge_path):
         self.view.highlight_path(edge_path)
 
