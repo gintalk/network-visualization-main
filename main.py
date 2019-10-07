@@ -129,10 +129,6 @@ class MainWindow(QMainWindow):
         else:
             return False
 
-
-
-
-
         # Pull it up
         self.set_up(graph=self.DEFAULT_GRAPH)
 
@@ -289,7 +285,7 @@ class MainWindow(QMainWindow):
 
     # File -> Exit and the top right 'x' button
     def closeEvent(self, event):
-        reply = QMessageBox.questession(self, '', 'Are you sure want to exit the program?',
+        reply = QMessageBox.question(self, '', 'Are you sure want to exit the program?',
                                      QMessageBox.Yes, QMessageBox.No)
         if reply == QMessageBox.Yes:
             event.accept()
