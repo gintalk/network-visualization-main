@@ -1,6 +1,7 @@
+from __future__ import division
 from PyQt5.QtCore import *
 from PyQt5.QtGui import QPen, QColor, QBrush
-from PyQt5.QtWidgets import QGraphicsScene
+from PyQt5.QtWidgets import QGraphicsScene, QMessageBox
 from igraph import VertexDendrogram, Graph
 
 from frontend.utils import *
@@ -57,6 +58,7 @@ class MainScene(QGraphicsScene):
 
     def init_edge_color_to_default(self, ):
         for edge in self.graph_to_display.es:
+            edge['edge_width'] = self.parent.SETTINGS['edge_width']
             edge['edge_color'] = self.parent.SETTINGS['edge_color']
 
     def set_background_color(self):
@@ -132,11 +134,70 @@ class MainScene(QGraphicsScene):
             point_a = self.points[edge.source]
             point_b = self.points[edge.target]
             line_pen = QPen(self.COLORS[edge['edge_color']])
-            line_pen.setWidth(self.parent.SETTINGS['edge_width'])
+            line_pen.setWidth(edge['edge_width'])
             line = MainEdge(edge, point_a, point_b, line_pen, self)
             self.addItem(line)
             self.lines.append(line)
             line.installSceneEventFilter(self.event_filter)
+    # def attribute(self):
+    #     a_attribute
+
+    def scalling(self):
+
+        bandwidth = []
+        n = 0
+        attribute = self.parent.main_window.get_attribute()
+        if not self.parent.main_window.search_attribute():
+            attribute = 'LinkSpeedRaw'
+            # if not hasattr(self.graph_to_display, attribute):
+        #     QMessageBox.about(self, 'Sorry bruh', 'This attribute is not available for this graph')
+
+        # print(attribute)
+        for edge in self.graph_to_display.es:
+            bandwidth.append(edge[attribute])
+
+        max_value = max(bandwidth)
+        min_value = min(bandwidth)
+        max_min = max_value - min_value
+        for i in range(len(bandwidth)):
+            bandwidth[i] = (bandwidth[i] - min_value) / max_min
+        return bandwidth
+
+    def display_edges_by_thickness(self):
+        if not self.parent.main_window.search_attribute():
+            return
+        bandwidth = self.scalling()
+        n = 0
+
+        # set the thickness of QPen according to the attribute value
+        for edge in self.graph_to_display.es:
+            line = self.lines[edge.index]
+            line.edge['edge_width'] = self.parent.SETTINGS['edge_width'] * bandwidth[n] * 2
+            # line_pen = QPen(self.COLORS[edge['edge_color']])
+            line_pen = QPen(QColor('black'))
+            line_pen.setWidthF(line.edge['edge_width'])
+            line.setPen(line_pen)
+            line._pen = line_pen
+            n += 1
+
+
+    # This is a more complete way of showing gradient in the edge
+    def display_edges_by_gradient(self):
+        if not self.parent.main_window.search_attribute():
+            return
+        bandwidth = self.scalling()
+        n = 0
+
+        # set the thickness of QPen according to the attribute value
+        for edge in self.graph_to_display.es:
+            line = self.lines[edge.index]
+            line.edge['edge_color'] = QColor(255 - bandwidth[n] * 255, 0, bandwidth[n] * 255)
+            line_pen = QPen(line.edge['edge_color'])
+            line_pen.setWidthF(line.edge['edge_width'])
+            line.setPen(line_pen)
+            line._pen = line_pen
+            n += 1
+
 
     def highlight_edges(self, edge_path):
         for edge_id in edge_path:

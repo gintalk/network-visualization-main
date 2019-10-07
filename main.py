@@ -1,6 +1,8 @@
+import sys
+
 from PyQt5 import uic
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QFileDialog, QMessageBox, QAction, \
-    QPushButton
+    QPushButton, QComboBox, QLabel
 from igraph import *
 
 from frontend.databar import DataBar
@@ -61,6 +63,46 @@ class MainWindow(QMainWindow):
         # Pull it up
         self.set_up(graph=self.DEFAULT_GRAPH)
         self.view.update_view()
+
+    def bind_buttons(self):
+        self.thickness_button = self.findChild(QWidget, 'drawthickness_button')
+        self.thickness_button.clicked.connect(self.view.scene.display_edges_by_thickness)
+
+        self.gradient_button = self.findChild(QWidget, 'drawgradient_button')
+        self.gradient_button.clicked.connect(self.view.scene.display_edges_by_gradient)
+
+        self.combobox_button = self.findChild(QComboBox, 'comboBox')
+        self.combobox_button.activated.connect(self.get_attribute)
+
+    # def save_attribute(self):line_pen = QPen(self.COLORS[edge['edge_color']])
+    #     comboText = self.'combobox'self.view.scene.display
+
+    def get_attribute(self):
+        self.attribute = self.combobox_button.currentText()
+        # print(dir(self.graph.es.summary))
+        # if not hasattr(self.graph.es.summary, attribute):
+        #     # print(hasattr(self.graph, attribute))
+        #     # self.about_message()
+        #     print(attribute)
+        #
+        #     # attribute = 'LinkSpeedRaw'
+        if not self.search_attribute():
+            QMessageBox.about(self, 'Sorry bruh' ,'This attribute is not available for this graph')
+        else:
+            return self.attribute
+
+    def search_attribute(self):
+        attribute = self.combobox_button.currentText()
+        self.dictionary = self.graph.es[0].attributes()
+        # print(self.graph.es[0])
+
+        for key, value in self.dictionary.items():
+            # print(key)
+            if str(key) == attribute:
+                return True
+        else:
+            return False
+
 
         # Test: getting shortest path between node 0 and node 1120. Note that the function inside returns a list within
         # a list, hence in order to get the actual edge list we need to get the element at 0, which is a list of edges
@@ -199,7 +241,7 @@ class MainWindow(QMainWindow):
 
     # File -> Exit and the top right 'x' button
     def closeEvent(self, event):
-        reply = QMessageBox.question(self, '', 'Are you sure want to exit the program?',
+        reply = QMessageBox.questession(self, '', 'Are you sure want to exit the program?',
                                      QMessageBox.Yes, QMessageBox.No)
         if reply == QMessageBox.Yes:
             event.accept()

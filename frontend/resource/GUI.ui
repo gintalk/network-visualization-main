@@ -17,9 +17,9 @@
    <widget class="QWidget" name="centralwidget" native="true">
     <property name="geometry">
      <rect>
-      <x>0</x>
+      <x>-10</x>
       <y>-5</y>
-      <width>991</width>
+      <width>1001</width>
       <height>751</height>
      </rect>
     </property>
@@ -61,6 +61,62 @@
      <string>Enter add Vertex Mode</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="drawthickness_button">
+    <property name="geometry">
+     <rect>
+      <x>990</x>
+      <y>100</y>
+      <width>89</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>thickness</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="drawgradient_button">
+    <property name="geometry">
+     <rect>
+      <x>990</x>
+      <y>70</y>
+      <width>89</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>gradient</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox">
+    <property name="geometry">
+     <rect>
+      <x>1110</x>
+      <y>0</y>
+      <width>141</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>LinkSpeedRaw</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>delay</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>weight</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string/>
+     </property>
+    </item>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -78,6 +134,13 @@
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
     <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuShow_As">
+    <property name="title">
+     <string>Show by</string>
+    </property>
+    <addaction name="actionThickness_of_edge"/>
+    <addaction name="actionGradient_of_edge"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -106,20 +169,33 @@
     <addaction name="actionRevert"/>
    </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuShow_As"/>
    <addaction name="menuView"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionOpen">
+   <property name="icon">
+    <iconset>
+     <normaloff>../../../Pelfusion-Flat-Folder-Open-Folder.ico</normaloff>../../../Pelfusion-Flat-Folder-Open-Folder.ico</iconset>
+   </property>
    <property name="text">
     <string>Open</string>
    </property>
   </action>
   <action name="actionSave">
+   <property name="icon">
+    <iconset>
+     <normaloff>../../../icons8-save-64.png</normaloff>../../../icons8-save-64.png</iconset>
+   </property>
    <property name="text">
     <string>Save</string>
    </property>
   </action>
   <action name="actionExit">
+   <property name="icon">
+    <iconset>
+     <normaloff>../../../icons8-close-window-100.png</normaloff>../../../icons8-close-window-100.png</iconset>
+   </property>
    <property name="text">
     <string>Exit</string>
    </property>
@@ -167,6 +243,16 @@
   <action name="actionRevert">
    <property name="text">
     <string>Revert</string>
+   </property>
+  </action>
+  <action name="actionThickness_of_edge">
+   <property name="text">
+    <string>Thickness of edge</string>
+   </property>
+  </action>
+  <action name="actionGradient_of_edge">
+   <property name="text">
+    <string>Gradient of edge</string>
    </property>
   </action>
  </widget>
