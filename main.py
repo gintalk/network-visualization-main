@@ -1,8 +1,8 @@
 import numpy as np
 from PyQt5 import uic
 from PyQt5.QtGui import QIcon, QKeySequence
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QFileDialog, QMessageBox, QAction, QDialog, \
-    QShortcut
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QFileDialog, QMessageBox, QAction, \
+    QDialog, QShortcut
 from PyQt5.QtWidgets import QPushButton, QComboBox
 from igraph import *
 
@@ -73,7 +73,7 @@ class MainWindow(QMainWindow):
         self.menu_action()
 
         # Icon buttons
-        self.button = self.findChild(QWidget, 'shortest_path') #pushButton1
+        self.button = self.findChild(QWidget, 'shortest_path')
         self.button.setToolTip("Shortest Path")
         self.button.setIcon(QIcon('frontend/resource/path_32.png'))
         self.button.clicked.connect(self.open_input_window)
@@ -103,9 +103,9 @@ class MainWindow(QMainWindow):
 
     # Check if self.attribute is an attribute in the graph or not
     def search_attribute(self):
-        self.dictionary = self.graph.es[0].attributes()
+        dictionary = self.graph.es[0].attributes()
 
-        for key, value in self.dictionary.items():
+        for key, value in dictionary.items():
             if str(key) == self.attribute:
                 return True
 
@@ -235,7 +235,7 @@ class MainWindow(QMainWindow):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         self.file_name, _ = QFileDialog.getOpenFileName(
-            self, "QFileDialog.getOpenFileName()", "",
+            self, "Open", "",
             "All Files (*);;GraphML Files (*.graphml)", options=options
         )
         if self.file_name:
@@ -249,7 +249,7 @@ class MainWindow(QMainWindow):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         file_name, _ = QFileDialog.getSaveFileName(
-            self, "Save As", "",
+            self, "Save", "",
             "All Files (*);;GraphML Files (*.graphml)", options=options
         )
         if file_name:
@@ -346,9 +346,12 @@ class MainWindow(QMainWindow):
         else:
             self.set_graph(self.DEFAULT_GRAPH)
         self.view.update_view()
+        self.gradient_thickness_window = GradientThicknessWindow(self)
+        self.attribute = 'LinkSpeedRaw'
 
     def add_vertex(self):
         self.ADD_VERTEX_STATE = True
+
 
 # Input window for shortest path
 class Input(QDialog):
@@ -396,6 +399,7 @@ class Input(QDialog):
         # self.parent.is_shortest_path_mode = False
         self.hide()
 
+
 # Window for gradient and thickness
 class GradientThicknessWindow(QDialog):
     def __init__(self, parent):
@@ -417,6 +421,7 @@ class GradientThicknessWindow(QDialog):
         self.parent.attribute = self.combobox_button.currentText()
         if not self.parent.search_attribute():
             QMessageBox.about(self, 'Sorry', 'This attribute is not available for this graph')
+
 
 if __name__ == "__main__":
     app = QApplication([])

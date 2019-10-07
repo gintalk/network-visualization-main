@@ -1,7 +1,7 @@
 from __future__ import division
 from PyQt5.QtCore import *
 from PyQt5.QtGui import QPen, QColor, QBrush
-from PyQt5.QtWidgets import QGraphicsScene, QMessageBox
+from PyQt5.QtWidgets import QGraphicsScene
 from igraph import VertexDendrogram, Graph
 
 from frontend.utils import *
@@ -112,7 +112,7 @@ class MainScene(QGraphicsScene):
             # if vertex["attribute"] and vertex["min"] <= vertex[vertex["attribute"]] <= vertex["max"]:
             #     self.vertex_to_display.append(vertex)
             # else:
-                self.vertex_to_display.append(vertex)
+            self.vertex_to_display.append(vertex)
 
         self.display_vertices()
         self.display_edges()
@@ -189,9 +189,6 @@ class MainScene(QGraphicsScene):
             line._pen = line_pen
             n += 1
 
-
-
-
     def highlight_edges(self, edge_path):
         for edge_id in edge_path:
             line = self.lines[edge_id]
@@ -214,13 +211,12 @@ class MainScene(QGraphicsScene):
     def unset_availability(self, availability):
         self.show_availability = False
 
-
     def mouseDoubleClickEvent(self, event):
-        if self.parent.main_window.ADD_VERTEX_STATE == True:
+        if self.parent.main_window.ADD_VERTEX_STATE:
             self.parent.main_window.graph = create_vertices(self.parent.main_window.graph, 1)
 
             self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['x'], \
-            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['y'] = \
+                self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['y'] = \
                 undilate(event.scenePos().x(), event.scenePos().y(), self.graph_center, self.scale_factor)
 
             self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['pos'] = \

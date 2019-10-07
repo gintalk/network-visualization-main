@@ -19,7 +19,7 @@
      <rect>
       <x>0</x>
       <y>40</y>
-      <width>750</width>
+      <width>730</width>
       <height>610</height>
      </rect>
     </property>
@@ -27,9 +27,9 @@
    <widget class="QWidget" name="gridLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>760</x>
+      <x>730</x>
       <y>40</y>
-      <width>231</width>
+      <width>261</width>
       <height>611</height>
      </rect>
     </property>
@@ -116,9 +116,9 @@
    <widget class="QComboBox" name="layout">
     <property name="geometry">
      <rect>
-      <x>750</x>
+      <x>840</x>
       <y>0</y>
-      <width>110</width>
+      <width>150</width>
       <height>30</height>
      </rect>
     </property>
@@ -186,9 +186,9 @@
    <widget class="QComboBox" name="cluster">
     <property name="geometry">
      <rect>
-      <x>880</x>
+      <x>670</x>
       <y>0</y>
-      <width>110</width>
+      <width>150</width>
       <height>30</height>
      </rect>
     </property>
