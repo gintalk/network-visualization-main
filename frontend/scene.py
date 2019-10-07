@@ -146,7 +146,7 @@ class MainScene(QGraphicsScene):
 
         bandwidth = []
         n = 0
-        attribute = self.parent.main_window.get_attribute()
+        attribute = self.parent.main_window.attribute
         if not self.parent.main_window.search_attribute():
             attribute = 'LinkSpeedRaw'
             # if not hasattr(self.graph_to_display, attribute):
