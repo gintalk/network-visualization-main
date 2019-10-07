@@ -1,8 +1,8 @@
 import sys
 
 from PyQt5 import uic
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QFileDialog, QMessageBox, QAction, \
-    QComboBox, QLabel
+from PyQt5.QtGui import QColor
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QFileDialog, QMessageBox, QAction, QComboBox, QLabel, QColorDialog
 from igraph import *
 
 from frontend.databar import DataBar
@@ -67,8 +67,15 @@ class MainWindow(QMainWindow):
         self.combobox_button = self.findChild(QComboBox, 'comboBox')
         self.combobox_button.activated.connect(self.get_attribute)
 
-    # def save_attribute(self):line_pen = QPen(self.COLORS[edge['edge_color']])
-    #     comboText = self.'combobox'self.view.scene.display
+        self.thickness_button = self.findChild(QWidget, 'color_mixer_button')
+        self.thickness_button.clicked.connect(self.color_mixer)
+
+        self.thickness_button = self.findChild(QWidget, 'color_change_node_button')
+        self.thickness_button.clicked.connect(self.color_change_nodes)
+
+
+
+
 
     def get_attribute(self):
         self.attribute = self.combobox_button.currentText()
@@ -83,6 +90,16 @@ class MainWindow(QMainWindow):
             QMessageBox.about(self, 'Sorry bruh' ,'This attribute is not available for this graph')
         else:
             return self.attribute
+
+    def color_mixer(self):
+        color = QColorDialog.getColor()
+        self.view.scene.change_color_all_node(color)
+
+    def color_change_nodes(self, vertex):
+        snl = len(self.selectedNodes)
+        print(snl)
+
+
 
     def search_attribute(self):
         attribute = self.combobox_button.currentText()
@@ -205,8 +222,7 @@ class MainWindow(QMainWindow):
 
     # File -> Exit and the top right 'x' button
     def closeEvent(self, event):
-        reply = QMessageBox.questession(self, '', 'Are you sure want to exit the program?',
-                                     QMessageBox.Yes, QMessageBox.No)
+        reply = QMessageBox.question(self, '', 'Are you sure want to exit the program?', QMessageBox.Yes, QMessageBox.No)
         if reply == QMessageBox.Yes:
             event.accept()
         else:
