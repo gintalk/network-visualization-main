@@ -143,8 +143,6 @@ class MainScene(QGraphicsScene):
     def scalling(self):
         bandwidth = []
         attribute = self.parent.main_window.attribute
-        #if not self.parent.main_window.search_attribute():
-            #attribute = 'LinkSpeedRaw'
 
         for edge in self.graph_to_display.es:
             bandwidth.append(edge[attribute])
@@ -160,7 +158,6 @@ class MainScene(QGraphicsScene):
     # This is a more complete way of showing gradient in the edge
     def display_edges_by_gradient(self):
         if not self.parent.main_window.search_attribute():
-            # QMessageBox.about(self, 'Sorry', 'This attribute is not available for this graph')
             return
         bandwidth = self.scalling()
         n = 0
@@ -177,7 +174,6 @@ class MainScene(QGraphicsScene):
 
     def display_edges_by_thickness(self):
         if not self.parent.main_window.search_attribute():
-            # QMessageBox.about(self, 'Sorry', 'This attribute is not available for this graph')
             return
         bandwidth = self.scalling()
         n = 0

@@ -42,7 +42,7 @@ class MainWindow(QMainWindow):
     is_source = True
 
     # For gradient and thickness
-    attribute = None
+    attribute = 'LinkSpeedRaw'
 
     def __init__(self):
         super().__init__()
@@ -89,20 +89,15 @@ class MainWindow(QMainWindow):
         self.button4.setIcon(QIcon('frontend/resource/zoom_out.png'))
         self.button4.clicked.connect(self.reset_zoom_button)
 
-        self.button5 = self.findChild(QWidget, 'add_vertex')
+        self.button5 = self.findChild(QWidget, 'addvertex')
         self.button5.setToolTip("Add Vertex")
-        self.button5.clicked.connect(lambda: self.add_vertex())
+        self.button5.clicked.connect(self.add_vertex)
 
         self.input_page = Input(self)
 
         self.gradient_thickness_window = GradientThicknessWindow(self)
 
-    def get_attribute(self):
-        if not self.search_attribute():
-            QMessageBox.about(self, 'Sorry' ,'This attribute is not available for this graph')
-        else:
-            return self.attribute
-
+    # Check if self.attribute is an attribute in the graph or not
     def search_attribute(self):
         self.dictionary = self.graph.es[0].attributes()
 
@@ -243,6 +238,7 @@ class MainWindow(QMainWindow):
             self.set_graph(self.file_name)
             self.clear_layout(self.info_layout)
             self.view.update_view()
+            self.gradient_thickness_window = GradientThicknessWindow(self)
 
     # File -> Save
     def save_file_dialog(self):
@@ -348,10 +344,7 @@ class MainWindow(QMainWindow):
         self.view.update_view()
 
     def add_vertex(self):
-        if not self.ADD_VERTEX_STATE:
-            self.ADD_VERTEX_STATE = True
-        else:
-            self.ADD_VERTEX_STATE = False
+        self.ADD_VERTEX_STATE = True
 
 # Input window for shortest path
 class Input(QDialog):
@@ -414,9 +407,12 @@ class GradientThicknessWindow(QDialog):
         self.thickness_button.clicked.connect(self.parent.view.scene.display_edges_by_thickness)
 
         self.combobox_button = self.findChild(QComboBox, 'comboBox')
-        self.combobox_button.activated.connect(self.parent.get_attribute)
+        self.combobox_button.activated.connect(self.selection_change)
 
+    def selection_change(self):
         self.parent.attribute = self.combobox_button.currentText()
+        if not self.parent.search_attribute():
+            QMessageBox.about(self, 'Sorry', 'This attribute is not available for this graph')
 
 if __name__ == "__main__":
     app = QApplication([])
