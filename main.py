@@ -2,11 +2,10 @@ from PyQt5 import uic
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QFileDialog, QMessageBox, QAction, \
     QPushButton
 from igraph import *
+import numpy as np
 
 from frontend.databar import DataBar
 from frontend.view import MainView
-from backend.algorithm import get_shortest_paths
-import numpy as np
 from frontend.vertexinfo import VertexInfo
 from frontend.edgeinfo import EdgeInfo
 
@@ -30,9 +29,9 @@ class MainWindow(QMainWindow):
         'Random 3D': 'random3d', 'Reingold Tilford': 'rt',
         'Reingold Tilford Circular': 'rt_circular', 'Sphere': 'sphere'
     }
-    selectedNodes = []
 
     ADD_VERTEX_STATE = False
+    ADD_EDGE_STATE = False
 
     def __init__(self):
         super().__init__()
@@ -51,21 +50,18 @@ class MainWindow(QMainWindow):
 
         self.info_layout = self.findChild(QGridLayout, 'infolayout')
 
-        self.shortest_path_button = self.findChild(QWidget, 'shortestpath')
-        # self.shortest_path_button.clicked.connect(self.getText)
-        self.shortest_path_button.clicked.connect(self.get_2_vertex_id)
-
         self.add_vertex_button = self.findChild(QPushButton, 'addvertex')
         self.add_vertex_button.clicked.connect(lambda: self.add_vertex())
+
+        self.add_edge_button = self.findChild(QPushButton, 'addedge')
+        self.add_edge_button.clicked.connect(lambda: self.add_edge())
+
+        # Bind action into menu button
+        self.menu_action()
 
         # Pull it up
         self.set_up(graph=self.DEFAULT_GRAPH)
         self.view.update_view()
-
-        # Test: getting shortest path between node 0 and node 1120. Note that the function inside returns a list within
-        # a list, hence in order to get the actual edge list we need to get the element at 0, which is a list of edges
-        # on the path
-        # self.highlight_path(get_shortest_paths(self.graph, 0, 1120)[0])
 
     def set_up(self, graph=None, layout=None, cluster=None):
         if graph is not None:
@@ -76,9 +72,6 @@ class MainWindow(QMainWindow):
 
         if cluster is not None:
             self.set_clustering_algorithm(cluster)
-
-        # Bind action into menu button
-        self.menu_action()
 
     def set_graph(self, graph_path):
         self.graph = Graph.Read_GraphML(graph_path)
@@ -108,24 +101,6 @@ class MainWindow(QMainWindow):
     def settings(self, **kwargs):
         self.view.settings(kwargs)
 
-    def show_vertex_id(self, vertex):
-        self.selectedNodes.append(vertex)
-
-    def get_2_vertex_id(self):
-        #selected nodes length
-        snl = len(self.selectedNodes)
-        # print(snl)
-        if snl == 0 or snl > 2:
-            self.selectedNodes = []
-        elif snl == 2:
-            sp_edge_ids = get_shortest_paths(self.graph,self.selectedNodes[0],self.selectedNodes[1])
-            self.highlight_path(sp_edge_ids[0])
-            self.selectedNodes = []
-
-    # To see shortest path, feed it a list of edges on the path
-    def highlight_path(self, edge_path):
-        self.view.highlight_path(edge_path)
-
     def save_graph(self, graph_path):
         write(self.graph, graph_path)
 
@@ -133,22 +108,34 @@ class MainWindow(QMainWindow):
     def menu_action(self):
         # File -> Open
         open_button = self.findChild(QAction, 'actionOpen')
-        open_button.triggered.connect(self.open_file_dialog)
+        open_button.triggered.connect(lambda: self.open_file_dialog())
 
         # File -> Save
         save_button = self.findChild(QAction, 'actionSave')
-        save_button.triggered.connect(self.save_file_dialog)
+        save_button.triggered.connect(lambda: self.save_file_dialog())
 
         # File -> Exit
         close_button = self.findChild(QAction, 'actionExit')
         close_button.triggered.connect(self.close)
+
+        # Layout -> Default
+        default_button = self.findChild(QAction, 'actionDefault')
+        default_button.triggered.connect(lambda: self.set_up(graph=self.DEFAULT_GRAPH))
+
+        # Layout -> Circle
+        circle_button = self.findChild(QAction, 'actionCircle')
+        circle_button.triggered.connect(lambda: self.set_up(graph=self.DEFAULT_GRAPH, layout='Circle'))
+
+        # Layout -> Distributed Recursive
+        drl_button = self.findChild(QAction, 'actionDistributed_Recursive')
+        drl_button.triggered.connect(lambda: self.set_up(graph=self.DEFAULT_GRAPH, layout='Distributed Recursive Layout'))
 
     # File -> Open
     def open_file_dialog(self):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         file_name, _ = QFileDialog.getOpenFileName(
-            self, "QFileDialog.getOpenFileName()", "",
+            self, "Open", "",
             "All Files (*);;GraphML Files (*.graphml)", options=options
         )
         if file_name:
@@ -161,7 +148,7 @@ class MainWindow(QMainWindow):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         file_name, _ = QFileDialog.getSaveFileName(
-            self, "Save As", "",
+            self, "Save", "",
             "All Files (*);;GraphML Files (*.graphml)", options=options
         )
         if file_name:
@@ -204,11 +191,22 @@ class MainWindow(QMainWindow):
     def add_vertex(self):
         if self.ADD_VERTEX_STATE == False:
             self.ADD_VERTEX_STATE = True
-            self.add_vertex_button.setText("Exit add vertex mode")
+            self.add_vertex_button.setText("Exit Add Vertex Mode")
+            self.ADD_EDGE_STATE = False
+            self.add_edge_button.setText("Enter Add Edge Mode")
         else:
             self.ADD_VERTEX_STATE = False
-            self.add_vertex_button.setText("Enter add vertex mode")
+            self.add_vertex_button.setText("Enter Add Vertex Mode")
 
+    def add_edge(self):
+        if self.ADD_EDGE_STATE == False:
+            self.ADD_EDGE_STATE = True
+            self.add_edge_button.setText("Exit Add Edge Mode")
+            self.ADD_VERTEX_STATE = False
+            self.add_vertex_button.setText("Enter Add Vertex Mode")
+        else:
+            self.ADD_EDGE_STATE = False
+            self.add_edge_button.setText("Enter Add Edge Mode")
 
 if __name__ == "__main__":
     app = QApplication([])

@@ -94,14 +94,3 @@ class MainView(QGraphicsView):
         for key in kwargs.keys():
             self.SETTINGS[key] = kwargs[key]
         self.update_view()
-
-    def highlight_path(self, edge_path):
-        vertices_along_the_way = []
-        for i in range(0, len(edge_path)):
-            vertex_id = self.main_window.graph.es[edge_path[i]].source
-            vertices_along_the_way.append(vertex_id)
-        last_vertex_id = self.main_window.graph.es[edge_path[-1]].target
-        vertices_along_the_way.append(last_vertex_id)
-
-        self.scene.highlight_edges(edge_path)
-        self.scene.highlight_vertices(vertices_along_the_way)

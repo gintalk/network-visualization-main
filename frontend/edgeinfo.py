@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel, QLineEdit, QPushButton, QMessageBox
 from PyQt5.QtCore import Qt
+
 from frontend.vertexinfo import EditLabel
 from backend.edge import update_edge, delete_edges
 
