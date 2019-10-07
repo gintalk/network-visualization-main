@@ -18,9 +18,9 @@
     <property name="geometry">
      <rect>
       <x>-10</x>
-      <y>-5</y>
+      <y>35</y>
       <width>1001</width>
-      <height>751</height>
+      <height>711</height>
      </rect>
     </property>
    </widget>
@@ -34,19 +34,6 @@
      </rect>
     </property>
     <layout class="QGridLayout" name="infolayout"/>
-   </widget>
-   <widget class="QPushButton" name="shortestpath">
-    <property name="geometry">
-     <rect>
-      <x>990</x>
-      <y>130</y>
-      <width>101</width>
-      <height>25</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Shortest Path</string>
-    </property>
    </widget>
    <widget class="QPushButton" name="addvertex">
     <property name="geometry">
@@ -116,6 +103,58 @@
       <string/>
      </property>
     </item>
+   </widget>
+   <widget class="QPushButton" name="shortest_path">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>41</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="zoom_in">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>0</y>
+      <width>41</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="zoom_out">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>0</y>
+      <width>41</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="reset_zoom">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>0</y>
+      <width>41</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">

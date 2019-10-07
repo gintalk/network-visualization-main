@@ -72,7 +72,6 @@ class MainWindow(QMainWindow):
 
         # Pull it up
         self.set_up(graph=self.DEFAULT_GRAPH)
-        self.view.update_view()
         self.button2 = self.findChild(QWidget, 'zoom_in')
         self.button2.setToolTip("Zoom In")
         self.button2.setIcon(QIcon('frontend/resource/zoom_in.png'))
