@@ -367,7 +367,7 @@ class MainWindow(QMainWindow):
 
     #pop data bar, data in list, try g.es['label']
     #stackoverflow.com/questions/940555/pyqt-sending-parameter-to-slot-when-connecting-to-a-signal
-    def popupBar(self, data):
+    def popup_bar(self, data):
         bar = DataBar(data)
         bar.show()
 

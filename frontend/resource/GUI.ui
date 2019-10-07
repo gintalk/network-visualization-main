@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1260</width>
-    <height>768</height>
+    <width>1000</width>
+    <height>700</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,20 +17,20 @@
    <widget class="QWidget" name="centralwidget" native="true">
     <property name="geometry">
      <rect>
-      <x>-10</x>
-      <y>35</y>
-      <width>1001</width>
-      <height>711</height>
+      <x>0</x>
+      <y>40</y>
+      <width>751</width>
+      <height>611</height>
      </rect>
     </property>
    </widget>
    <widget class="QWidget" name="gridLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>990</x>
-      <y>160</y>
-      <width>271</width>
-      <height>561</height>
+      <x>750</x>
+      <y>40</y>
+      <width>241</width>
+      <height>611</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="infolayout"/>
@@ -38,8 +38,8 @@
    <widget class="QPushButton" name="addvertex">
     <property name="geometry">
      <rect>
-      <x>990</x>
-      <y>70</y>
+      <x>530</x>
+      <y>0</y>
       <width>181</width>
       <height>31</height>
      </rect>
@@ -51,8 +51,8 @@
    <widget class="QPushButton" name="drawthickness_button">
     <property name="geometry">
      <rect>
-      <x>990</x>
-      <y>100</y>
+      <x>250</x>
+      <y>0</y>
       <width>89</width>
       <height>25</height>
      </rect>
@@ -64,8 +64,8 @@
    <widget class="QPushButton" name="drawgradient_button">
     <property name="geometry">
      <rect>
-      <x>990</x>
-      <y>70</y>
+      <x>160</x>
+      <y>0</y>
       <width>89</width>
       <height>25</height>
      </rect>
@@ -77,7 +77,7 @@
    <widget class="QComboBox" name="comboBox">
     <property name="geometry">
      <rect>
-      <x>1110</x>
+      <x>340</x>
       <y>0</y>
       <width>141</width>
       <height>21</height>
@@ -162,7 +162,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1260</width>
+     <width>1000</width>
      <height>22</height>
     </rect>
    </property>
@@ -173,13 +173,6 @@
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
     <addaction name="actionExit"/>
-   </widget>
-   <widget class="QMenu" name="menuShow_As">
-    <property name="title">
-     <string>Show by</string>
-    </property>
-    <addaction name="actionThickness_of_edge"/>
-    <addaction name="actionGradient_of_edge"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -208,7 +201,6 @@
     <addaction name="actionRevert"/>
    </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuShow_As"/>
    <addaction name="menuView"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
