@@ -29,7 +29,6 @@ class MainView(QGraphicsView):
 
     def update_view(self):
         self.scene = MainScene(self)
-        self.main_window.bind_buttons()
         self.setScene(self.scene)
         self.scene.display()
 

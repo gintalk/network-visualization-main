@@ -19,98 +19,29 @@
      <rect>
       <x>0</x>
       <y>40</y>
-      <width>751</width>
-      <height>611</height>
+      <width>750</width>
+      <height>610</height>
      </rect>
     </property>
    </widget>
    <widget class="QWidget" name="gridLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>750</x>
+      <x>760</x>
       <y>40</y>
-      <width>241</width>
+      <width>231</width>
       <height>611</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="infolayout"/>
-   </widget>
-   <widget class="QPushButton" name="addvertex">
-    <property name="geometry">
-     <rect>
-      <x>530</x>
-      <y>0</y>
-      <width>181</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Enter add Vertex Mode</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="drawthickness_button">
-    <property name="geometry">
-     <rect>
-      <x>250</x>
-      <y>0</y>
-      <width>89</width>
-      <height>25</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>thickness</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="drawgradient_button">
-    <property name="geometry">
-     <rect>
-      <x>160</x>
-      <y>0</y>
-      <width>89</width>
-      <height>25</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>gradient</string>
-    </property>
-   </widget>
-   <widget class="QComboBox" name="comboBox">
-    <property name="geometry">
-     <rect>
-      <x>340</x>
-      <y>0</y>
-      <width>141</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <item>
-     <property name="text">
-      <string>LinkSpeedRaw</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>delay</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>weight</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string/>
-     </property>
-    </item>
    </widget>
    <widget class="QPushButton" name="shortest_path">
     <property name="geometry">
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>41</width>
-      <height>41</height>
+      <width>40</width>
+      <height>40</height>
      </rect>
     </property>
     <property name="text">
@@ -122,8 +53,8 @@
      <rect>
       <x>40</x>
       <y>0</y>
-      <width>41</width>
-      <height>41</height>
+      <width>40</width>
+      <height>40</height>
      </rect>
     </property>
     <property name="text">
@@ -135,8 +66,8 @@
      <rect>
       <x>80</x>
       <y>0</y>
-      <width>41</width>
-      <height>41</height>
+      <width>40</width>
+      <height>40</height>
      </rect>
     </property>
     <property name="text">
@@ -148,13 +79,149 @@
      <rect>
       <x>120</x>
       <y>0</y>
-      <width>41</width>
-      <height>41</height>
+      <width>40</width>
+      <height>40</height>
      </rect>
     </property>
     <property name="text">
      <string/>
     </property>
+   </widget>
+   <widget class="QPushButton" name="add_vertex">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>0</y>
+      <width>40</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="add_edge">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>0</y>
+      <width>40</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="layout">
+    <property name="geometry">
+     <rect>
+      <x>750</x>
+      <y>0</y>
+      <width>110</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>Circle</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Distributed Recursive Layout</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Fruchterman Reingold</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Fruchterman Reingold 3D</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Kamada Kawai</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Kamada Kawai 3D</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Large Graph Layout</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Random</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Random 3D</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Reingold Tilford</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Reingold Tilford Circular</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Sphere</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QComboBox" name="cluster">
+    <property name="geometry">
+     <rect>
+      <x>880</x>
+      <y>0</y>
+      <width>110</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>Fastgreedy</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Infomap</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Label Propagation</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Multilevel</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Edge Betweenness</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Walktrap</string>
+     </property>
+    </item>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -198,6 +265,7 @@
     </widget>
     <addaction name="menuStatistics"/>
     <addaction name="actionAvailability"/>
+    <addaction name="actionGradient_and_Thickness"/>
     <addaction name="actionRevert"/>
    </widget>
    <addaction name="menuFile"/>
@@ -284,6 +352,16 @@
   <action name="actionGradient_of_edge">
    <property name="text">
     <string>Gradient of edge</string>
+   </property>
+  </action>
+  <action name="actionGradient_and_Thickness">
+   <property name="text">
+    <string>Gradient and Thickness</string>
+   </property>
+  </action>
+  <action name="actionThickness">
+   <property name="text">
+    <string>Thickness</string>
    </property>
   </action>
  </widget>
