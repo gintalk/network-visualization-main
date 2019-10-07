@@ -1,16 +1,16 @@
-import sys
-
+import numpy as np
 from PyQt5 import uic
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QFileDialog, QMessageBox, QAction, \
-    QPushButton, QComboBox, QLabel
+from PyQt5.QtGui import QIcon, QKeySequence
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QFileDialog, QMessageBox, QAction, QDialog, \
+    QShortcut
+from PyQt5.QtWidgets import QPushButton, QComboBox
 from igraph import *
 
-from frontend.databar import DataBar
-from frontend.view import MainView
 from backend.algorithm import get_shortest_paths
-import numpy as np
-from frontend.vertexinfo import VertexInfo
+from frontend.databar import DataBar
 from frontend.edgeinfo import EdgeInfo
+from frontend.vertexinfo import VertexInfo
+from frontend.view import MainView
 
 
 class MainWindow(QMainWindow):
@@ -36,6 +36,10 @@ class MainWindow(QMainWindow):
 
     ADD_VERTEX_STATE = False
 
+    # MODE FOR SHORTEST PATH
+    is_shortest_path_mode = False
+    is_source = True
+
     def __init__(self):
         super().__init__()
 
@@ -53,9 +57,15 @@ class MainWindow(QMainWindow):
 
         self.info_layout = self.findChild(QGridLayout, 'infolayout')
 
-        self.shortest_path_button = self.findChild(QWidget, 'shortestpath')
-        # self.shortest_path_button.clicked.connect(self.getText)
-        self.shortest_path_button.clicked.connect(self.get_2_vertex_id)
+        # self.shortest_path_button = self.findChild(QWidget, 'shortestpath')
+        # # self.shortest_path_button.clicked.connect(self.getText)
+        # self.shortest_path_button.clicked.connect(self.get_2_vertex_id)
+        # self.info_layout = self.findChild(QGridLayout, 'infolayout')
+
+        self.button = self.findChild(QWidget, 'shortest_path') #pushButton1
+        self.button.setToolTip("Shortest Path")
+        self.button.setIcon(QIcon('frontend/resource/path_32.png'))
+        self.button.clicked.connect(self.open_input_window)
 
         self.add_vertex_button = self.findChild(QPushButton, 'addvertex')
         self.add_vertex_button.clicked.connect(lambda: self.add_vertex())
@@ -63,6 +73,22 @@ class MainWindow(QMainWindow):
         # Pull it up
         self.set_up(graph=self.DEFAULT_GRAPH)
         self.view.update_view()
+        self.button2 = self.findChild(QWidget, 'zoom_in')
+        self.button2.setToolTip("Zoom In")
+        self.button2.setIcon(QIcon('frontend/resource/zoom_in.png'))
+        self.button2.clicked.connect(self.zoom_in_button)
+
+        self.button3 = self.findChild(QWidget, 'zoom_out')
+        self.button3.setToolTip("Zoom Out")
+        self.button3.setIcon(QIcon('frontend/resource/zoom_out.png'))
+        self.button3.clicked.connect(self.zoom_out_button)
+
+        self.button4 = self.findChild(QWidget, 'reset_zoom')
+        self.button4.setToolTip("Reset Zoom")
+        self.button4.setIcon(QIcon('frontend/resource/zoom_out.png'))
+        self.button4.clicked.connect(self.reset_zoom_button)
+
+        self.input_page = Input(self)
 
     def bind_buttons(self):
         self.thickness_button = self.findChild(QWidget, 'drawthickness_button')
@@ -104,10 +130,30 @@ class MainWindow(QMainWindow):
             return False
 
 
+
+
+
+        # Pull it up
+        self.set_up(graph=self.DEFAULT_GRAPH)
+
         # Test: getting shortest path between node 0 and node 1120. Note that the function inside returns a list within
         # a list, hence in order to get the actual edge list we need to get the element at 0, which is a list of edges
         # on the path
         # self.highlight_path(get_shortest_paths(self.graph, 0, 1120)[0])
+
+    def open_input_window(self):
+        self.is_shortest_path_mode = True
+        self.input_page.show()
+        # self.hide()
+
+    def zoom_in_button(self):
+        self.view.zoom_in()
+
+    def zoom_out_button(self):
+        self.view.zoom_out()
+
+    def reset_zoom_button(self):
+        self.view.reset_view()
 
     def set_up(self, graph=None, layout=None, cluster=None):
         if graph is not None:
@@ -151,18 +197,16 @@ class MainWindow(QMainWindow):
         self.view.settings(kwargs)
 
     def show_vertex_id(self, vertex):
-        self.selectedNodes.append(vertex)
 
-    def get_2_vertex_id(self):
-        #selected nodes length
-        snl = len(self.selectedNodes)
-        # print(snl)
-        if snl == 0 or snl > 2:
-            self.selectedNodes = []
-        elif snl == 2:
-            sp_edge_ids = get_shortest_paths(self.graph,self.selectedNodes[0],self.selectedNodes[1])
-            self.highlight_path(sp_edge_ids[0])
-            self.selectedNodes = []
+        if self.is_shortest_path_mode is True and self.is_source is True:
+            self.input_page.source_node = vertex.index
+            self.input_page.source.setText(str(vertex.index))
+            self.input_page.show()
+        elif self.is_shortest_path_mode is True and self.is_source is False:
+            self.input_page.destination_node = vertex.index
+            # print(self.input_page.destination_node)
+            self.input_page.destination.setText(str(vertex.index))
+            self.input_page.show()
 
     # To see shortest path, feed it a list of edges on the path
     def highlight_path(self, edge_path):
@@ -176,10 +220,14 @@ class MainWindow(QMainWindow):
         # File -> Open
         open_button = self.findChild(QAction, 'actionOpen')
         open_button.triggered.connect(self.open_file_dialog)
+        open_shortcut = QShortcut(QKeySequence(self.tr("Ctrl+O", "File|Open")), self)
+        open_shortcut.activated.connect(self.open_file_dialog)
 
         # File -> Save
         save_button = self.findChild(QAction, 'actionSave')
         save_button.triggered.connect(self.save_file_dialog)
+        save_shortcut = QShortcut(QKeySequence(self.tr("Ctrl+S", "File|Save")), self)
+        save_shortcut.activated.connect(self.save_file_dialog)
 
         # File -> Exit
         close_button = self.findChild(QAction, 'actionExit')
@@ -263,6 +311,33 @@ class MainWindow(QMainWindow):
         data = self.graph.es['LinkSpeedRaw']
         self.popup_bar(data)
 
+    def picking_source(self):
+        self.hide()
+        self.parent.is_source = True
+        self.parent.show
+
+    def picking_destination(self):
+        self.hide()
+        self.parent.is_source = False
+        self.parent.show
+
+    def closeWindow_cancel(self):
+        self.hide()
+        self.parent.is_shortest_path_mode = False
+        self.parent.show
+
+
+    def closeWindow_ok(self):
+        # Check if Source value or Destination Value is None ?
+        # If 1 of them is none ,
+
+        self.sp_edge_ids = get_shortest_paths(self.parent.graph,self.source_node,self.destination_node)
+        self.parent.highlight_path(self.sp_edge_ids[0])
+        # self.parent.is_shortest_path_mode = False
+        self.hide()
+        self.parent.show
+
+
     # View -> Statistic -> Bar ->  Edge Weight
     def display_edge_weight_bar(self):
         data = self.graph.es['weight']
@@ -315,6 +390,56 @@ class MainWindow(QMainWindow):
         else:
             self.ADD_VERTEX_STATE = False
             self.add_vertex_button.setText("Enter add vertex mode")
+
+        # INPUT
+class Input(QDialog):
+    def __init__(self, parent=None):
+        super(Input, self).__init__()
+        self.parent = parent
+        uic.loadUi('frontend/resource/INPUT.ui', self)
+        self.setWindowTitle("Input")
+
+        self.source_node = 0
+        self.destination_node = 0
+
+        self.button = self.findChild(QWidget, 'buttonBox')
+        self.button.rejected.connect(self.closeWindow_cancel)
+        self.button.accepted.connect(self.closeWindow_ok)
+
+        self.source_button = self.findChild(QWidget, 'pushButton')
+        self.source_button.clicked.connect(self.picking_source)
+        self.destination_button = self.findChild(QWidget, 'pushButton_2')
+        self.destination_button.clicked.connect(self.picking_destination)
+
+        self.source = self.findChild(QWidget, 'lineEdit')
+        self.source.setReadOnly(True)
+        self.destination = self.findChild(QWidget, 'lineEdit_2')
+        self.destination.setReadOnly(True)
+
+    def picking_source(self):
+        self.hide()
+        self.parent.is_source = True
+        self.parent.show
+
+    def picking_destination(self):
+        self.hide()
+        self.parent.is_source = False
+        self.parent.show
+
+    def closeWindow_cancel(self):
+        self.hide()
+        self.parent.is_shortest_path_mode = False
+        self.parent.show
+
+    def closeWindow_ok(self):
+        # Check if Source value or Destination Value is None ?
+        # If 1 of them is none ,
+
+        self.sp_edge_ids = get_shortest_paths(self.parent.graph, self.source_node, self.destination_node)
+        self.parent.highlight_path(self.sp_edge_ids[0])
+        # self.parent.is_shortest_path_mode = False
+        self.hide()
+        self.parent.show
 
 
 if __name__ == "__main__":

@@ -1,3 +1,4 @@
+from PyQt5.QtGui import QTransform
 from PyQt5.QtWidgets import QGraphicsLineItem
 
 
