@@ -6,6 +6,7 @@ import numpy as np
 
 from frontend.databar import DataBar
 from frontend.view import MainView
+from backend.algorithm import get_shortest_paths
 from frontend.vertexinfo import VertexInfo
 from frontend.edgeinfo import EdgeInfo
 
@@ -29,6 +30,7 @@ class MainWindow(QMainWindow):
         'Random 3D': 'random3d', 'Reingold Tilford': 'rt',
         'Reingold Tilford Circular': 'rt_circular', 'Sphere': 'sphere'
     }
+    selectedNodes = []
 
     ADD_VERTEX_STATE = False
     ADD_EDGE_STATE = False
@@ -50,6 +52,10 @@ class MainWindow(QMainWindow):
 
         self.info_layout = self.findChild(QGridLayout, 'infolayout')
 
+        self.shortest_path_button = self.findChild(QWidget, 'shortestpath')
+        # self.shortest_path_button.clicked.connect(self.getText)
+        self.shortest_path_button.clicked.connect(self.get_2_vertex_id)
+
         self.add_vertex_button = self.findChild(QPushButton, 'addvertex')
         self.add_vertex_button.clicked.connect(lambda: self.add_vertex())
 
@@ -62,6 +68,11 @@ class MainWindow(QMainWindow):
         # Pull it up
         self.set_up(graph=self.DEFAULT_GRAPH)
         self.view.update_view()
+
+        # Test: getting shortest path between node 0 and node 1120. Note that the function inside returns a list within
+        # a list, hence in order to get the actual edge list we need to get the element at 0, which is a list of edges
+        # on the path
+        # self.highlight_path(get_shortest_paths(self.graph, 0, 1120)[0])
 
     def set_up(self, graph=None, layout=None, cluster=None):
         if graph is not None:
@@ -100,6 +111,24 @@ class MainWindow(QMainWindow):
 
     def settings(self, **kwargs):
         self.view.settings(kwargs)
+
+    def show_vertex_id(self, vertex):
+        self.selectedNodes.append(vertex)
+
+    def get_2_vertex_id(self):
+        #selected nodes length
+        snl = len(self.selectedNodes)
+        # print(snl)
+        if snl == 0 or snl > 2:
+            self.selectedNodes = []
+        elif snl == 2:
+            sp_edge_ids = get_shortest_paths(self.graph,self.selectedNodes[0],self.selectedNodes[1])
+            self.highlight_path(sp_edge_ids[0])
+            self.selectedNodes = []
+
+    # To see shortest path, feed it a list of edges on the path
+    def highlight_path(self, edge_path):
+        self.view.highlight_path(edge_path)
 
     def save_graph(self, graph_path):
         write(self.graph, graph_path)
