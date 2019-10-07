@@ -209,17 +209,17 @@ class MainWindow(QMainWindow):
         data = self.graph.vs['Country']
         self.popup_bar(data)
 
-    # View -> Statistic -> Bar -> Vertex Country
+    # View -> Statistic -> Bar -> Edge Link Speed Raw
     def display_edge_linkspeedraw_bar(self):
         data = self.graph.es['LinkSpeedRaw']
         self.popup_bar(data)
 
-    # View -> Statistic -> Bar ->  Edge LinkSpeedRaw
+    # View -> Statistic -> Bar ->  Edge Weight
     def display_edge_weight_bar(self):
         data = self.graph.es['weight']
         self.popup_bar(data)
 
-    # View -> Statistic -> Bar ->  Edge LinkSpeedRaw
+    # View -> Statistic -> Bar ->  Edge Label
     def display_edge_label_bar(self):
         data = self.graph.es['label']
         self.popup_bar(data)
