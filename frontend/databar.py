@@ -1,15 +1,12 @@
 import matplotlib
 from PyQt5.QtWidgets import QSizePolicy
-
-matplotlib.use("Qt5Agg")
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
+matplotlib.use("Qt5Agg")
 
 
 class DataBar(FigureCanvas):
-    node_list = []
-    edge_list = []
 
     def __init__(self, data, parent=None, width=5, height=4, dpi=100):
         self.fig = Figure(figsize=(width, height), dpi=dpi)

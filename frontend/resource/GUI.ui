@@ -13,20 +13,14 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <property name="iconSize">
-   <size>
-    <width>16</width>
-    <height>16</height>
-   </size>
-  </property>
   <widget class="QWidget" name="containingwidget">
    <widget class="QWidget" name="centralwidget" native="true">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>30</y>
-      <width>991</width>
-      <height>721</height>
+      <x>-10</x>
+      <y>35</y>
+      <width>1001</width>
+      <height>711</height>
      </rect>
     </property>
    </widget>
@@ -41,32 +35,95 @@
     </property>
     <layout class="QGridLayout" name="infolayout"/>
    </widget>
+   <widget class="QPushButton" name="addvertex">
+    <property name="geometry">
+     <rect>
+      <x>990</x>
+      <y>70</y>
+      <width>181</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Enter add Vertex Mode</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="drawthickness_button">
+    <property name="geometry">
+     <rect>
+      <x>990</x>
+      <y>100</y>
+      <width>89</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>thickness</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="drawgradient_button">
+    <property name="geometry">
+     <rect>
+      <x>990</x>
+      <y>70</y>
+      <width>89</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>gradient</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox">
+    <property name="geometry">
+     <rect>
+      <x>1110</x>
+      <y>0</y>
+      <width>141</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>LinkSpeedRaw</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>delay</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>weight</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string/>
+     </property>
+    </item>
+   </widget>
    <widget class="QPushButton" name="shortest_path">
     <property name="geometry">
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>31</width>
-      <height>31</height>
+      <width>41</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="text">
      <string/>
     </property>
-    <property name="iconSize">
-     <size>
-      <width>16</width>
-      <height>16</height>
-     </size>
-    </property>
    </widget>
    <widget class="QPushButton" name="zoom_in">
     <property name="geometry">
      <rect>
-      <x>30</x>
+      <x>40</x>
       <y>0</y>
-      <width>31</width>
-      <height>31</height>
+      <width>41</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="text">
@@ -76,10 +133,10 @@
    <widget class="QPushButton" name="zoom_out">
     <property name="geometry">
      <rect>
-      <x>60</x>
+      <x>80</x>
       <y>0</y>
-      <width>31</width>
-      <height>31</height>
+      <width>41</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="text">
@@ -89,14 +146,14 @@
    <widget class="QPushButton" name="reset_zoom">
     <property name="geometry">
      <rect>
-      <x>90</x>
+      <x>120</x>
       <y>0</y>
-      <width>89</width>
-      <height>31</height>
+      <width>41</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="text">
-     <string>Reset Zoom</string>
+     <string/>
     </property>
    </widget>
   </widget>
@@ -117,22 +174,124 @@
     <addaction name="actionSave"/>
     <addaction name="actionExit"/>
    </widget>
+   <widget class="QMenu" name="menuShow_As">
+    <property name="title">
+     <string>Show by</string>
+    </property>
+    <addaction name="actionThickness_of_edge"/>
+    <addaction name="actionGradient_of_edge"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <widget class="QMenu" name="menuStatistics">
+     <property name="title">
+      <string>Statistics</string>
+     </property>
+     <widget class="QMenu" name="menuBar">
+      <property name="title">
+       <string>Bar</string>
+      </property>
+      <addaction name="actionVertex_Label"/>
+      <addaction name="actionVertex_Country"/>
+      <addaction name="actionEdge_Link_Speed_Raw"/>
+      <addaction name="actionEdge_Weight"/>
+      <addaction name="actionEdge_Key"/>
+      <addaction name="actionEdge_Label"/>
+     </widget>
+     <addaction name="menuBar"/>
+     <addaction name="actionPie_Chart"/>
+    </widget>
+    <addaction name="menuStatistics"/>
+    <addaction name="actionAvailability"/>
+    <addaction name="actionRevert"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuShow_As"/>
+   <addaction name="menuView"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionOpen">
+   <property name="icon">
+    <iconset>
+     <normaloff>../../../Pelfusion-Flat-Folder-Open-Folder.ico</normaloff>../../../Pelfusion-Flat-Folder-Open-Folder.ico</iconset>
+   </property>
    <property name="text">
-    <string>Open Ctrl + O</string>
+    <string>Open</string>
    </property>
   </action>
   <action name="actionSave">
+   <property name="icon">
+    <iconset>
+     <normaloff>../../../icons8-save-64.png</normaloff>../../../icons8-save-64.png</iconset>
+   </property>
    <property name="text">
-    <string>Save Ctrl + S</string>
+    <string>Save</string>
    </property>
   </action>
   <action name="actionExit">
+   <property name="icon">
+    <iconset>
+     <normaloff>../../../icons8-close-window-100.png</normaloff>../../../icons8-close-window-100.png</iconset>
+   </property>
    <property name="text">
     <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionPie_Chart">
+   <property name="text">
+    <string>Pie Chart</string>
+   </property>
+  </action>
+  <action name="actionVertex_Label">
+   <property name="text">
+    <string>Vertex Label</string>
+   </property>
+  </action>
+  <action name="actionVertex_Country">
+   <property name="text">
+    <string>Vertex Country</string>
+   </property>
+  </action>
+  <action name="actionEdge_Link_Speed_Raw">
+   <property name="text">
+    <string>Edge Link Speed Raw</string>
+   </property>
+  </action>
+  <action name="actionEdge_Weight">
+   <property name="text">
+    <string>Edge Weight</string>
+   </property>
+  </action>
+  <action name="actionEdge_Key">
+   <property name="text">
+    <string>Edge Key</string>
+   </property>
+  </action>
+  <action name="actionEdge_Label">
+   <property name="text">
+    <string>Edge Label</string>
+   </property>
+  </action>
+  <action name="actionAvailability">
+   <property name="text">
+    <string>Availability</string>
+   </property>
+  </action>
+  <action name="actionRevert">
+   <property name="text">
+    <string>Revert</string>
+   </property>
+  </action>
+  <action name="actionThickness_of_edge">
+   <property name="text">
+    <string>Thickness of edge</string>
+   </property>
+  </action>
+  <action name="actionGradient_of_edge">
+   <property name="text">
+    <string>Gradient of edge</string>
    </property>
   </action>
  </widget>

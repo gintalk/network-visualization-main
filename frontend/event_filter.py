@@ -18,8 +18,8 @@ class EventFilter(QGraphicsItem):
             item.mouseMoveEvent(event)
         elif event_type == 186:             # mouse press
             item.mousePressEvent(event)
-        elif event_type == 187:             # mouse release
-            print('mouse release')
+        # elif event_type == 187:             # mouse release
+            # print('mouse release')
 
         return True
 

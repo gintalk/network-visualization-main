@@ -29,8 +29,10 @@ class MainView(QGraphicsView):
 
     def update_view(self):
         self.scene = MainScene(self)
+        self.main_window.bind_buttons()
         self.setScene(self.scene)
         self.scene.display()
+
 
     def wheelEvent(self, event):
         old_cursor_pos = self.mapToScene(event.pos())
@@ -49,6 +51,7 @@ class MainView(QGraphicsView):
 
         self.setDragMode(self.drag_mode_hint())
 
+
     def keyPressEvent(self, event):
         # print(event.key())
         if event.key() == Qt.Key_PageUp:
@@ -61,8 +64,10 @@ class MainView(QGraphicsView):
             self.rotate_anti_clockwise()
         elif event.key() == Qt.Key_Right:
             self.rotate_clockwise()
-        # elif event.key() == Qt.Key_R:
-        #     self.main_window.settings()
+        elif event.key() == Qt.Key_R:
+            self.scene.display_edges_by_gradient()
+        elif event.key() == Qt.Key_T:
+            self.scene.display_edges_by_thickness()
 
         self.setDragMode(self.drag_mode_hint())
 
