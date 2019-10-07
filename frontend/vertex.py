@@ -46,7 +46,6 @@ class MainVertex(QGraphicsEllipseItem):
         [line.stick() for line in self.lines]
 
         self.parent.parent.main_window.display_vertex(self.vertex)
-
     def mouseReleaseEvent(self, event):
         pass
 

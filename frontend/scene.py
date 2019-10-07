@@ -197,6 +197,16 @@ class MainScene(QGraphicsScene):
             line._pen = line_pen
             n += 1
 
+    def change_color_all_node(self ,the_color):
+        for edge in self.graph_to_display.es:
+            line = self.lines[edge.index]
+            line.edge['edge_color'] = the_color
+            line_pen = QPen(line.edge['edge_color'])
+            line_pen.setWidthF(line.edge['edge_width'])
+            line.setPen(line_pen)
+            line._pen = line_pen
+
+
 
     def highlight_edges(self, edge_path):
         for edge_id in edge_path:

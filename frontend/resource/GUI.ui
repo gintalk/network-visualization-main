@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1260</width>
-    <height>768</height>
+    <height>769</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,9 +17,9 @@
    <widget class="QWidget" name="centralwidget" native="true">
     <property name="geometry">
      <rect>
-      <x>-10</x>
-      <y>-5</y>
-      <width>1001</width>
+      <x>-390</x>
+      <y>-30</y>
+      <width>1191</width>
       <height>751</height>
      </rect>
     </property>
@@ -104,6 +104,36 @@
      </property>
     </item>
    </widget>
+   <widget class="QPushButton" name="color_mixer_button">
+    <property name="geometry">
+     <rect>
+      <x>1150</x>
+      <y>60</y>
+      <width>41</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset>
+      <normaloff>../../../icons8-color-wheel-16.png</normaloff>../../../icons8-color-wheel-16.png</iconset>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="color_change_node_button">
+    <property name="geometry">
+     <rect>
+      <x>1140</x>
+      <y>100</y>
+      <width>89</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Color_node</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -136,7 +166,7 @@
   <action name="actionOpen">
    <property name="icon">
     <iconset>
-     <normaloff>../../../Pelfusion-Flat-Folder-Open-Folder.ico</normaloff>../../../Pelfusion-Flat-Folder-Open-Folder.ico</iconset>
+     <normaloff>../../../../../Pelfusion-Flat-Folder-Open-Folder.ico</normaloff>../../../../../Pelfusion-Flat-Folder-Open-Folder.ico</iconset>
    </property>
    <property name="text">
     <string>Open</string>
@@ -145,7 +175,7 @@
   <action name="actionSave">
    <property name="icon">
     <iconset>
-     <normaloff>../../../icons8-save-64.png</normaloff>../../../icons8-save-64.png</iconset>
+     <normaloff>../../../../../icons8-save-64.png</normaloff>../../../../../icons8-save-64.png</iconset>
    </property>
    <property name="text">
     <string>Save</string>
@@ -154,7 +184,7 @@
   <action name="actionExit">
    <property name="icon">
     <iconset>
-     <normaloff>../../../icons8-close-window-100.png</normaloff>../../../icons8-close-window-100.png</iconset>
+     <normaloff>../../../../../icons8-close-window-100.png</normaloff>../../../../../icons8-close-window-100.png</iconset>
    </property>
    <property name="text">
     <string>Exit</string>
