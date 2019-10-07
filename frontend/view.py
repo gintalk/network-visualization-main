@@ -7,7 +7,9 @@ from frontend.scene import MainScene
 
 class MainView(QGraphicsView):
     ZOOM_IN_FACTOR = 1.1
+    ZOOM_IN_LIMIT = 20
     ZOOM_OUT_FACTOR = 0.9
+    ZOOM_OUT_LIMIT = -4
 
     SETTINGS = {
         'background_color': 'light_gray',
@@ -27,12 +29,13 @@ class MainView(QGraphicsView):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
+        self._zoom = 0
+
     def update_view(self):
         self.scene = MainScene(self)
         self.main_window.bind_buttons()
         self.setScene(self.scene)
         self.scene.display()
-
 
     def wheelEvent(self, event):
         old_cursor_pos = self.mapToScene(event.pos())
@@ -48,9 +51,6 @@ class MainView(QGraphicsView):
         new_cursor_pos = self.mapToScene(event.pos())
         delta = new_cursor_pos - old_cursor_pos
         self.translate(delta.x(), delta.y())
-
-        self.setDragMode(self.drag_mode_hint())
-
 
     def keyPressEvent(self, event):
         # print(event.key())
@@ -69,27 +69,34 @@ class MainView(QGraphicsView):
         elif event.key() == Qt.Key_T:
             self.scene.display_edges_by_thickness()
 
-        self.setDragMode(self.drag_mode_hint())
-
     def zoom_in(self):
-        self.scale(self.ZOOM_IN_FACTOR, self.ZOOM_IN_FACTOR)
+        if self._zoom <= self.ZOOM_IN_LIMIT:
+            self.scale(self.ZOOM_IN_FACTOR, self.ZOOM_IN_FACTOR)
+            self.setDragMode(self.drag_mode_hint())
+            self._zoom += 1
 
     def zoom_out(self):
-        self.scale(self.ZOOM_OUT_FACTOR, self.ZOOM_OUT_FACTOR)
+        if self._zoom >= self.ZOOM_OUT_LIMIT:
+            self.scale(self.ZOOM_OUT_FACTOR, self.ZOOM_OUT_FACTOR)
+            self.setDragMode(self.drag_mode_hint())
+            self._zoom -= 1
 
     def rotate_clockwise(self):
         self.rotate(1)
+        self.setDragMode(self.drag_mode_hint())
 
     def rotate_anti_clockwise(self):
         self.rotate(-1)
+        self.setDragMode(self.drag_mode_hint())
 
     def reset_view(self):
         self.setTransform(QTransform())
+        self._zoom = 0
 
     def drag_mode_hint(self):
-        if(
-            self.verticalScrollBar().value() != 0 or
-            self.horizontalScrollBar().value() != 0
+        if (
+                self.verticalScrollBar().value() != 0 or
+                self.horizontalScrollBar().value() != 0
         ):
             return QGraphicsView.ScrollHandDrag
         else:

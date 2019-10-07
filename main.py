@@ -1,9 +1,8 @@
 import numpy as np
 from PyQt5 import uic
 from PyQt5.QtGui import QIcon, QKeySequence
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QFileDialog, QMessageBox, QAction, QDialog, \
-    QShortcut
-from PyQt5.QtWidgets import QPushButton, QComboBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QFileDialog, QMessageBox, QAction,\
+    QDialog, QShortcut, QPushButton, QComboBox
 from igraph import *
 
 from backend.algorithm import get_shortest_paths
@@ -56,7 +55,7 @@ class MainWindow(QMainWindow):
 
         self.info_layout = self.findChild(QGridLayout, 'infolayout')
 
-        self.button_shortest_path = self.findChild(QWidget, 'shortest_path') #pushButton1
+        self.button_shortest_path = self.findChild(QWidget, 'shortest_path')  # pushButton1
         self.button_shortest_path.setToolTip("Shortest Path")
         self.button_shortest_path.setIcon(QIcon('frontend/resource/path_32.png'))
         self.button_shortest_path.clicked.connect(self.open_input_window)
@@ -85,8 +84,6 @@ class MainWindow(QMainWindow):
 
         self.attribute = self.combobox_button.currentText()
 
-
-
         # Pull it up
         self.set_up(graph=self.DEFAULT_GRAPH)
 
@@ -101,8 +98,6 @@ class MainWindow(QMainWindow):
 
         self.gradient_button = self.findChild(QWidget, 'drawgradient_button')
         self.gradient_button.clicked.connect(self.view.scene.display_edges_by_gradient)
-
-
 
         # def save_attribute(self):line_pen = QPen(self.COLORS[edge['edge_color']])
         #     comboText = self.'combobox'self.view.scene.display
@@ -310,17 +305,15 @@ class MainWindow(QMainWindow):
         self.parent.is_shortest_path_mode = False
         self.parent.show
 
-
     def closeWindow_ok(self):
         # Check if Source value or Destination Value is None ?
         # If 1 of them is none ,
 
-        self.sp_edge_ids = get_shortest_paths(self.parent.graph,self.source_node,self.destination_node)
+        self.sp_edge_ids = get_shortest_paths(self.parent.graph, self.source_node, self.destination_node)
         self.parent.highlight_path(self.sp_edge_ids[0])
         # self.parent.is_shortest_path_mode = False
         self.hide()
         self.parent.show
-
 
     # View -> Statistic -> Bar ->  Edge Weight
     def display_edge_weight_bar(self):
@@ -354,8 +347,8 @@ class MainWindow(QMainWindow):
         edge_info = EdgeInfo(edge, self)
         self.info_layout.addWidget(edge_info)
 
-    #pop data bar, data in list, try g.es['label']
-    #stackoverflow.com/questions/940555/pyqt-sending-parameter-to-slot-when-connecting-to-a-signal
+    # pop data bar, data in list, try g.es['label']
+    # stackoverflow.com/questions/940555/pyqt-sending-parameter-to-slot-when-connecting-to-a-signal
     def popupBar(self, data):
         bar = DataBar(data)
         bar.show()
@@ -376,6 +369,8 @@ class MainWindow(QMainWindow):
             self.add_vertex_button.setText("Enter add vertex mode")
 
         # INPUT
+
+
 class Input(QDialog):
     def __init__(self, parent=None):
         super(Input, self).__init__()
