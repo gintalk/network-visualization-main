@@ -1,6 +1,6 @@
 from PyQt5 import uic
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QFileDialog, QMessageBox, QAction , QDialog
-from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QFileDialog, QMessageBox, QAction , QDialog,QShortcut
+from PyQt5.QtGui import QIcon,QKeySequence
 from igraph import *
 
 from frontend.databar import DataBar
@@ -53,10 +53,25 @@ class MainWindow(QMainWindow):
 
         self.info_layout = self.findChild(QGridLayout, 'infolayout')
 
-        self.button = self.findChild(QWidget, 'pushButton')
+        self.button = self.findChild(QWidget, 'shortest_path') #pushButton1
         self.button.setToolTip("Shortest Path")
         self.button.setIcon(QIcon('frontend/resource/path_32.png'))
         self.button.clicked.connect(self.open_input_window)
+
+        self.button2 = self.findChild(QWidget, 'zoom_in')
+        self.button2.setToolTip("Zoom In")
+        self.button2.setIcon(QIcon('frontend/resource/zoom_in.png'))
+        self.button2.clicked.connect(self.zoom_in_button)
+
+        self.button3 = self.findChild(QWidget, 'zoom_out')
+        self.button3.setToolTip("Zoom Out")
+        self.button3.setIcon(QIcon('frontend/resource/zoom_out.png'))
+        self.button3.clicked.connect(self.zoom_out_button)
+
+        self.button4 = self.findChild(QWidget, 'reset_zoom')
+        self.button4.setToolTip("Reset Zoom")
+        self.button4.setIcon(QIcon('frontend/resource/zoom_out.png'))
+        self.button4.clicked.connect(self.reset_zoom_button)
 
         self.input_page = Input(self)
 
@@ -72,6 +87,15 @@ class MainWindow(QMainWindow):
         self.is_shortest_path_mode = True
         self.input_page.show()
         # self.hide()
+
+    def zoom_in_button(self):
+        self.view.zoom_in()
+
+    def zoom_out_button(self):
+        self.view.zoom_out()
+
+    def reset_zoom_button(self):
+        self.view.reset_view()
 
     def set_up(self, graph=None, layout=None, cluster=None):
         if graph is not None:
@@ -115,8 +139,7 @@ class MainWindow(QMainWindow):
         self.view.settings(kwargs)
 
     def show_vertex_id(self, vertex):
-        # self.selected_nodes.append(vertex)
-        # input_page = Input()
+
         if self.is_shortest_path_mode is True and self.is_source is True:
             self.input_page.source_node = vertex.index
             self.input_page.source.setText(str(vertex.index))
@@ -126,18 +149,7 @@ class MainWindow(QMainWindow):
             # print(self.input_page.destination_node)
             self.input_page.destination.setText(str(vertex.index))
             self.input_page.show()
-    # def get_2_vertex_id(self):
-    #     #selected nodes length
-    #     snl = len(self.selectedNodes)
-    #     print(snl)
-    #     if snl == 0 or snl > 2:
-    #         self.selectedNodes = []
-    #     elif snl == 2:
-    #         sp_edge_ids = get_shortest_paths(self.graph,self.selectedNodes[0],self.selectedNodes[1])
-    #         self.highlight_path(sp_edge_ids[0])
-    #         self.selectedNodes = []
 
-    # To see shortest path, feed it a list of edges on the path
     def highlight_path(self, edge_path):
         self.view.highlight_path(edge_path)
 
@@ -149,10 +161,15 @@ class MainWindow(QMainWindow):
         # File -> Open
         open_button = self.findChild(QAction, 'actionOpen')
         open_button.triggered.connect(self.open_file_dialog)
+        open_shortcut = QShortcut(QKeySequence(self.tr("Ctrl+O", "File|Open")), self)
+        open_shortcut.activated.connect(self.open_file_dialog)
+
 
         # File -> Save
         save_button = self.findChild(QAction, 'actionSave')
         save_button.triggered.connect(self.save_file_dialog)
+        save_shortcut = QShortcut(QKeySequence(self.tr("Ctrl+S", "File|Save")), self)
+        save_shortcut.activated.connect(self.save_file_dialog)
 
         # File -> Exit
         close_button = self.findChild(QAction, 'actionExit')
@@ -236,7 +253,9 @@ class Input(QDialog):
         self.destination_button.clicked.connect(self.picking_destination)
 
         self.source = self.findChild(QWidget, 'lineEdit')
+        self.source.setReadOnly(True)
         self.destination = self.findChild(QWidget, 'lineEdit_2')
+        self.destination.setReadOnly(True)
 
     def picking_source(self):
         self.hide()

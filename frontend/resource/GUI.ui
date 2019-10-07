@@ -41,7 +41,7 @@
     </property>
     <layout class="QGridLayout" name="infolayout"/>
    </widget>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="shortest_path">
     <property name="geometry">
      <rect>
       <x>0</x>
@@ -58,6 +58,45 @@
       <width>16</width>
       <height>16</height>
      </size>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="zoom_in">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>0</y>
+      <width>31</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="zoom_out">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>0</y>
+      <width>31</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="reset_zoom">
+    <property name="geometry">
+     <rect>
+      <x>90</x>
+      <y>0</y>
+      <width>89</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Reset Zoom</string>
     </property>
    </widget>
   </widget>
@@ -83,12 +122,12 @@
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionOpen">
    <property name="text">
-    <string>Open</string>
+    <string>Open Ctrl + O</string>
    </property>
   </action>
   <action name="actionSave">
    <property name="text">
-    <string>Save</string>
+    <string>Save Ctrl + S</string>
    </property>
   </action>
   <action name="actionExit">
