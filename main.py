@@ -88,6 +88,10 @@ class MainWindow(QMainWindow):
         self.button4.clicked.connect(self.reset_zoom_button)
 
         self.input_page = Input(self)
+        self.combobox_button = self.findChild(QComboBox, 'comboBox')
+        self.combobox_button.activated.connect(self.get_attribute)
+
+        self.attribute = self.combobox_button.currentText()
 
     def bind_buttons(self):
         self.thickness_button = self.findChild(QWidget, 'drawthickness_button')
@@ -96,21 +100,13 @@ class MainWindow(QMainWindow):
         self.gradient_button = self.findChild(QWidget, 'drawgradient_button')
         self.gradient_button.clicked.connect(self.view.scene.display_edges_by_gradient)
 
-        self.combobox_button = self.findChild(QComboBox, 'comboBox')
-        self.combobox_button.activated.connect(self.get_attribute)
+
 
     # def save_attribute(self):line_pen = QPen(self.COLORS[edge['edge_color']])
     #     comboText = self.'combobox'self.view.scene.display
 
     def get_attribute(self):
-        self.attribute = self.combobox_button.currentText()
-        # print(dir(self.graph.es.summary))
-        # if not hasattr(self.graph.es.summary, attribute):
-        #     # print(hasattr(self.graph, attribute))
-        #     # self.about_message()
-        #     print(attribute)
-        #
-        #     # attribute = 'LinkSpeedRaw'
+        # self.attribute = self.combobox_button.currentText()
         if not self.search_attribute():
             QMessageBox.about(self, 'Sorry bruh' ,'This attribute is not available for this graph')
         else:
