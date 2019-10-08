@@ -1,14 +1,16 @@
-from PyQt5 import uic
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QFileDialog, QMessageBox, QAction, \
-    QPushButton
-from igraph import *
 import numpy as np
+from PyQt5 import uic
+from PyQt5.QtGui import QIcon, QKeySequence
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QFileDialog, QMessageBox, QAction, \
+    QDialog, QShortcut
+from PyQt5.QtWidgets import QPushButton, QComboBox
+from igraph import *
 
-from frontend.databar import DataBar
-from frontend.view import MainView
 from backend.algorithm import get_shortest_paths
-from frontend.vertexinfo import VertexInfo
+from frontend.databar import DataBar
 from frontend.edgeinfo import EdgeInfo
+from frontend.vertexinfo import VertexInfo
+from frontend.view import MainView
 
 
 class MainWindow(QMainWindow):
@@ -30,10 +32,19 @@ class MainWindow(QMainWindow):
         'Random 3D': 'random3d', 'Reingold Tilford': 'rt',
         'Reingold Tilford Circular': 'rt_circular', 'Sphere': 'sphere'
     }
+
+    file_name = 'frontend/resource/NREN.graphml'
+
     selectedNodes = []
 
     ADD_VERTEX_STATE = False
-    ADD_EDGE_STATE = False
+
+    # MODE FOR SHORTEST PATH
+    is_shortest_path_mode = False
+    is_source = True
+
+    # For gradient and thickness
+    attribute = 'LinkSpeedRaw'
 
     def __init__(self):
         super().__init__()
@@ -52,27 +63,69 @@ class MainWindow(QMainWindow):
 
         self.info_layout = self.findChild(QGridLayout, 'infolayout')
 
-        self.shortest_path_button = self.findChild(QWidget, 'shortestpath')
-        # self.shortest_path_button.clicked.connect(self.getText)
-        self.shortest_path_button.clicked.connect(self.get_2_vertex_id)
+        # Pull it up
+        self.set_up(graph=self.DEFAULT_GRAPH)
 
-        self.add_vertex_button = self.findChild(QPushButton, 'addvertex')
-        self.add_vertex_button.clicked.connect(lambda: self.add_vertex())
-
-        self.add_edge_button = self.findChild(QPushButton, 'addedge')
-        self.add_edge_button.clicked.connect(lambda: self.add_edge())
+        # DO NOT REMOVE THIS LINE
+        self.view.update_view()
 
         # Bind action into menu button
         self.menu_action()
 
-        # Pull it up
-        self.set_up(graph=self.DEFAULT_GRAPH)
-        self.view.update_view()
+        # Icon buttons
+        self.button_shortest_path = self.findChild(QWidget, 'shortest_path')
+        self.button_shortest_path.setToolTip("Shortest Path")
+        self.button_shortest_path.setIcon(QIcon('frontend/resource/path_32.png'))
+        self.button_shortest_path.clicked.connect(self.open_input_window)
 
-        # Test: getting shortest path between node 0 and node 1120. Note that the function inside returns a list within
-        # a list, hence in order to get the actual edge list we need to get the element at 0, which is a list of edges
-        # on the path
-        # self.highlight_path(get_shortest_paths(self.graph, 0, 1120)[0])
+        self.button_zoom_in = self.findChild(QWidget, 'zoom_in')
+        self.button_zoom_in.setToolTip("Zoom In")
+        self.button_zoom_in.setIcon(QIcon('frontend/resource/zoom_in.png'))
+        self.button_zoom_in.clicked.connect(self.zoom_in_button)
+
+        self.button_zoom_out = self.findChild(QWidget, 'zoom_out')
+        self.button_zoom_out.setToolTip("Zoom Out")
+        self.button_zoom_out.setIcon(QIcon('frontend/resource/zoom_out.png'))
+        self.button_zoom_out.clicked.connect(self.zoom_out_button)
+
+        self.button_reset_zoom = self.findChild(QWidget, 'reset_zoom')
+        self.button_reset_zoom.setToolTip("Reset Zoom")
+        self.button_reset_zoom.setIcon(QIcon('frontend/resource/zoom_out.png'))
+        self.button_reset_zoom.clicked.connect(self.reset_zoom_button)
+
+        self.button_add_vertex = self.findChild(QWidget, 'addvertex')
+        self.button_add_vertex.setToolTip("Add Vertex")
+        self.button_add_vertex.clicked.connect(self.add_vertex)
+
+        self.input_page = Input(self)
+
+        self.gradient_thickness_window = GradientThicknessWindow(self)
+
+    # Check if self.attribute is an attribute in the graph or not
+    def search_attribute(self):
+        dictionary = self.graph.es[0].attributes()
+
+        for key, value in dictionary.items():
+            if str(key) == self.attribute:
+                return True
+
+        return False
+
+    def open_input_window(self):
+        self.is_shortest_path_mode = True
+        self.input_page.show()
+
+    def open_gradient_thickness_window(self):
+        self.gradient_thickness_window.show()
+
+    def zoom_in_button(self):
+        self.view.zoom_in()
+
+    def zoom_out_button(self):
+        self.view.zoom_out()
+
+    def reset_zoom_button(self):
+        self.view.reset_view()
 
     def set_up(self, graph=None, layout=None, cluster=None):
         if graph is not None:
@@ -92,9 +145,6 @@ class MainWindow(QMainWindow):
 
         np.random.seed(0)
         self.graph.vs["availability"] = np.random.randint(2, size=len(self.graph.vs))
-        self.graph.vs["attribute"] = [None] * len(self.graph.vs)
-        self.graph.vs["max"] = sys.maxsize * np.ones(len(self.graph.vs))
-        # self.graph.vs["min"] = (-sys.maxint - 1) * np.ones(len(self.graph.vs))
 
         self.view.update()
 
@@ -113,20 +163,16 @@ class MainWindow(QMainWindow):
         self.view.settings(kwargs)
 
     def show_vertex_id(self, vertex):
-        self.selectedNodes.append(vertex)
+        if self.is_shortest_path_mode is True and self.is_source is True:
+            self.input_page.source_node = vertex.index
+            self.input_page.source.setText(str(vertex.index))
+            self.input_page.show()
+        elif self.is_shortest_path_mode is True and self.is_source is False:
+            self.input_page.destination_node = vertex.index
+            # print(self.input_page.destination_node)
+            self.input_page.destination.setText(str(vertex.index))
+            self.input_page.show()
 
-    def get_2_vertex_id(self):
-        #selected nodes length
-        snl = len(self.selectedNodes)
-        # print(snl)
-        if snl == 0 or snl > 2:
-            self.selectedNodes = []
-        elif snl == 2:
-            sp_edge_ids = get_shortest_paths(self.graph,self.selectedNodes[0],self.selectedNodes[1])
-            self.highlight_path(sp_edge_ids[0])
-            self.selectedNodes = []
-
-    # To see shortest path, feed it a list of edges on the path
     def highlight_path(self, edge_path):
         self.view.highlight_path(edge_path)
 
@@ -137,40 +183,65 @@ class MainWindow(QMainWindow):
     def menu_action(self):
         # File -> Open
         open_button = self.findChild(QAction, 'actionOpen')
-        open_button.triggered.connect(lambda: self.open_file_dialog())
+        open_button.triggered.connect(self.open_file_dialog)
+        open_shortcut = QShortcut(QKeySequence(self.tr("Ctrl+O", "File|Open")), self)
+        open_shortcut.activated.connect(self.open_file_dialog)
 
         # File -> Save
         save_button = self.findChild(QAction, 'actionSave')
-        save_button.triggered.connect(lambda: self.save_file_dialog())
+        save_button.triggered.connect(self.save_file_dialog)
+        save_shortcut = QShortcut(QKeySequence(self.tr("Ctrl+S", "File|Save")), self)
+        save_shortcut.activated.connect(self.save_file_dialog)
 
         # File -> Exit
         close_button = self.findChild(QAction, 'actionExit')
         close_button.triggered.connect(self.close)
 
-        # Layout -> Default
-        default_button = self.findChild(QAction, 'actionDefault')
-        default_button.triggered.connect(lambda: self.set_up(graph=self.DEFAULT_GRAPH))
+        # View -> Statistics -> Bar -> Vertex Label
+        vertex_label_bar_button = self.findChild(QAction, 'actionVertex_Label')
+        vertex_label_bar_button.triggered.connect(self.display_vertex_label_bar)
 
-        # Layout -> Circle
-        circle_button = self.findChild(QAction, 'actionCircle')
-        circle_button.triggered.connect(lambda: self.set_up(graph=self.DEFAULT_GRAPH, layout='Circle'))
+        # View -> Statistics -> Bar -> Vertex Country
+        vertex_country_bar_button = self.findChild(QAction, 'actionVertex_Country')
+        vertex_country_bar_button.triggered.connect(self.display_vertex_country_bar)
 
-        # Layout -> Distributed Recursive
-        drl_button = self.findChild(QAction, 'actionDistributed_Recursive')
-        drl_button.triggered.connect(lambda: self.set_up(graph=self.DEFAULT_GRAPH, layout='Distributed Recursive Layout'))
+        # View -> Statistics -> Bar -> Edge Link Speed Raw
+        edge_linkspeedraw_bar_button = self.findChild(QAction, 'actionEdge_Link_Speed_Raw')
+        edge_linkspeedraw_bar_button.triggered.connect(self.display_edge_linkspeedraw_bar)
+
+        # View -> Statistics -> Bar -> Edge Weight
+        edge_weight_bar_button = self.findChild(QAction, 'actionEdge_Weight')
+        edge_weight_bar_button.triggered.connect(self.display_edge_weight_bar)
+
+        # View -> Statistics -> Bar -> Edge Label
+        edge_label_bar_button = self.findChild(QAction, 'actionEdge_Label')
+        edge_label_bar_button.triggered.connect(self.display_edge_label_bar)
+
+        # View -> Statistics -> Bar -> Vertex Label
+        edge_key_bar_button = self.findChild(QAction, 'actionEdge_Key')
+        edge_key_bar_button.triggered.connect(self.display_edge_key_bar)
+
+        # View -> Gradient and Thickness
+        gradient_thickness_button = self.findChild(QAction, 'actionGradient_and_Thickness')
+        gradient_thickness_button.triggered.connect(self.open_gradient_thickness_window)
+
+        # View -> Revert View
+        revert_button = self.findChild(QAction, 'actionRevert')
+        revert_button.triggered.connect(self.revert_view)
 
     # File -> Open
     def open_file_dialog(self):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        file_name, _ = QFileDialog.getOpenFileName(
+        self.file_name, _ = QFileDialog.getOpenFileName(
             self, "Open", "",
             "All Files (*);;GraphML Files (*.graphml)", options=options
         )
-        if file_name:
-            self.set_graph(file_name)
+        if self.file_name:
+            self.set_graph(self.file_name)
             self.clear_layout(self.info_layout)
             self.view.update_view()
+            self.gradient_thickness_window = GradientThicknessWindow(self)
 
     # File -> Save
     def save_file_dialog(self):
@@ -185,7 +256,7 @@ class MainWindow(QMainWindow):
                 file_name = file_name + ".graphml"
             self.save_graph(file_name)
 
-    # File -> Exit and the top right 'x' button
+    # File -> Exit
     def closeEvent(self, event):
         reply = QMessageBox.question(self, '', 'Are you sure want to exit the program?',
                                      QMessageBox.Yes, QMessageBox.No)
@@ -193,6 +264,57 @@ class MainWindow(QMainWindow):
             event.accept()
         else:
             event.ignore()
+
+    # View -> Statistic -> Bar -> Vertex Label
+    def display_vertex_label_bar(self):
+        data = self.graph.vs['label']
+        self.popup_bar(data)
+
+    # View -> Statistic -> Bar -> Vertex Label
+    def display_vertex_country_bar(self):
+        data = self.graph.vs['Country']
+        self.popup_bar(data)
+
+    # View -> Statistic -> Bar -> Edge Link Speed Raw
+    def display_edge_linkspeedraw_bar(self):
+        data = self.graph.es['LinkSpeedRaw']
+        self.popup_bar(data)
+
+    def picking_source(self):
+        self.hide()
+        self.parent.is_source = True
+
+    def picking_destination(self):
+        self.hide()
+        self.parent.is_source = False
+
+    def closeWindow_cancel(self):
+        self.hide()
+        self.parent.is_shortest_path_mode = False
+
+    def closeWindow_ok(self):
+        # Check if Source value or Destination Value is None ?
+        # If 1 of them is none ,
+
+        self.sp_edge_ids = get_shortest_paths(self.parent.graph,self.source_node,self.destination_node)
+        self.parent.highlight_path(self.sp_edge_ids[0])
+        # self.parent.is_shortest_path_mode = False
+        self.hide()
+
+    # View -> Statistic -> Bar ->  Edge Weight
+    def display_edge_weight_bar(self):
+        data = self.graph.es['weight']
+        self.popup_bar(data)
+
+    # View -> Statistic -> Bar ->  Edge Label
+    def display_edge_label_bar(self):
+        data = self.graph.es['label']
+        self.popup_bar(data)
+
+    # View -> Statistic -> Bar ->  Edge LinkSpeedRaw
+    def display_edge_key_bar(self):
+        data = self.graph.es['key']
+        self.popup_bar(data)
 
     @staticmethod
     def clear_layout(layout):
@@ -213,29 +335,92 @@ class MainWindow(QMainWindow):
 
     # pop data bar, data in list, try g.es['label']
     # stackoverflow.com/questions/940555/pyqt-sending-parameter-to-slot-when-connecting-to-a-signal
-    def popupBar(self, data):
+    def popup_bar(self, data):
         bar = DataBar(data)
         bar.show()
 
-    def add_vertex(self):
-        if self.ADD_VERTEX_STATE == False:
-            self.ADD_VERTEX_STATE = True
-            self.add_vertex_button.setText("Exit Add Vertex Mode")
-            self.ADD_EDGE_STATE = False
-            self.add_edge_button.setText("Enter Add Edge Mode")
+    def revert_view(self):
+        if self.file_name:
+            self.set_graph(self.file_name)
         else:
-            self.ADD_VERTEX_STATE = False
-            self.add_vertex_button.setText("Enter Add Vertex Mode")
+            self.set_graph(self.DEFAULT_GRAPH)
+        self.view.update_view()
+        self.gradient_thickness_window = GradientThicknessWindow(self)
+        self.attribute = 'LinkSpeedRaw'
 
-    def add_edge(self):
-        if self.ADD_EDGE_STATE == False:
-            self.ADD_EDGE_STATE = True
-            self.add_edge_button.setText("Exit Add Edge Mode")
-            self.ADD_VERTEX_STATE = False
-            self.add_vertex_button.setText("Enter Add Vertex Mode")
-        else:
-            self.ADD_EDGE_STATE = False
-            self.add_edge_button.setText("Enter Add Edge Mode")
+    def add_vertex(self):
+        self.ADD_VERTEX_STATE = True
+
+
+# Input window for shortest path
+class Input(QDialog):
+    def __init__(self, parent=None):
+        super(Input, self).__init__()
+        self.parent = parent
+        uic.loadUi('frontend/resource/INPUT.ui', self)
+        self.setWindowTitle("Input")
+
+        self.source_node = 0
+        self.destination_node = 0
+
+        self.button = self.findChild(QWidget, 'buttonBox')
+        self.button.rejected.connect(self.closeWindow_cancel)
+        self.button.accepted.connect(self.closeWindow_ok)
+
+        self.source_button = self.findChild(QWidget, 'pushButton')
+        self.source_button.clicked.connect(self.picking_source)
+        self.destination_button = self.findChild(QWidget, 'pushButton_2')
+        self.destination_button.clicked.connect(self.picking_destination)
+
+        self.source = self.findChild(QWidget, 'lineEdit')
+        self.source.setReadOnly(True)
+        self.destination = self.findChild(QWidget, 'lineEdit_2')
+        self.destination.setReadOnly(True)
+
+    def picking_source(self):
+        self.hide()
+        self.parent.is_source = True
+
+    def picking_destination(self):
+        self.hide()
+        self.parent.is_source = False
+
+    def closeWindow_cancel(self):
+        self.hide()
+        self.parent.is_shortest_path_mode = False
+
+    def closeWindow_ok(self):
+        # Check if Source value or Destination Value is None ?
+        # If 1 of them is none ,
+
+        self.sp_edge_ids = get_shortest_paths(self.parent.graph, self.source_node, self.destination_node)
+        self.parent.highlight_path(self.sp_edge_ids[0])
+        # self.parent.is_shortest_path_mode = False
+        self.hide()
+
+
+# Window for gradient and thickness
+class GradientThicknessWindow(QDialog):
+    def __init__(self, parent):
+        super().__init__()
+        self.parent = parent
+        uic.loadUi('frontend/resource/GRATHIC.ui', self)
+        self.setWindowTitle("Gradient and Thickness")
+
+        self.gradient_button = self.findChild(QPushButton, 'drawgradient_button')
+        self.gradient_button.clicked.connect(self.parent.view.scene.display_edges_by_gradient)
+
+        self.thickness_button = self.findChild(QPushButton, 'drawthickness_button')
+        self.thickness_button.clicked.connect(self.parent.view.scene.display_edges_by_thickness)
+
+        self.combobox_button = self.findChild(QComboBox, 'comboBox')
+        self.combobox_button.activated.connect(self.selection_change)
+
+    def selection_change(self):
+        self.parent.attribute = self.combobox_button.currentText()
+        if not self.parent.search_attribute():
+            QMessageBox.about(self, 'Sorry', 'This attribute is not available for this graph')
+
 
 if __name__ == "__main__":
     app = QApplication([])

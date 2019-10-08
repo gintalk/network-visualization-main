@@ -1,3 +1,4 @@
+from __future__ import division
 from PyQt5.QtCore import *
 from PyQt5.QtGui import QPen, QColor, QBrush
 from PyQt5.QtWidgets import QGraphicsScene
@@ -57,6 +58,7 @@ class MainScene(QGraphicsScene):
 
     def init_edge_color_to_default(self, ):
         for edge in self.graph_to_display.es:
+            edge['edge_width'] = self.parent.SETTINGS['edge_width']
             edge['edge_color'] = self.parent.SETTINGS['edge_color']
 
     def set_background_color(self):
@@ -106,6 +108,12 @@ class MainScene(QGraphicsScene):
         if self.show_availability:
             availability_color_to_vertex()
 
+        for vertex in self.graph_to_display.vs:
+            # if vertex["attribute"] and vertex["min"] <= vertex[vertex["attribute"]] <= vertex["max"]:
+            #     self.vertex_to_display.append(vertex)
+            # else:
+            self.vertex_to_display.append(vertex)
+
         self.display_vertices()
         self.display_edges()
 
@@ -126,11 +134,60 @@ class MainScene(QGraphicsScene):
             point_a = self.points[edge.source]
             point_b = self.points[edge.target]
             line_pen = QPen(self.COLORS[edge['edge_color']])
-            line_pen.setWidth(self.parent.SETTINGS['edge_width'])
+            line_pen.setWidth(edge['edge_width'])
             line = MainEdge(edge, point_a, point_b, line_pen, self)
             self.addItem(line)
             self.lines.append(line)
             line.installSceneEventFilter(self.event_filter)
+
+    def scalling(self):
+        bandwidth = []
+        attribute = self.parent.main_window.attribute
+
+        for edge in self.graph_to_display.es:
+            bandwidth.append(edge[attribute])
+
+        max_value = max(bandwidth)
+        min_value = min(bandwidth)
+        max_min = max_value - min_value
+        for i in range(len(bandwidth)):
+            bandwidth[i] = (bandwidth[i] - min_value) / max_min
+
+        return bandwidth
+
+    # This is a more complete way of showing gradient in the edge
+    def display_edges_by_gradient(self):
+        if not self.parent.main_window.search_attribute():
+            return
+        bandwidth = self.scalling()
+        n = 0
+
+        # set the thickness of QPen according to the attribute value
+        for edge in self.graph_to_display.es:
+            line = self.lines[edge.index]
+            line.edge['edge_color'] = QColor(255 - bandwidth[n] * 255, 0, bandwidth[n] * 255)
+            line_pen = QPen(line.edge['edge_color'])
+            line_pen.setWidthF(line.edge['edge_width'])
+            line.setPen(line_pen)
+            line._pen = line_pen
+            n += 1
+
+    def display_edges_by_thickness(self):
+        if not self.parent.main_window.search_attribute():
+            return
+        bandwidth = self.scalling()
+        n = 0
+
+        # set the thickness of QPen according to the attribute value
+        for edge in self.graph_to_display.es:
+            line = self.lines[edge.index]
+            line.edge['edge_width'] = self.parent.SETTINGS['edge_width'] * bandwidth[n] * 2
+            # line_pen = QPen(self.COLORS[edge['edge_color']])
+            line_pen = QPen(QColor('black'))
+            line_pen.setWidthF(line.edge['edge_width'])
+            line.setPen(line_pen)
+            line._pen = line_pen
+            n += 1
 
     def highlight_edges(self, edge_path):
         for edge_id in edge_path:
@@ -149,14 +206,17 @@ class MainScene(QGraphicsScene):
         point.vertex.update_attributes(x=original_x, y=original_y, pos={'x': dilated_x, 'y': dilated_y})
 
     def set_availability(self, availability):
-        self.show_availability = availability
+        self.show_availability = True
+
+    def unset_availability(self, availability):
+        self.show_availability = False
 
     def mouseDoubleClickEvent(self, event):
-        if self.parent.main_window.ADD_VERTEX_STATE == True:
+        if self.parent.main_window.ADD_VERTEX_STATE:
             self.parent.main_window.graph = create_vertices(self.parent.main_window.graph, 1)
 
             self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['x'], \
-            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['y'] = \
+                self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['y'] = \
                 undilate(event.scenePos().x(), event.scenePos().y(), self.graph_center, self.scale_factor)
 
             self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['pos'] = \
@@ -171,3 +231,5 @@ class MainScene(QGraphicsScene):
             self.addItem(point)
             self.points.append(point)
             point.installSceneEventFilter(self.event_filter)
+
+            self.parent.main_window.ADD_VERTEX_STATE = False

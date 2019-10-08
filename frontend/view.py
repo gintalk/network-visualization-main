@@ -29,6 +29,7 @@ class MainView(QGraphicsView):
 
     def update_view(self):
         self.scene = MainScene(self)
+
         self.setScene(self.scene)
         self.scene.display()
 
@@ -61,8 +62,10 @@ class MainView(QGraphicsView):
             self.rotate_anti_clockwise()
         elif event.key() == Qt.Key_Right:
             self.rotate_clockwise()
-        # elif event.key() == Qt.Key_R:
-        #     self.main_window.settings()
+        elif event.key() == Qt.Key_R:
+            self.scene.display_edges_by_gradient()
+        elif event.key() == Qt.Key_T:
+            self.scene.display_edges_by_thickness()
 
         self.setDragMode(self.drag_mode_hint())
 

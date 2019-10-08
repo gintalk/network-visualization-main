@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1000</width>
-    <height>700</height>
+    <width>1260</width>
+    <height>768</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,48 +18,210 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>5</y>
-      <width>751</width>
-      <height>641</height>
+      <y>40</y>
+      <width>730</width>
+      <height>610</height>
      </rect>
     </property>
    </widget>
    <widget class="QWidget" name="gridLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>750</x>
-      <y>140</y>
-      <width>241</width>
-      <height>511</height>
+      <x>730</x>
+      <y>40</y>
+      <width>261</width>
+      <height>611</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="infolayout"/>
    </widget>
+   <widget class="QPushButton" name="shortest_path">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>40</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="zoom_in">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>0</y>
+      <width>40</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="zoom_out">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>0</y>
+      <width>40</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="reset_zoom">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>0</y>
+      <width>40</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
    <widget class="QPushButton" name="addvertex">
     <property name="geometry">
      <rect>
-      <x>760</x>
-      <y>30</y>
-      <width>181</width>
-      <height>31</height>
+      <x>160</x>
+      <y>0</y>
+      <width>40</width>
+      <height>40</height>
      </rect>
     </property>
     <property name="text">
-     <string>Enter Add Vertex Mode</string>
+     <string/>
     </property>
    </widget>
-   <widget class="QPushButton" name="addedge">
+   <widget class="QPushButton" name="add_edge">
     <property name="geometry">
      <rect>
-      <x>760</x>
-      <y>70</y>
-      <width>181</width>
-      <height>31</height>
+      <x>200</x>
+      <y>0</y>
+      <width>40</width>
+      <height>40</height>
      </rect>
     </property>
     <property name="text">
-     <string>Enter Add Edge Mode</string>
+     <string/>
     </property>
+   </widget>
+   <widget class="QComboBox" name="layout">
+    <property name="geometry">
+     <rect>
+      <x>840</x>
+      <y>0</y>
+      <width>150</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>Circle</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Distributed Recursive Layout</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Fruchterman Reingold</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Fruchterman Reingold 3D</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Kamada Kawai</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Kamada Kawai 3D</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Large Graph Layout</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Random</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Random 3D</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Reingold Tilford</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Reingold Tilford Circular</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Sphere</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QComboBox" name="cluster">
+    <property name="geometry">
+     <rect>
+      <x>670</x>
+      <y>0</y>
+      <width>150</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>Fastgreedy</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Infomap</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Label Propagation</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Multilevel</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Edge Betweenness</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Walktrap</string>
+     </property>
+    </item>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -67,7 +229,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1000</width>
+     <width>1260</width>
      <height>22</height>
     </rect>
    </property>
@@ -79,101 +241,127 @@
     <addaction name="actionSave"/>
     <addaction name="actionExit"/>
    </widget>
-   <widget class="QMenu" name="menuLayout">
+   <widget class="QMenu" name="menuView">
     <property name="title">
-     <string>Layout</string>
+     <string>View</string>
     </property>
-    <addaction name="actionDefault"/>
-    <addaction name="actionCircle"/>
-    <addaction name="actionDistributed_Recursive"/>
+    <widget class="QMenu" name="menuStatistics">
+     <property name="title">
+      <string>Statistics</string>
+     </property>
+     <widget class="QMenu" name="menuBar">
+      <property name="title">
+       <string>Bar</string>
+      </property>
+      <addaction name="actionVertex_Label"/>
+      <addaction name="actionVertex_Country"/>
+      <addaction name="actionEdge_Link_Speed_Raw"/>
+      <addaction name="actionEdge_Weight"/>
+      <addaction name="actionEdge_Key"/>
+      <addaction name="actionEdge_Label"/>
+     </widget>
+     <addaction name="menuBar"/>
+     <addaction name="actionPie_Chart"/>
+    </widget>
+    <addaction name="menuStatistics"/>
+    <addaction name="actionAvailability"/>
+    <addaction name="actionGradient_and_Thickness"/>
+    <addaction name="actionRevert"/>
    </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuLayout"/>
+   <addaction name="menuView"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionOpen">
+   <property name="icon">
+    <iconset>
+     <normaloff>../../../Pelfusion-Flat-Folder-Open-Folder.ico</normaloff>../../../Pelfusion-Flat-Folder-Open-Folder.ico</iconset>
+   </property>
    <property name="text">
     <string>Open</string>
    </property>
   </action>
   <action name="actionSave">
+   <property name="icon">
+    <iconset>
+     <normaloff>../../../icons8-save-64.png</normaloff>../../../icons8-save-64.png</iconset>
+   </property>
    <property name="text">
     <string>Save</string>
    </property>
   </action>
   <action name="actionExit">
+   <property name="icon">
+    <iconset>
+     <normaloff>../../../icons8-close-window-100.png</normaloff>../../../icons8-close-window-100.png</iconset>
+   </property>
    <property name="text">
     <string>Exit</string>
    </property>
   </action>
-  <action name="actionExportImage">
+  <action name="actionPie_Chart">
    <property name="text">
-    <string>Export Image</string>
+    <string>Pie Chart</string>
    </property>
   </action>
-  <action name="actionCircle">
+  <action name="actionVertex_Label">
    <property name="text">
-    <string>Circle</string>
+    <string>Vertex Label</string>
    </property>
   </action>
-  <action name="actionDistributed_Recursive">
+  <action name="actionVertex_Country">
    <property name="text">
-    <string>Distributed Recursive</string>
+    <string>Vertex Country</string>
    </property>
   </action>
-  <action name="actionFruchterman_Reingold">
+  <action name="actionEdge_Link_Speed_Raw">
    <property name="text">
-    <string>Fruchterman Reingold</string>
+    <string>Edge Link Speed Raw</string>
    </property>
   </action>
-  <action name="actionFruchterman_Reingold_3D">
+  <action name="actionEdge_Weight">
    <property name="text">
-    <string>Fruchterman Reingold 3D</string>
+    <string>Edge Weight</string>
    </property>
   </action>
-  <action name="actionKamada_Kawai">
+  <action name="actionEdge_Key">
    <property name="text">
-    <string>Kamada Kawai</string>
+    <string>Edge Key</string>
    </property>
   </action>
-  <action name="actionKamada_Kawai_3D">
+  <action name="actionEdge_Label">
    <property name="text">
-    <string>Kamada Kawai 3D</string>
+    <string>Edge Label</string>
    </property>
   </action>
-  <action name="actionLarge_Graph">
+  <action name="actionAvailability">
    <property name="text">
-    <string>Large Graph</string>
+    <string>Availability</string>
    </property>
   </action>
-  <action name="actionRandom">
+  <action name="actionRevert">
    <property name="text">
-    <string>Random</string>
+    <string>Revert</string>
    </property>
   </action>
-  <action name="actionRandom_3D">
+  <action name="actionThickness_of_edge">
    <property name="text">
-    <string>Random 3D</string>
+    <string>Thickness of edge</string>
    </property>
   </action>
-  <action name="actionReingold_Tilford">
+  <action name="actionGradient_of_edge">
    <property name="text">
-    <string>Reingold Tilford</string>
+    <string>Gradient of edge</string>
    </property>
   </action>
-  <action name="actionReingold_Tilford_Circular">
+  <action name="actionGradient_and_Thickness">
    <property name="text">
-    <string>Reingold Tilford Circular</string>
+    <string>Gradient and Thickness</string>
    </property>
   </action>
-  <action name="actionSphere">
+  <action name="actionThickness">
    <property name="text">
-    <string>Sphere</string>
-   </property>
-  </action>
-  <action name="actionDefault">
-   <property name="text">
-    <string>Default</string>
+    <string>Thickness</string>
    </property>
   </action>
  </widget>
