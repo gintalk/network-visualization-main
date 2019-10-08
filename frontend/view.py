@@ -108,14 +108,3 @@ class MainView(QGraphicsView):
 
         self.scene.highlight_edges(edge_path)
         self.scene.highlight_vertices(vertices_along_the_way)
-
-    def shortest_path_highlight(self,edge_path):
-        vertices_along_the_way = []
-        for i in range(0, len(edge_path)):
-            vertex_id = self.main_window.graph.es[edge_path[i]].source
-            vertices_along_the_way.append(vertex_id)
-        last_vertex_id = self.main_window.graph.es[edge_path[-1]].target
-        vertices_along_the_way.append(last_vertex_id)
-
-        self.scene.alternative_highlight(edge_path)
-        self.scene.highlight_vertices(vertices_along_the_way)
