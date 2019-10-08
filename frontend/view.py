@@ -66,6 +66,14 @@ class MainView(QGraphicsView):
             self.rotate_anti_clockwise()
         elif event.key() == Qt.Key_Right:
             self.rotate_clockwise()
+        elif event.key() == Qt.Key_D:
+            self.translate(-5, 0)
+        elif event.key() == Qt.Key_A:
+            self.translate(5, 0)
+        elif event.key() == Qt.Key_W:
+            self.translate(0, 5)
+        elif event.key() == Qt.Key_S:
+            self.translate(0, -5)
         elif event.key() == Qt.Key_R:
             self.scene.display_edges_by_gradient()
         elif event.key() == Qt.Key_T:
