@@ -29,10 +29,9 @@ class MainView(QGraphicsView):
 
     def update_view(self):
         self.scene = MainScene(self)
-        self.main_window.bind_buttons()
+
         self.setScene(self.scene)
         self.scene.display()
-
 
     def wheelEvent(self, event):
         old_cursor_pos = self.mapToScene(event.pos())
@@ -50,7 +49,6 @@ class MainView(QGraphicsView):
         self.translate(delta.x(), delta.y())
 
         self.setDragMode(self.drag_mode_hint())
-
 
     def keyPressEvent(self, event):
         # print(event.key())
