@@ -55,7 +55,9 @@ class MainVertex(QGraphicsEllipseItem):
         pen.setColor(self.parent.COLORS['red'])
         pen.setWidth(self.parent.parent.SETTINGS['point_border_width'] * 4)
         self.setPen(pen)
+        # self.setBrush(self.parent.COLORS[self.parent.parent.SETTINGS['highlight_color']])
         self.setBrush(self.parent.COLORS[self.parent.parent.SETTINGS['highlight_color']])
+
 
     def unhighlight_self(self):
         self.setPen(self._pen)

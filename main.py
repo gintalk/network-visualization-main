@@ -200,6 +200,9 @@ class MainWindow(QMainWindow):
     def highlight_path(self, edge_path):
         self.view.highlight_path(edge_path)
 
+    def shortest_path_highlight(self,edge_path):
+        self.view.shortest_path_highlight(edge_path)
+
     def save_graph(self, graph_path):
         write(self.graph, graph_path)
 
@@ -424,7 +427,7 @@ class Input(QDialog):
         # If 1 of them is none ,
 
         self.sp_edge_ids = get_shortest_paths(self.parent.graph, self.source_node, self.destination_node)
-        self.parent.highlight_path(self.sp_edge_ids[0])
+        self.parent.shortest_path_highlight(self.sp_edge_ids[0])
         # self.parent.is_shortest_path_mode = False
         self.hide()
         self.parent.show

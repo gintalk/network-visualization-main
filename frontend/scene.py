@@ -209,6 +209,11 @@ class MainScene(QGraphicsScene):
             point = self.points[vertex_id]
             point.highlight_self()
 
+    def alternative_highlight(self,edge_path):
+        for edge_id in edge_path:
+            line = self.lines[edge_id]
+            line.alternative_highlight()
+
     def update_vertex(self, point):
         dilated_x, dilated_y = point.x(), point.y()
         original_x, original_y = undilate(dilated_x, dilated_y, self.graph_center, self.scale_factor
