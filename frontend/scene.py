@@ -37,6 +37,7 @@ class MainScene(QGraphicsScene):
         self.vertex_to_display = []
         self.edge_to_display = []
 
+        self._move = False
         self.highlighted_item = None
         self.selected_item = None
         self.rb_selected_items = SelectedList()
@@ -235,15 +236,28 @@ class MainScene(QGraphicsScene):
             self.parent.main_window.ADD_VERTEX_STATE = False
 
     def mousePressEvent(self, event):
+        self.rb_selected_items.clear()
+
         cursor_pos = event.scenePos().toPoint()
         item_under_cursor = self.itemAt(cursor_pos, QTransform())
 
         if item_under_cursor is not None:
-            item_under_cursor.mousePressEvent(event)
+            if self.highlighted_item is not None:
+                self.highlighted_item.unhighlight_self()
+            if self.selected_item is not None:
+                self.selected_item.unhighlight_self()
+
             self.selected_item = item_under_cursor
+            self.selected_item.mousePressEvent(event)
+            self.highlighted_item = item_under_cursor
+            self.highlighted_item.highlight_self()
+            self._move = True
         elif self.parent.main_window.SELECTION_MODE:
-            # Clicking else where resets selection previously made by rubber band
-            self.rb_selected_items.clear()
+            # Clicking else where resets any selection previously made
+            self.selected_item = None
+            if self.highlighted_item is not None:
+                self.highlighted_item.unhighlight_self()
+                self.highlighted_item = None
 
             # Initializing rubber band
             self.rb_origin = self.parent.mapFromScene(cursor_pos)
@@ -254,36 +268,40 @@ class MainScene(QGraphicsScene):
     def mouseMoveEvent(self, event):
         cursor_pos = event.scenePos().toPoint()
 
-        if self.selected_item is not None:
+        if self.selected_item is not None and self._move:
             self.selected_item.highlight_self()
             self.selected_item.mouseMoveEvent(event)
         elif self.parent.main_window.SELECTION_MODE and self.rb_origin is not None:
             if self.rb_origin is not None:
                 adjusted_cursor_pos = self.parent.mapFromScene(cursor_pos)
                 self.rubber_band.setGeometry(QRect(self.rb_origin, adjusted_cursor_pos).normalized())
-        else:
+        elif not self.parent.main_window.SELECTION_MODE:
             item_under_cursor = self.itemAt(cursor_pos, QTransform())
 
             if item_under_cursor is None and self.highlighted_item is not None:
                 # When mouse moves out of an item into background
                 self.parent.setDragMode(self.parent.drag_mode_hint())
-                self.highlighted_item.unhighlight_self()
+
+                if self.highlighted_item != self.selected_item:
+                    self.highlighted_item.unhighlight_self()
                 self.highlighted_item = item_under_cursor
             elif item_under_cursor is not None and self.highlighted_item is None:
                 # Whe mouse moves from background into an item
                 self.parent.setDragMode(QGraphicsView.NoDrag)
+
                 self.highlighted_item = item_under_cursor
                 self.highlighted_item.highlight_self()
             elif item_under_cursor is not None and self.highlighted_item is not None:
                 # When mouse moves out of one item into another item
-                self.highlighted_item.unhighlight_self()
+                if self.highlighted_item != self.selected_item:
+                    self.highlighted_item.unhighlight_self()
                 self.highlighted_item = item_under_cursor
                 self.highlighted_item.highlight_self()
 
     def mouseReleaseEvent(self, event):
         if self.selected_item is not None:
-            self.selected_item = None
-        if self.parent.main_window.SELECTION_MODE and self.rb_origin is not None:
+            self._move = False
+        elif self.parent.main_window.SELECTION_MODE and self.rb_origin is not None:
             self.rubber_band.hide()
             rect = self.rubber_band.geometry()
             rect_scene = self.parent.mapToScene(rect).boundingRect()
@@ -306,6 +324,9 @@ class SelectedList:
 
         if isinstance(item, MainVertex):
             item.highlight_self()
+
+    def contains(self, item):
+        return item in self.SELECTED
 
     def clear(self):
         for item in self.SELECTED:
