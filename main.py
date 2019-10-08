@@ -242,6 +242,7 @@ class MainWindow(QMainWindow):
             self.clear_layout(self.info_layout)
             self.view.update_view()
             self.gradient_thickness_window = GradientThicknessWindow(self)
+            self.ADD_VERTEX_STATE = False
 
     # File -> Save
     def save_file_dialog(self):
