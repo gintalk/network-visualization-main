@@ -74,6 +74,12 @@ class MainView(QGraphicsView):
             self.translate(0, 5)
         elif event.key() == Qt.Key_S:
             self.translate(0, -5)
+        elif event.key() == Qt.Key_M:
+            self.scene.crop()
+        elif event.key() == Qt.Key_N:
+            self.scene.reverse_crop()
+        elif event.key() == Qt.Key_B:
+            self.scene.revert_to_default()
         elif event.key() == Qt.Key_R:
             self.scene.display_edges_by_gradient()
         elif event.key() == Qt.Key_T:

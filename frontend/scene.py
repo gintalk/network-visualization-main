@@ -40,7 +40,7 @@ class MainScene(QGraphicsScene):
         self._move = False
         self.highlighted_item = None
         self.selected_item = None
-        self.rb_selected_items = SelectedList()
+        self.rb_selected_points = SelectedList()
         self.rb_origin = None
         self.rubber_band = None
 
@@ -213,6 +213,40 @@ class MainScene(QGraphicsScene):
     def unset_availability(self, availability):
         self.show_availability = False
 
+    def crop(self):
+        lines_to_keep = []
+        for point in self.rb_selected_points:
+            for line in point.lines:
+                if line not in lines_to_keep and \
+                        (self.rb_selected_points.contains(line.point_a) and self.rb_selected_points.contains(
+                            line.point_b)):
+                    lines_to_keep.append(line)
+
+        for item in self.items():
+            if isinstance(item, MainEdge) and item not in lines_to_keep:
+                self.removeItem(item)
+            elif isinstance(item, MainVertex) and not self.rb_selected_points.contains(item):
+                self.removeItem(item)
+
+    def reverse_crop(self):
+        for point in self.rb_selected_points:
+            if point in self.items():
+                for line in point.lines:
+                    if line in self.items():
+                        self.removeItem(line)
+                self.removeItem(point)
+
+    def revert_to_default(self):
+        items = self.items()
+
+        for point in self.points:
+            if point not in items:
+                self.addItem(point)
+
+        for line in self.lines:
+            if line not in items:
+                self.addItem(line)
+
     def mouseDoubleClickEvent(self, event):
         if self.parent.main_window.ADD_VERTEX_STATE:
             self.parent.main_window.graph = create_vertices(self.parent.main_window.graph, 1)
@@ -236,7 +270,7 @@ class MainScene(QGraphicsScene):
             self.parent.main_window.ADD_VERTEX_STATE = False
 
     def mousePressEvent(self, event):
-        self.rb_selected_items.clear()
+        self.rb_selected_points.clear()
 
         cursor_pos = event.scenePos().toPoint()
         item_under_cursor = self.itemAt(cursor_pos, QTransform())
@@ -307,7 +341,8 @@ class MainScene(QGraphicsScene):
             rect_scene = self.parent.mapToScene(rect).boundingRect()
             selected = self.items(rect_scene)
             for item in selected:
-                self.rb_selected_items.append(item)
+                if isinstance(item, MainVertex):
+                    self.rb_selected_points.append(item)
 
             self.rb_origin = None
             self.rubber_band = None
@@ -318,6 +353,17 @@ class SelectedList:
 
     def __init__(self):
         self.SELECTED = []
+        self.index = 0
+
+    def __next__(self):
+        if self.index < len(self.SELECTED):
+            index = self.index
+            self.index += 1
+            return self.SELECTED[index]
+        raise StopIteration()
+
+    def __iter__(self):
+        return self
 
     def append(self, item):
         self.SELECTED.append(item)
@@ -334,3 +380,4 @@ class SelectedList:
                 item.unhighlight_self()
 
         self.SELECTED.clear()
+        self.index = 0
