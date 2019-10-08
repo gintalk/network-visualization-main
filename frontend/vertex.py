@@ -34,6 +34,9 @@ class MainVertex(QGraphicsEllipseItem):
         self.parent.parent.main_window.display_vertex(self.vertex)
         self.parent.parent.main_window.show_vertex_id(self.vertex)
 
+        if (self.parent.parent.main_window.ADD_EDGE_STATE == True):
+            self.parent.real_add_edge(self.vertex)
+
     def mouseMoveEvent(self, event):
         cursor_pos = event.scenePos()
         adjusted_cursor_pos = QPointF(cursor_pos.x() - self.diameter / 2, float(cursor_pos.y() - self.diameter / 2))

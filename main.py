@@ -38,6 +38,10 @@ class MainWindow(QMainWindow):
     selectedNodes = []
 
     ADD_VERTEX_STATE = False
+    ADD_EDGE_STATE = False
+
+    # For add edge
+    SOURCE_TARGET = []
 
     # MODE FOR SHORTEST PATH
     is_shortest_path_mode = False
@@ -96,6 +100,10 @@ class MainWindow(QMainWindow):
         self.button_add_vertex = self.findChild(QWidget, 'addvertex')
         self.button_add_vertex.setToolTip("Add Vertex")
         self.button_add_vertex.clicked.connect(self.add_vertex)
+
+        self.button_add_edge = self.findChild(QWidget, 'addedge')
+        self.button_add_edge.setToolTip("Add Edge")
+        self.button_add_edge.clicked.connect(self.add_edge)
 
         self.input_page = Input(self)
 
@@ -243,6 +251,9 @@ class MainWindow(QMainWindow):
             self.view.update_view()
             self.gradient_thickness_window = GradientThicknessWindow(self)
             self.ADD_VERTEX_STATE = False
+            self.button_add_vertex.setToolTip("Add Vertex")
+            self.ADD_EDGE_STATE = False
+            self.button_add_edge.setToolTip("Add Edge")
 
     # File -> Save
     def save_file_dialog(self):
@@ -350,8 +361,20 @@ class MainWindow(QMainWindow):
         self.attribute = 'LinkSpeedRaw'
 
     def add_vertex(self):
-        self.ADD_VERTEX_STATE = True
+        if not self.ADD_VERTEX_STATE:
+            self.ADD_VERTEX_STATE = True
+            self.button_add_vertex.setToolTip("Cancel Add Vertex")
+        else:
+            self.ADD_VERTEX_STATE = False
+            self.button_add_vertex.setToolTip("Add Vertex")
 
+    def add_edge(self):
+        if not self.ADD_EDGE_STATE:
+            self.ADD_EDGE_STATE = True
+            self.button_add_edge.setToolTip("Cancel Add Edge")
+        else:
+            self.ADD_EDGE_STATE = False
+            self.button_add_edge.setToolTip("Add Edge")
 
 # Input window for shortest path
 class Input(QDialog):

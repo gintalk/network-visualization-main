@@ -100,7 +100,7 @@
      <string/>
     </property>
    </widget>
-   <widget class="QPushButton" name="add_edge">
+   <widget class="QPushButton" name="addedge">
     <property name="geometry">
      <rect>
       <x>200</x>

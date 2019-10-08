@@ -9,6 +9,7 @@ from frontend.vertex import MainVertex
 from frontend.edge import MainEdge
 from frontend.event_filter import EventFilter
 from backend.vertex import create_vertices
+from backend.edge import create_edges
 
 
 class MainScene(QGraphicsScene):
@@ -211,6 +212,7 @@ class MainScene(QGraphicsScene):
     def unset_availability(self, availability):
         self.show_availability = False
 
+    # For add vertex
     def mouseDoubleClickEvent(self, event):
         if self.parent.main_window.ADD_VERTEX_STATE:
             self.parent.main_window.graph = create_vertices(self.parent.main_window.graph, 1)
@@ -233,3 +235,32 @@ class MainScene(QGraphicsScene):
             point.installSceneEventFilter(self.event_filter)
 
             self.parent.main_window.ADD_VERTEX_STATE = False
+            self.parent.main_window.button_add_vertex.setToolTip("Add Vertex")
+
+    # For add edge
+    def real_add_edge(self, vertex):
+        if len(self.parent.main_window.SOURCE_TARGET) == 0:
+            self.parent.main_window.SOURCE_TARGET.append(vertex)
+
+        elif len(self.parent.main_window.SOURCE_TARGET) == 1:
+            self.parent.main_window.SOURCE_TARGET.append(vertex)
+
+            self.parent.main_window.graph = create_edges(
+                self.parent.main_window.graph, [(int(self.parent.main_window.SOURCE_TARGET[0]['id'][1:]),
+                                                 int(self.parent.main_window.SOURCE_TARGET[1]['id'][1:]))])
+
+            edge = self.parent.main_window.graph.es[self.parent.main_window.graph.ecount() - 1]
+            self.edge_to_display.append(edge)
+
+            point_a = self.points[edge.source]
+            point_b = self.points[edge.target]
+            line_pen = QPen(self.COLORS['black'])
+            line_pen.setWidth(1)
+            line = MainEdge(edge, point_a, point_b, line_pen, self)
+            self.addItem(line)
+            self.lines.append(line)
+            line.installSceneEventFilter(self.event_filter)
+
+            self.parent.main_window.SOURCE_TARGET = []
+            self.parent.main_window.ADD_EDGE_STATE = False
+            self.parent.main_window.button_add_edge.setToolTip("Add Edge")
