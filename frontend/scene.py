@@ -7,7 +7,7 @@ from igraph import VertexDendrogram, Graph
 from frontend.utils import *
 from frontend.vertex import MainVertex
 from frontend.edge import MainEdge
-from backend.vertex import create_vertices
+from backend.vertex import delete_vertices, create_vertices
 
 
 class MainScene(QGraphicsScene):
@@ -26,6 +26,7 @@ class MainScene(QGraphicsScene):
 
         # Variables
         self.graph_to_display = None
+        self.default_graph = None
         self.clustering_algorithm = None
         self.graph_center = None
         self.scale_factor = None
@@ -48,6 +49,7 @@ class MainScene(QGraphicsScene):
 
     def init_variables(self):
         self.graph_to_display = self.parent.main_window.graph
+        self.default_graph = self.graph_to_display.copy()
         self.clustering_algorithm = self.parent.main_window.clustering_algorithm
 
         graph_rect = QRectF(
@@ -222,19 +224,27 @@ class MainScene(QGraphicsScene):
                             line.point_b)):
                     lines_to_keep.append(line)
 
+        vertices = []
         for item in self.items():
             if isinstance(item, MainEdge) and item not in lines_to_keep:
                 self.removeItem(item)
             elif isinstance(item, MainVertex) and not self.rb_selected_points.contains(item):
+                vertices.append(item.vertex)
                 self.removeItem(item)
 
+        delete_vertices(self.graph_to_display, vertices)
+
     def reverse_crop(self):
+        vertices = []
         for point in self.rb_selected_points:
             if point in self.items():
                 for line in point.lines:
                     if line in self.items():
                         self.removeItem(line)
+                vertices.append(point.vertex)
                 self.removeItem(point)
+
+        delete_vertices(self.graph_to_display, vertices)
 
     def revert_to_default(self):
         items = self.items()
@@ -246,6 +256,9 @@ class MainScene(QGraphicsScene):
         for line in self.lines:
             if line not in items:
                 self.addItem(line)
+
+        self.graph_to_display = self.default_graph.copy()
+        self.parent.main_window.graph = self.graph_to_display
 
     def mouseDoubleClickEvent(self, event):
         if self.parent.main_window.ADD_VERTEX_STATE:
