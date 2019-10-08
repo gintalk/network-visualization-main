@@ -1,6 +1,6 @@
-from PyQt5.QtCore import QRect, Qt, QPoint, QSize
+from PyQt5.QtCore import QRect, Qt
 from PyQt5.QtGui import QTransform
-from PyQt5.QtWidgets import QGraphicsView, QRubberBand
+from PyQt5.QtWidgets import QGraphicsView
 
 from frontend.scene import MainScene
 
@@ -29,38 +29,13 @@ class MainView(QGraphicsView):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
-        self.rubber_band = QRubberBand(QRubberBand.Rectangle, self)
-        self.origin = QPoint()
-
         self._zoom = 0
 
     def update_view(self):
         self.scene = MainScene(self)
-        self.main_window.bind_buttons()
+
         self.setScene(self.scene)
         self.scene.display()
-
-    # def mousePressEvent(self, event):
-    #     if self.main_window.SELECTION_MODE:
-    #         if event.button() == Qt.LeftButton:
-    #             self.origin = QPoint(event.pos())
-    #             self.rubber_band.setGeometry(QRect(self.origin, QSize()))
-    #             self.rubber_band.show()
-    #
-    # def mouseMoveEvent(self, event):
-    #     if self.main_window.SELECTION_MODE:
-    #         if not self.origin.isNull():
-    #             self.rubber_band.setGeometry(QRect(self.origin, event.pos()).normalized())
-    #
-    # def mouseReleaseEvent(self, event):
-    #     if self.main_window.SELECTION_MODE:
-    #         if event.button() == Qt.LeftButton:
-    #             self.rubber_band.hide()
-    #             rect = self.rubber_band.geometry()
-    #             rect_scene = self.mapToScene(rect).boundingRect()
-    #             selected = self.scene.items(rect_scene)
-    #             if selected:
-    #                 print(selected)
 
     def wheelEvent(self, event):
         old_cursor_pos = self.mapToScene(event.pos())
@@ -76,6 +51,8 @@ class MainView(QGraphicsView):
         new_cursor_pos = self.mapToScene(event.pos())
         delta = new_cursor_pos - old_cursor_pos
         self.translate(delta.x(), delta.y())
+
+        self.setDragMode(self.drag_mode_hint())
 
     def keyPressEvent(self, event):
         # print(event.key())
@@ -120,9 +97,9 @@ class MainView(QGraphicsView):
 
     def drag_mode_hint(self):
         if (
-                self.verticalScrollBar().value() != 0 or
-                self.horizontalScrollBar().value() != 0
-        ):
+            self.verticalScrollBar().value() != 0 or
+            self.horizontalScrollBar().value() != 0
+        ) and not self.main_window.SELECTION_MODE:
             return QGraphicsView.ScrollHandDrag
         else:
             return QGraphicsView.NoDrag

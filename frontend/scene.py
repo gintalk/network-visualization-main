@@ -1,13 +1,12 @@
 from __future__ import division
 from PyQt5.QtCore import *
-from PyQt5.QtGui import QPen, QColor, QBrush
-from PyQt5.QtWidgets import QGraphicsScene, QMessageBox
+from PyQt5.QtGui import QPen, QColor, QBrush, QTransform
+from PyQt5.QtWidgets import QGraphicsScene, QRubberBand, QGraphicsView
 from igraph import VertexDendrogram, Graph
 
 from frontend.utils import *
 from frontend.vertex import MainVertex
 from frontend.edge import MainEdge
-from frontend.event_filter import EventFilter
 from backend.vertex import create_vertices
 
 
@@ -38,8 +37,12 @@ class MainScene(QGraphicsScene):
         self.vertex_to_display = []
         self.edge_to_display = []
 
-        self.event_filter = EventFilter()
-        self.addItem(self.event_filter)
+        self.highlighted_item = None
+        self.selected_item = None
+        self.rb_selected_items = SelectedList()
+        self.rb_origin = None
+        self.rubber_band = None
+
         self.init_variables()
 
     def init_variables(self):
@@ -112,7 +115,7 @@ class MainScene(QGraphicsScene):
             # if vertex["attribute"] and vertex["min"] <= vertex[vertex["attribute"]] <= vertex["max"]:
             #     self.vertex_to_display.append(vertex)
             # else:
-                self.vertex_to_display.append(vertex)
+            self.vertex_to_display.append(vertex)
 
         self.display_vertices()
         self.display_edges()
@@ -127,7 +130,6 @@ class MainScene(QGraphicsScene):
             point = MainVertex(vertex, d, point_pen, vertex['color'], self)
             self.addItem(point)
             self.points.append(point)
-            point.installSceneEventFilter(self.event_filter)
 
     def display_edges(self):
         for edge in self.graph_to_display.es:
@@ -138,21 +140,11 @@ class MainScene(QGraphicsScene):
             line = MainEdge(edge, point_a, point_b, line_pen, self)
             self.addItem(line)
             self.lines.append(line)
-            line.installSceneEventFilter(self.event_filter)
-    # def attribute(self):
-    #     a_attribute
 
     def scalling(self):
-
         bandwidth = []
-        n = 0
         attribute = self.parent.main_window.attribute
-        if not self.parent.main_window.search_attribute():
-            attribute = 'LinkSpeedRaw'
-            # if not hasattr(self.graph_to_display, attribute):
-        #     QMessageBox.about(self, 'Sorry bruh', 'This attribute is not available for this graph')
 
-        # print(attribute)
         for edge in self.graph_to_display.es:
             bandwidth.append(edge[attribute])
 
@@ -161,25 +153,8 @@ class MainScene(QGraphicsScene):
         max_min = max_value - min_value
         for i in range(len(bandwidth)):
             bandwidth[i] = (bandwidth[i] - min_value) / max_min
+
         return bandwidth
-
-    def display_edges_by_thickness(self):
-        if not self.parent.main_window.search_attribute():
-            return
-        bandwidth = self.scalling()
-        n = 0
-
-        # set the thickness of QPen according to the attribute value
-        for edge in self.graph_to_display.es:
-            line = self.lines[edge.index]
-            line.edge['edge_width'] = self.parent.SETTINGS['edge_width'] * bandwidth[n] * 2
-            # line_pen = QPen(self.COLORS[edge['edge_color']])
-            line_pen = QPen(QColor('black'))
-            line_pen.setWidthF(line.edge['edge_width'])
-            line.setPen(line_pen)
-            line._pen = line_pen
-            n += 1
-
 
     # This is a more complete way of showing gradient in the edge
     def display_edges_by_gradient(self):
@@ -198,6 +173,22 @@ class MainScene(QGraphicsScene):
             line._pen = line_pen
             n += 1
 
+    def display_edges_by_thickness(self):
+        if not self.parent.main_window.search_attribute():
+            return
+        bandwidth = self.scalling()
+        n = 0
+
+        # set the thickness of QPen according to the attribute value
+        for edge in self.graph_to_display.es:
+            line = self.lines[edge.index]
+            line.edge['edge_width'] = self.parent.SETTINGS['edge_width'] * bandwidth[n] * 2
+            # line_pen = QPen(self.COLORS[edge['edge_color']])
+            line_pen = QPen(QColor('black'))
+            line_pen.setWidthF(line.edge['edge_width'])
+            line.setPen(line_pen)
+            line._pen = line_pen
+            n += 1
 
     def highlight_edges(self, edge_path):
         for edge_id in edge_path:
@@ -221,9 +212,8 @@ class MainScene(QGraphicsScene):
     def unset_availability(self, availability):
         self.show_availability = False
 
-
     def mouseDoubleClickEvent(self, event):
-        if self.parent.main_window.ADD_VERTEX_STATE == True:
+        if self.parent.main_window.ADD_VERTEX_STATE:
             self.parent.main_window.graph = create_vertices(self.parent.main_window.graph, 1)
 
             self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['x'], \
@@ -241,4 +231,85 @@ class MainScene(QGraphicsScene):
             point = MainVertex(self.vertex_to_display[-1], d, point_pen, QColor(Qt.darkMagenta), self)
             self.addItem(point)
             self.points.append(point)
-            point.installSceneEventFilter(self.event_filter)
+
+            self.parent.main_window.ADD_VERTEX_STATE = False
+
+    def mousePressEvent(self, event):
+        cursor_pos = event.scenePos().toPoint()
+        item_under_cursor = self.itemAt(cursor_pos, QTransform())
+
+        if item_under_cursor is not None:
+            item_under_cursor.mousePressEvent(event)
+            self.selected_item = item_under_cursor
+        elif self.parent.main_window.SELECTION_MODE:
+            # Clicking else where resets selection previously made by rubber band
+            self.rb_selected_items.clear()
+
+            # Initializing rubber band
+            self.rb_origin = self.parent.mapFromScene(cursor_pos)
+            self.rubber_band = QRubberBand(QRubberBand.Rectangle, self.parent)
+            self.rubber_band.setGeometry(QRect(self.rb_origin, QSize()))
+            self.rubber_band.show()
+
+    def mouseMoveEvent(self, event):
+        cursor_pos = event.scenePos().toPoint()
+
+        if self.selected_item is not None:
+            self.selected_item.highlight_self()
+            self.selected_item.mouseMoveEvent(event)
+        elif self.parent.main_window.SELECTION_MODE and self.rb_origin is not None:
+            if self.rb_origin is not None:
+                adjusted_cursor_pos = self.parent.mapFromScene(cursor_pos)
+                self.rubber_band.setGeometry(QRect(self.rb_origin, adjusted_cursor_pos).normalized())
+        else:
+            item_under_cursor = self.itemAt(cursor_pos, QTransform())
+
+            if item_under_cursor is None and self.highlighted_item is not None:
+                # When mouse moves out of an item into background
+                self.parent.setDragMode(self.parent.drag_mode_hint())
+                self.highlighted_item.unhighlight_self()
+                self.highlighted_item = item_under_cursor
+            elif item_under_cursor is not None and self.highlighted_item is None:
+                # Whe mouse moves from background into an item
+                self.parent.setDragMode(QGraphicsView.NoDrag)
+                self.highlighted_item = item_under_cursor
+                self.highlighted_item.highlight_self()
+            elif item_under_cursor is not None and self.highlighted_item is not None:
+                # When mouse moves out of one item into another item
+                self.highlighted_item.unhighlight_self()
+                self.highlighted_item = item_under_cursor
+                self.highlighted_item.highlight_self()
+
+    def mouseReleaseEvent(self, event):
+        if self.selected_item is not None:
+            self.selected_item = None
+        if self.parent.main_window.SELECTION_MODE and self.rb_origin is not None:
+            self.rubber_band.hide()
+            rect = self.rubber_band.geometry()
+            rect_scene = self.parent.mapToScene(rect).boundingRect()
+            selected = self.items(rect_scene)
+            for item in selected:
+                self.rb_selected_items.append(item)
+
+            self.rb_origin = None
+            self.rubber_band = None
+
+
+class SelectedList:
+    SELECTED = None
+
+    def __init__(self):
+        self.SELECTED = []
+
+    def append(self, item):
+        self.SELECTED.append(item)
+
+        if isinstance(item, MainVertex):
+            item.highlight_self()
+
+    def clear(self):
+        for item in self.SELECTED:
+            if isinstance(item, MainVertex):
+                item.unhighlight_self()
+
+        self.SELECTED.clear()

@@ -1,5 +1,5 @@
 from PyQt5.QtCore import *
-from PyQt5.QtWidgets import QGraphicsEllipseItem
+from PyQt5.QtWidgets import QGraphicsEllipseItem, QGraphicsItem
 
 
 class MainVertex(QGraphicsEllipseItem):
