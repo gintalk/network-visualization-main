@@ -280,6 +280,12 @@ class MainScene(QGraphicsScene):
             self.parent.main_window.graph.es[self.parent.main_window.graph.ecount() - 1]['key'] = 0.0
             self.parent.main_window.graph.es[self.parent.main_window.graph.ecount() - 1]['zorder'] = 1.0
 
+            # Check for attribute delay, if it exists set default value for new edge
+            dictionary = self.parent.main_window.graph.es[0].attributes()
+            for key, value in dictionary.items():
+                if str(key) == "delay":
+                    self.parent.main_window.graph.es[self.parent.main_window.graph.ecount() - 1]['delay'] = 50.0
+
             self.edge_to_display.append(self.parent.main_window.graph.es[self.parent.main_window.graph.ecount() - 1])
 
             point_a = self.points[self.edge_to_display[-1].source]
