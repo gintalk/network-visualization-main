@@ -7,6 +7,8 @@ from PyQt5.QtWidgets import QPushButton, QComboBox
 from igraph import *
 
 from backend.algorithm import get_shortest_paths
+from backend.edge import delete_edges
+from backend.vertex import delete_vertices
 from frontend.databar import DataBar
 from frontend.edgeinfo import EdgeInfo
 from frontend.vertexinfo import VertexInfo
@@ -42,6 +44,9 @@ class MainWindow(QMainWindow):
 
     # For add edge
     SOURCE_TARGET = []
+
+    VERTEX_DISPLAYING = None
+    EDGE_DISPLAYING = None
 
     # MODE FOR SHORTEST PATH
     is_shortest_path_mode = False
@@ -104,6 +109,14 @@ class MainWindow(QMainWindow):
         self.button_add_edge = self.findChild(QWidget, 'addedge')
         self.button_add_edge.setToolTip("Add Edge")
         self.button_add_edge.clicked.connect(self.add_edge)
+
+        self.button_delete_vertex = self.findChild(QWidget, 'deletevertex')
+        self.button_delete_vertex.clicked.connect(self.delete_vertex)
+        self.button_delete_vertex.hide()
+
+        self.button_delete_edge = self.findChild(QWidget, 'deleteedge')
+        self.button_delete_edge.clicked.connect(self.delete_edge)
+        self.button_delete_edge.hide()
 
         self.input_page = Input(self)
 
@@ -254,12 +267,18 @@ class MainWindow(QMainWindow):
             self.set_graph(self.file_name)
             self.clear_layout(self.info_layout)
             self.view.update_view()
-            self.gradient_thickness_window = GradientThicknessWindow(self)
+            self.button_delete_vertex.hide()
+            self.button_delete_edge.hide()
+            self.VERTEX_DISPLAYING = None
+            self.EDGE_DISPLAYING = None
+
             self.ADD_VERTEX_STATE = False
             self.button_add_vertex.setToolTip("Add Vertex")
             self.ADD_EDGE_STATE = False
             self.button_add_edge.setToolTip("Add Edge")
             self.SOURCE_TARGET = []
+
+            self.gradient_thickness_window = GradientThicknessWindow(self)
 
     # File -> Save
     def save_file_dialog(self):
@@ -344,12 +363,18 @@ class MainWindow(QMainWindow):
         self.clear_layout(self.info_layout)
         vertex_info = VertexInfo(vertex, self)
         self.info_layout.addWidget(vertex_info)
+        self.VERTEX_DISPLAYING = vertex
+        self.button_delete_vertex.show()
+        self.button_delete_edge.hide()
 
     # Display edge information
     def display_edge(self, edge):
         self.clear_layout(self.info_layout)
         edge_info = EdgeInfo(edge, self)
         self.info_layout.addWidget(edge_info)
+        self.EDGE_DISPLAYING = edge
+        self.button_delete_edge.show()
+        self.button_delete_vertex.hide()
 
     # pop data bar, data in list, try g.es['label']
     # stackoverflow.com/questions/940555/pyqt-sending-parameter-to-slot-when-connecting-to-a-signal
@@ -382,6 +407,35 @@ class MainWindow(QMainWindow):
             self.ADD_EDGE_STATE = False
             self.button_add_edge.setToolTip("Add Edge")
             self.SOURCE_TARGET = []
+
+    def delete_vertex(self):
+        reply = QMessageBox.question(self, '', 'Are you sure want to delete this vertex?',
+                                     QMessageBox.Yes, QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            delete_vertices(self.graph, self.VERTEX_DISPLAYING)
+            self.view.update_view()
+            self.clear_layout(self.info_layout)
+            self.VERTEX_DISPLAYING = None
+            self.button_delete_vertex.hide()
+
+            self.ADD_EDGE_STATE = False
+            self.button_add_edge.setToolTip("Add Edge")
+            self.SOURCE_TARGET = []
+
+            self.gradient_thickness_window = GradientThicknessWindow(self)
+
+    def delete_edge(self):
+        reply = QMessageBox.question(self, '', 'Are you sure want to delete this edge?',
+                                     QMessageBox.Yes, QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            delete_edges(self.graph, self.EDGE_DISPLAYING)
+            self.view.update_view()
+            self.clear_layout(self.info_layout)
+            self.EDGE_DISPLAYING = None
+            self.button_delete_edge.hide()
+
+            self.gradient_thickness_window = GradientThicknessWindow(self)
+
 
 # Input window for shortest path
 class Input(QDialog):
