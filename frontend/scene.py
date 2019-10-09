@@ -277,8 +277,6 @@ class MainScene(QGraphicsScene):
         self.parent.main_window.graph = graph
         self.graph_to_display = self.parent.main_window.graph
 
-        print(self.graph_to_display)
-
     def revert_to_default(self):
         items = self.items()
 
