@@ -123,6 +123,11 @@ class MainWindow(QMainWindow):
         self.is_shortest_path_mode = True
         self.input_page.show()
 
+        # Cancel add edge mode when finding shortest path
+        self.ADD_EDGE_STATE = False
+        self.button_add_edge.setToolTip("Add Edge")
+        self.SOURCE_TARGET = []
+
     def open_gradient_thickness_window(self):
         self.gradient_thickness_window.show()
 
@@ -254,6 +259,7 @@ class MainWindow(QMainWindow):
             self.button_add_vertex.setToolTip("Add Vertex")
             self.ADD_EDGE_STATE = False
             self.button_add_edge.setToolTip("Add Edge")
+            self.SOURCE_TARGET = []
 
     # File -> Save
     def save_file_dialog(self):
@@ -282,7 +288,7 @@ class MainWindow(QMainWindow):
         data = self.graph.vs['label']
         self.popup_bar(data)
 
-    # View -> Statistic -> Bar -> Vertex Label
+    # View -> Statistic -> Bar -> Vertex Country
     def display_vertex_country_bar(self):
         data = self.graph.vs['Country']
         self.popup_bar(data)
@@ -310,7 +316,7 @@ class MainWindow(QMainWindow):
 
         self.sp_edge_ids = get_shortest_paths(self.parent.graph,self.source_node,self.destination_node)
         self.parent.highlight_path(self.sp_edge_ids[0])
-        # self.parent.is_shortest_path_mode = False
+        self.parent.is_shortest_path_mode = False
         self.hide()
 
     # View -> Statistic -> Bar ->  Edge Weight
@@ -375,6 +381,7 @@ class MainWindow(QMainWindow):
         else:
             self.ADD_EDGE_STATE = False
             self.button_add_edge.setToolTip("Add Edge")
+            self.SOURCE_TARGET = []
 
 # Input window for shortest path
 class Input(QDialog):
