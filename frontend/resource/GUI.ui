@@ -390,6 +390,11 @@
     <string>Thickness</string>
    </property>
   </action>
+  <action name="actionExport">
+   <property name="text">
+    <string>Export</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
