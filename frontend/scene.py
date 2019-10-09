@@ -2,12 +2,13 @@ from __future__ import division
 from PyQt5.QtCore import *
 from PyQt5.QtGui import QPen, QColor, QBrush, QTransform
 from PyQt5.QtWidgets import QGraphicsScene, QRubberBand, QGraphicsView
-from igraph import VertexDendrogram, Graph
+from igraph import VertexDendrogram, Graph, summary
 
 from frontend.utils import *
 from frontend.vertex import MainVertex
 from frontend.edge import MainEdge
-from backend.vertex import delete_vertices, create_vertices
+from backend.vertex import create_vertices
+from backend.edge import create_edges, update_edge
 
 
 class MainScene(QGraphicsScene):
@@ -224,27 +225,59 @@ class MainScene(QGraphicsScene):
                             line.point_b)):
                     lines_to_keep.append(line)
 
-        vertices = []
         for item in self.items():
-            if isinstance(item, MainEdge) and item not in lines_to_keep:
-                self.removeItem(item)
-            elif isinstance(item, MainVertex) and not self.rb_selected_points.contains(item):
-                vertices.append(item.vertex)
+            if item not in lines_to_keep and not self.rb_selected_points.contains(item):
                 self.removeItem(item)
 
-        delete_vertices(self.graph_to_display, vertices)
+        self.save_cropped()
 
     def reverse_crop(self):
-        vertices = []
         for point in self.rb_selected_points:
             if point in self.items():
                 for line in point.lines:
                     if line in self.items():
                         self.removeItem(line)
-                vertices.append(point.vertex)
                 self.removeItem(point)
 
-        delete_vertices(self.graph_to_display, vertices)
+        self.save_cropped()
+
+    def save_cropped(self):
+        graph = Graph()
+        items = self.items()
+
+        point_index = 0
+        for point in self.points:
+            if point in items:
+                create_vertices(graph, 1)
+
+                created_vertex = graph.vs[point_index]
+                created_vertex.update_attributes(point.vertex.attributes())
+
+                point_index += 1
+
+        line_index = 0
+        for line in self.lines:
+            if line in items:
+                st_tuple = [0, 0]
+                for vertex in graph.vs:
+                    if vertex['id'] == line.point_a.vertex['id']:
+                        st_tuple[0] = vertex.index
+                        break
+                for vertex in graph.vs:
+                    if vertex['id'] == line.point_b.vertex['id']:
+                        st_tuple[1] = vertex.index
+                        break
+                st_tuple = [tuple(st_tuple)]
+                create_edges(graph, st_tuple)
+
+                created_edge = graph.es[line_index]
+                created_edge.update_attributes(line.edge.attributes())
+                line_index += 1
+
+        self.parent.main_window.graph = graph
+        self.graph_to_display = self.parent.main_window.graph
+
+        print(self.graph_to_display)
 
     def revert_to_default(self):
         items = self.items()
