@@ -411,7 +411,7 @@ class MainWindow(QMainWindow):
         self.clear_layout(self.info_layout)
         vertex_info = VertexInfo(point, self)
         self.info_layout.addWidget(vertex_info)
-        self.VERTEX_DISPLAYING = point.vertex
+        self.VERTEX_DISPLAYING = point
         self.button_delete_vertex.show()
         self.button_delete_edge.hide()
 
@@ -461,7 +461,8 @@ class MainWindow(QMainWindow):
         reply = QMessageBox.question(self, '', 'Are you sure want to delete this vertex?',
                                      QMessageBox.Yes, QMessageBox.No)
         if reply == QMessageBox.Yes:
-            delete_vertices(self.graph, self.VERTEX_DISPLAYING)
+            self.view.scene.removeItem(self.VERTEX_DISPLAYING)
+            # delete_vertices(self.graph, self.VERTEX_DISPLAYING)
             self.view.update_view()
             self.clear_layout(self.info_layout)
             self.VERTEX_DISPLAYING = None
