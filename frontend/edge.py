@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QGraphicsLineItem
-
+import time
 
 class MainEdge(QGraphicsLineItem):
     def __init__(self, edge, point_a, point_b, pen, parent):

@@ -249,6 +249,9 @@ class MainWindow(QMainWindow):
     def highlight_path(self, edge_path):
         self.view.highlight_path(edge_path)
 
+    def shortest_path_highlight(self,edge_path):
+        self.view.shortest_path_highlight(edge_path)
+
     def save_graph(self, graph_path):
         write(self.graph, graph_path)
 
@@ -497,8 +500,8 @@ class Input(QDialog):
         uic.loadUi('frontend/resource/INPUT.ui', self)
         self.setWindowTitle("Input")
 
-        self.source_node = 0
-        self.destination_node = 0
+        self.source_node = None
+        self.destination_node = None
 
         self.button = self.findChild(QWidget, 'buttonBox')
         self.button.rejected.connect(self.closeWindow_cancel)
@@ -529,12 +532,15 @@ class Input(QDialog):
     def closeWindow_ok(self):
         # Check if Source value or Destination Value is None ?
         # If 1 of them is none ,
-
-        self.sp_edge_ids = get_shortest_paths(self.parent.graph, self.source_node, self.destination_node)
-        self.parent.highlight_path(self.sp_edge_ids[0])
-        # self.parent.is_shortest_path_mode = False
-        self.hide()
-
+        if self.source_node == self.destination_node:
+            QMessageBox.about(self, "Wrong Input", "Please choose 2 different nodes.")
+        elif self.source_node is None or self.destination_node is None:
+            QMessageBox.about(self, "Wrong Input", "Please choose 2 nodes to highlight the shortest path")
+        elif self.source_node is not None and self.destination_node is not None:
+            self.sp_edge_ids = get_shortest_paths(self.parent.graph, self.source_node, self.destination_node)
+            self.parent.highlight_path(self.sp_edge_ids[0])
+            self.parent.is_shortest_path_mode = False
+            self.hide()
 
 # Window for gradient and thickness
 class GradientThicknessWindow(QDialog):
