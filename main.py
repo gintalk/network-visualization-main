@@ -12,6 +12,7 @@ from backend.algorithm import get_shortest_paths
 from backend.edge import delete_edges
 from backend.vertex import delete_vertices
 from frontend.create_attribute_dialog import CreateAttributeDialog
+from frontend.add_attribute_value_dialog import AddAttributeValueDialog
 from frontend.databar import DataBar
 from frontend.edgeinfo import EdgeInfo
 from frontend.vertexinfo import VertexInfo
@@ -115,11 +116,6 @@ class MainWindow(QMainWindow):
         self.button_add_vertex.setToolTip("Add Vertex")
         self.button_add_vertex.clicked.connect(self.add_vertex)
 
-        self.color_change_all_edge = self.findChild(QWidget, 'color_change')
-        self.color_change_all_edge.setToolTip("Change color of all edge")
-        self.color_change_all_edge.setIcon(QIcon('frontend/resource/color_wheel.png'))
-        self.color_change_all_edge.clicked.connect(self.change_color_all_edges)
-
         self.color_change_node = self.findChild(QWidget, 'color_change_node')
         self.color_change_node.setToolTip("Change color of node")
         self.color_change_node.setIcon(QIcon('frontend/resource/color-wheel2.png'))
@@ -129,10 +125,9 @@ class MainWindow(QMainWindow):
         self.button_create_attribute_dialog.setToolTip("Add Attribute")
         self.button_create_attribute_dialog.clicked.connect(self.create_attribute)
 
-        # self.button_add_attribute_value = self.findChild(QWidget, 'add_attribute_value')
-        # self.button_add_attribute_value.setToolTip("Add value for attribute")
-        # self.button_add_attribute_value.clicked.connect(self.add_attribute_value)
-
+        self.button_add_attribute_value = self.findChild(QWidget, 'add_attribute_value')
+        self.button_add_attribute_value.setToolTip("Add value for attribute")
+        self.button_add_attribute_value.clicked.connect(self.add_attribute_value)
 
         self.button_add_edge = self.findChild(QWidget, 'addedge')
         self.button_add_edge.setToolTip("Add Edge")
@@ -149,6 +144,7 @@ class MainWindow(QMainWindow):
         self.input_page = Input(self)
         self.gradient_thickness_window = GradientThicknessWindow(self)
         self.create_attribute_dialog = CreateAttributeDialog(self)
+        self.add_attribute_value_dialog = AddAttributeValueDialog(self)
 
     # Check if self.attribute is an attribute in the graph or not
     def search_attribute(self):
@@ -490,6 +486,9 @@ class MainWindow(QMainWindow):
 
     def create_attribute(self):
         self.create_attribute_dialog.show()
+
+    def add_attribute_value(self):
+        self.add_attribute_value_dialog.show()
 
 
 # Input window for shortest path
