@@ -552,16 +552,10 @@ class MainWindow(QMainWindow):
         self.realtime_thread.update.connect(self.doRealTime)
         self.realtime_thread.start()
 
-        self.button_realtime_mode.hide()
-        self.button_close_realtime_mode.show()
-
     def unset_realtime_mode(self):
         self.realtimeState = False
         self.realtime_thread.quit()
         self.realtime_thread = None
-
-        self.button_realtime_mode.show()
-        self.button_close_realtime_mode.hide()
 
     def doRealTime(self):
         lines = self.view.scene.lines
