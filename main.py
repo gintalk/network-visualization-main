@@ -10,6 +10,7 @@ from frontend.databar import DataBar
 from frontend.edgeinfo import EdgeInfo
 from frontend.vertexinfo import VertexInfo
 from frontend.view import MainView
+from frontend.create_attribute_dialog import CreateAttributeDialog
 
 
 class MainWindow(QMainWindow):
@@ -97,9 +98,18 @@ class MainWindow(QMainWindow):
         self.button_add_vertex.setToolTip("Add Vertex")
         self.button_add_vertex.clicked.connect(self.add_vertex)
 
-        self.input_page = Input(self)
+        self.button_create_attribute_dialog = self.findChild(QWidget, 'add_attribute')
+        self.button_create_attribute_dialog.setToolTip("Add Attribute")
+        self.button_create_attribute_dialog.clicked.connect(self.create_attribute)
 
+        # self.button_add_attribute_value = self.findChild(QWidget, 'add_attribute_value')
+        # self.button_add_attribute_value.setToolTip("Add value for attribute")
+        # self.button_add_attribute_value.clicked.connect(self.add_attribute_value)
+
+
+        self.input_page = Input(self)
         self.gradient_thickness_window = GradientThicknessWindow(self)
+        self.create_attribute_dialog = CreateAttributeDialog(self)
 
     # Check if self.attribute is an attribute in the graph or not
     def search_attribute(self):
@@ -350,6 +360,12 @@ class MainWindow(QMainWindow):
 
     def add_vertex(self):
         self.ADD_VERTEX_STATE = True
+
+    def create_attribute(self):
+        self.create_attribute_dialog.show()
+
+    def create_attribute(self):
+        self.create_attribute_dialog.show()
 
 
 # Input window for shortest path
