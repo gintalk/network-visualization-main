@@ -5,9 +5,9 @@ from backend.vertex import update_vertex
 
 
 class VertexInfo(QWidget):
-    def __init__(self, vertex, parent):
+    def __init__(self, point, parent):
         super().__init__()
-        self.vertex = vertex
+        self.vertex = point.vertex
         self.parent = parent
 
         # Dictionary to store vertex information

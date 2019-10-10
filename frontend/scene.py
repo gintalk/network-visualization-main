@@ -314,6 +314,13 @@ class MainScene(QGraphicsScene):
         self.graph_to_display = self.default_graph.copy()
         self.parent.main_window.graph = self.graph_to_display
 
+    def remove_point(self, point):
+        self.removeItem(point)
+        for line in point.lines:
+            self.removeItem(line)
+
+        self.save_cropped()
+
     # For add vertex
     def mouseDoubleClickEvent(self, event):
         if self.parent.main_window.ADD_VERTEX_STATE:
