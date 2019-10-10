@@ -37,7 +37,6 @@ class MainScene(QGraphicsScene):
 
         self.points = []
         self.lines = []
-        self.show_availability = False
         self.vertex_to_display = []
         self.edge_to_display = []
 
@@ -114,14 +113,14 @@ class MainScene(QGraphicsScene):
         clusters = clusters.subgraphs()
         assign_vertex_to_cluster()
         assign_color_to_vertex()  # based on the cluster it belongs to
-        if self.show_availability:
+        if self.parent.availability:
             availability_color_to_vertex()
 
-        for vertex in self.graph_to_display.vs:
-            # if vertex["attribute"] and vertex["min"] <= vertex[vertex["attribute"]] <= vertex["max"]:
-            #     self.vertex_to_display.append(vertex)
-            # else:
-            self.vertex_to_display.append(vertex)
+        # for vertex in self.graph_to_display.vs:
+        #     # if vertex["attribute"] and vertex["min"] <= vertex[vertex["attribute"]] <= vertex["max"]:
+        #     #     self.vertex_to_display.append(vertex)
+        #     # else:
+        #     self.vertex_to_display.append(vertex)
 
         self.display_vertices()
         self.display_edges()
@@ -239,12 +238,6 @@ class MainScene(QGraphicsScene):
         original_x, original_y = undilate(dilated_x, dilated_y, self.graph_center, self.scale_factor
                                           )
         point.vertex.update_attributes(x=original_x, y=original_y, pos={'x': dilated_x, 'y': dilated_y})
-
-    def set_availability(self, availability):
-        self.show_availability = True
-
-    def unset_availability(self, availability):
-        self.show_availability = False
 
     def crop(self):
         if self.rb_selected_points.is_empty():
@@ -445,19 +438,23 @@ class MainScene(QGraphicsScene):
             self.highlighted_item = item_under_cursor
             self.highlighted_item.highlight_self()
             self._move = True
-        elif self.parent.main_window.SELECTION_MODE:
+        else:
             # Clicking else where resets any selection previously made
-            self.selected_item = None
             if self.highlighted_item is not None:
-                if self.highlighted_item.is_highlighted:
+                if not self.highlighted_item.is_highlighted:
                     self.highlighted_item.unhighlight_self()
-                self.highlighted_item = None
+            if self.selected_item is not None:
+                if not self.selected_item.is_highlighted:
+                    self.selected_item.unhighlight_self()
+            self.highlighted_item = None
+            self.selected_item = None
 
-            # Initializing rubber band
-            self.rb_origin = self.parent.mapFromScene(cursor_pos)
-            self.rubber_band = QRubberBand(QRubberBand.Rectangle, self.parent)
-            self.rubber_band.setGeometry(QRect(self.rb_origin, QSize()))
-            self.rubber_band.show()
+            if self.parent.main_window.SELECTION_MODE:
+                # Initializing rubber band
+                self.rb_origin = self.parent.mapFromScene(cursor_pos)
+                self.rubber_band = QRubberBand(QRubberBand.Rectangle, self.parent)
+                self.rubber_band.setGeometry(QRect(self.rb_origin, QSize()))
+                self.rubber_band.show()
 
     def mouseMoveEvent(self, event):
         cursor_pos = event.scenePos().toPoint()

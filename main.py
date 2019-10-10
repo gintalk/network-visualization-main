@@ -2,15 +2,13 @@ import numpy as np
 from PyQt5 import uic
 from PyQt5.QtGui import QIcon, QKeySequence
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QFileDialog, QMessageBox, QAction, \
-    QDialog, QShortcut, QPushButton, QComboBox, QColorDialog
-
-QDialog, QShortcut, QColorDialog
+    QDialog, QShortcut, QColorDialog
 from PyQt5.QtWidgets import QPushButton, QComboBox
 from igraph import *
 
 from backend.algorithm import get_shortest_paths
-from backend.edge import delete_edges
 from frontend.create_attribute_dialog import CreateAttributeDialog
+from frontend.add_attribute_value_dialog import AddAttributeValueDialog
 from frontend.databar import DataBar
 from frontend.edgeinfo import EdgeInfo
 from frontend.vertexinfo import VertexInfo
@@ -114,11 +112,6 @@ class MainWindow(QMainWindow):
         self.button_add_vertex.setToolTip("Add Vertex")
         self.button_add_vertex.clicked.connect(self.add_vertex)
 
-        self.color_change_all_edge = self.findChild(QWidget, 'color_change')
-        self.color_change_all_edge.setToolTip("Change color of all edge")
-        self.color_change_all_edge.setIcon(QIcon('frontend/resource/color_wheel.png'))
-        self.color_change_all_edge.clicked.connect(self.change_color_all_edges)
-
         self.color_change_node = self.findChild(QWidget, 'color_change_node')
         self.color_change_node.setToolTip("Change color of node")
         self.color_change_node.setIcon(QIcon('frontend/resource/color-wheel2.png'))
@@ -128,9 +121,9 @@ class MainWindow(QMainWindow):
         self.button_create_attribute_dialog.setToolTip("Add Attribute")
         self.button_create_attribute_dialog.clicked.connect(self.create_attribute)
 
-        # self.button_add_attribute_value = self.findChild(QWidget, 'add_attribute_value')
-        # self.button_add_attribute_value.setToolTip("Add value for attribute")
-        # self.button_add_attribute_value.clicked.connect(self.add_attribute_value)
+        self.button_add_attribute_value = self.findChild(QWidget, 'add_attribute_value')
+        self.button_add_attribute_value.setToolTip("Add value for attribute")
+        self.button_add_attribute_value.clicked.connect(self.pop_add_value_dialog)
 
         self.button_add_edge = self.findChild(QWidget, 'addedge')
         self.button_add_edge.setToolTip("Add Edge")
@@ -147,6 +140,7 @@ class MainWindow(QMainWindow):
         self.input_page = Input(self)
         self.gradient_thickness_window = GradientThicknessWindow(self)
         self.create_attribute_dialog = CreateAttributeDialog(self)
+        self.add_attribute_value_dialog = AddAttributeValueDialog(self)
 
     # Check if self.attribute is an attribute in the graph or not
     def search_attribute(self):
@@ -292,6 +286,10 @@ class MainWindow(QMainWindow):
         edge_key_bar_button = self.findChild(QAction, 'actionEdge_Key')
         edge_key_bar_button.triggered.connect(self.display_edge_key_bar)
 
+        # View -> Availability
+        availability_button = self.findChild(QAction, 'actionShow_Availability')
+        availability_button.triggered.connect(self.set_availability)
+
         # View -> Gradient and Thickness
         gradient_thickness_button = self.findChild(QAction, 'actionGradient_and_Thickness')
         gradient_thickness_button.triggered.connect(self.open_gradient_thickness_window)
@@ -299,6 +297,8 @@ class MainWindow(QMainWindow):
         # View -> Revert View
         revert_button = self.findChild(QAction, 'actionRevert')
         revert_button.triggered.connect(self.revert_view)
+        revert_shortcut = QShortcut(QKeySequence(self.tr("Ctrl+Z", "View|Revert")), self)
+        revert_shortcut.activated.connect(self.revert_view)
 
     # File -> Open
     def open_file_dialog(self):
@@ -378,6 +378,10 @@ class MainWindow(QMainWindow):
         data = self.graph.es['key']
         self.popup_bar(data)
 
+    def set_availability(self):
+        self.view.availability = not self.view.availability
+        self.view.update_view()
+
     @staticmethod
     def clear_layout(layout):
         for i in range(layout.count()):
@@ -393,11 +397,11 @@ class MainWindow(QMainWindow):
         self.button_delete_edge.hide()
 
     # Display edge information
-    def display_edge(self, edge):
+    def display_edge(self, line):
         self.clear_layout(self.info_layout)
-        edge_info = EdgeInfo(edge, self)
+        edge_info = EdgeInfo(line, self)
         self.info_layout.addWidget(edge_info)
-        self.EDGE_DISPLAYING = edge
+        self.EDGE_DISPLAYING = line
         self.button_delete_edge.show()
         self.button_delete_vertex.hide()
 
@@ -416,6 +420,14 @@ class MainWindow(QMainWindow):
         self.gradient_thickness_window = GradientThicknessWindow(self)
         self.attribute = 'LinkSpeedRaw'
         self.is_color_change_node = False
+        self.clear_layout(self.info_layout)
+        self.button_delete_vertex.hide()
+        self.button_delete_edge.hide()
+        self.VERTEX_DISPLAYING = None
+        self.EDGE_DISPLAYING = None
+        self.ADD_EDGE_STATE = False
+        self.button_add_edge.setToolTip("Add Edge")
+        self.SOURCE_TARGET = []
 
     def add_vertex(self):
         if not self.ADD_VERTEX_STATE:
@@ -453,8 +465,7 @@ class MainWindow(QMainWindow):
         reply = QMessageBox.question(self, '', 'Are you sure want to delete this edge?',
                                      QMessageBox.Yes, QMessageBox.No)
         if reply == QMessageBox.Yes:
-            delete_edges(self.graph, self.EDGE_DISPLAYING)
-            self.view.update_view()
+            self.view.scene.remove_line(self.EDGE_DISPLAYING)
             self.clear_layout(self.info_layout)
             self.EDGE_DISPLAYING = None
             self.button_delete_edge.hide()
@@ -463,6 +474,9 @@ class MainWindow(QMainWindow):
 
     def create_attribute(self):
         self.create_attribute_dialog.show()
+
+    def pop_add_value_dialog(self):
+        self.add_attribute_value_dialog.show()
 
 
 # Input window for shortest path

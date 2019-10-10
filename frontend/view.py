@@ -29,11 +29,11 @@ class MainView(QGraphicsView):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
+        self.availability = False
         self._zoom = 0
 
     def update_view(self):
         self.scene = MainScene(self)
-
         self.setScene(self.scene)
         self.scene.display()
 
@@ -80,6 +80,8 @@ class MainView(QGraphicsView):
             self.scene.reverse_crop()
         elif event.key() == Qt.Key_B:
             self.scene.revert_to_default()
+        elif event.key() == Qt.Key_V:
+            self.main_window.SELECTION_MODE = not self.main_window.SELECTION_MODE
         elif event.key() == Qt.Key_R:
             self.scene.display_edges_by_gradient()
         elif event.key() == Qt.Key_T:

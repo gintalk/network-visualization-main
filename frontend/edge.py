@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QGraphicsLineItem
-import time
+
 
 
 class MainEdge(QGraphicsLineItem):
@@ -25,7 +25,7 @@ class MainEdge(QGraphicsLineItem):
         self.setLine(self.point_a.x(), self.point_a.y(), self.point_b.x(), self.point_b.y())
 
     def mousePressEvent(self, event):
-        self.parent.parent.main_window.display_edge(self.edge)
+        self.parent.parent.main_window.display_edge(self)
 
     def mouseMoveEvent(self, event):
         pass

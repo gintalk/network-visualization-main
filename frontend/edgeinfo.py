@@ -6,13 +6,13 @@ from frontend.vertexinfo import EditLabel
 
 
 class EdgeInfo(QWidget):
-    def __init__(self, edge, parent):
+    def __init__(self, line, parent):
         super().__init__()
-        self.edge = edge
+        self.edge = line.edge
         self.parent = parent
 
         # Dictionary to store edge information
-        self.dictionary = edge.attributes()
+        self.dictionary = self.edge.attributes()
 
         # Create grid layout
         layout = QGridLayout(self)
