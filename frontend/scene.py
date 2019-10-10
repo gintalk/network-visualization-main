@@ -189,14 +189,13 @@ class MainScene(QGraphicsScene):
         for edge in self.graph_to_display.es:
             line = self.lines[edge.index]
             line.edge['edge_width'] = self.parent.SETTINGS['edge_width'] * bandwidth[n] * 2
-            # line_pen = QPen(self.COLORS[edge['edge_color']])
             line_pen = QPen(QColor('black'))
             line_pen.setWidthF(line.edge['edge_width'])
             line.setPen(line_pen)
             line._pen = line_pen
             n += 1
 
-    def change_color_all_edge(self ,the_color):
+    def change_color_all_edge(self, the_color):
         for edge in self.graph_to_display.es:
             line = self.lines[edge.index]
             line.edge['edge_color'] = the_color
@@ -205,27 +204,35 @@ class MainScene(QGraphicsScene):
             line.setPen(line_pen)
             line._pen = line_pen
 
-    # def change_color_nodes(self):
-    #     for vertex in self.parent.main_window.selectedNodes2:
-    #         vertex.setBrush("red")
-    #         self.parent.view.update_view()
-
     def change_color_nodes(self, color):
         for point in self.points:
             if point.vertex in self.parent.main_window.selectedNodes2:
                 point.setBrush(color)
-        # self.parent.view.update()
-
+                point.update_default_brush()
 
     def highlight_edges(self, edge_path):
         for edge_id in edge_path:
             line = self.lines[edge_id]
             line.highlight_self()
+            line.is_highlighted = True
+
+    def unhighlight_edges(self, edge_path):
+        for edge_id in edge_path:
+            line = self.lines[edge_id]
+            line.unhighlight_self()
+            line.is_highlighted = False
 
     def highlight_vertices(self, vertex_path):
         for vertex_id in vertex_path:
             point = self.points[vertex_id]
             point.highlight_self()
+            point.is_highlighted = True
+
+    def unhighlight_vertices(self, vertex_path):
+        for vertex_id in vertex_path:
+            point = self.points[vertex_id]
+            point.unhighlight_self()
+            point.is_highlighted = False
 
     def update_vertex(self, point):
         dilated_x, dilated_y = point.x(), point.y()
@@ -240,6 +247,9 @@ class MainScene(QGraphicsScene):
         self.show_availability = False
 
     def crop(self):
+        if self.rb_selected_points.is_empty():
+            return
+
         lines_to_keep = []
         for point in self.rb_selected_points:
             for line in point.lines:
@@ -255,6 +265,9 @@ class MainScene(QGraphicsScene):
         self.save_cropped()
 
     def reverse_crop(self):
+        if self.rb_selected_points.is_empty():
+            return
+
         for point in self.rb_selected_points:
             if point in self.items():
                 for line in point.lines:
@@ -297,6 +310,7 @@ class MainScene(QGraphicsScene):
                 created_edge.update_attributes(line.edge.attributes())
                 line_index += 1
 
+        self.rb_selected_points.clear()
         self.parent.main_window.graph = graph
         self.graph_to_display = self.parent.main_window.graph
 
@@ -311,6 +325,7 @@ class MainScene(QGraphicsScene):
             if line not in items:
                 self.addItem(line)
 
+        self.rb_selected_points.clear()
         self.graph_to_display = self.default_graph.copy()
         self.parent.main_window.graph = self.graph_to_display
 
@@ -318,6 +333,11 @@ class MainScene(QGraphicsScene):
         self.removeItem(point)
         for line in point.lines:
             self.removeItem(line)
+
+        self.save_cropped()
+
+    def remove_line(self, line):
+        self.removeItem(line)
 
         self.save_cropped()
 
@@ -347,7 +367,8 @@ class MainScene(QGraphicsScene):
             self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['Latitude'] = 20.0
             self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['type'] = ""
             self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['asn'] = ""
-            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['availability'] = np.random.randint(2)
+            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1][
+                'availability'] = np.random.randint(2)
             self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['cluster'] = ""
 
             self.vertex_to_display.append(self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1])
@@ -414,9 +435,9 @@ class MainScene(QGraphicsScene):
         item_under_cursor = self.itemAt(cursor_pos, QTransform())
 
         if item_under_cursor is not None:
-            if self.highlighted_item is not None:
+            if self.highlighted_item is not None and not self.highlighted_item.is_highlighted:
                 self.highlighted_item.unhighlight_self()
-            if self.selected_item is not None:
+            if self.selected_item is not None and not self.selected_item.is_highlighted:
                 self.selected_item.unhighlight_self()
 
             self.selected_item = item_under_cursor
@@ -428,7 +449,8 @@ class MainScene(QGraphicsScene):
             # Clicking else where resets any selection previously made
             self.selected_item = None
             if self.highlighted_item is not None:
-                self.highlighted_item.unhighlight_self()
+                if self.highlighted_item.is_highlighted:
+                    self.highlighted_item.unhighlight_self()
                 self.highlighted_item = None
 
             # Initializing rubber band
@@ -454,7 +476,7 @@ class MainScene(QGraphicsScene):
                 # When mouse moves out of an item into background
                 self.parent.setDragMode(self.parent.drag_mode_hint())
 
-                if self.highlighted_item != self.selected_item:
+                if self.highlighted_item != self.selected_item and not self.highlighted_item.is_highlighted:
                     self.highlighted_item.unhighlight_self()
                 self.highlighted_item = item_under_cursor
             elif item_under_cursor is not None and self.highlighted_item is None:
@@ -465,7 +487,7 @@ class MainScene(QGraphicsScene):
                 self.highlighted_item.highlight_self()
             elif item_under_cursor is not None and self.highlighted_item is not None:
                 # When mouse moves out of one item into another item
-                if self.highlighted_item != self.selected_item:
+                if self.highlighted_item != self.selected_item and not self.highlighted_item.is_highlighted:
                     self.highlighted_item.unhighlight_self()
                 self.highlighted_item = item_under_cursor
                 self.highlighted_item.highlight_self()
@@ -519,3 +541,6 @@ class SelectedList:
 
         self.SELECTED.clear()
         self.index = 0
+
+    def is_empty(self):
+        return self.SELECTED == []

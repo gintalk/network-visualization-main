@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QGraphicsLineItem
 import time
 
+
 class MainEdge(QGraphicsLineItem):
     def __init__(self, edge, point_a, point_b, pen, parent):
         x_a, y_a = (point_a.x(), point_a.y())
@@ -11,6 +12,7 @@ class MainEdge(QGraphicsLineItem):
         self.setPen(pen)
 
         self.setAcceptHoverEvents(True)
+        self.is_highlighted = False
         self._pen = self.pen()
 
         self.edge = edge
@@ -33,7 +35,6 @@ class MainEdge(QGraphicsLineItem):
 
     def highlight_self(self):
         pen = self.pen()
-        # pen.setWidth(self._pen.width() * 3)
         pen.setColor(self.parent.COLORS[self.parent.parent.SETTINGS['highlight_color']])
         self.setPen(pen)
 
