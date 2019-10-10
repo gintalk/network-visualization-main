@@ -166,10 +166,10 @@ class MainWindow(QMainWindow):
         self.button_close_realtime_mode.setToolTip("Stop Realtime Mode")
         self.button_close_realtime_mode.clicked.connect(self.unset_realtime_mode)
 
-        self.input_page = Input(self)
-        self.gradient_thickness_window = GradientThicknessWindow(self)
-        self.create_attribute_dialog = CreateAttributeDialog(self)
-        self.add_attribute_value_dialog = AddAttributeValueDialog(self)
+        self.input_page = None
+        self.gradient_thickness_window = None
+        self.create_attribute_dialog = None
+        self.add_attribute_value_dialog = None
         self.realtime_thread = None
 
     # Check if self.attribute is an attribute in the graph or not
@@ -202,6 +202,7 @@ class MainWindow(QMainWindow):
 
     def open_input_window(self):
         self.is_shortest_path_mode = True
+        self.input_page = Input(self)
         self.input_page.show()
 
         # Cancel add edge mode when finding shortest path
@@ -210,6 +211,7 @@ class MainWindow(QMainWindow):
         self.SOURCE_TARGET = []
 
     def open_gradient_thickness_window(self):
+        self.gradient_thickness_window = GradientThicknessWindow(self)
         self.gradient_thickness_window.show()
 
         self.ADD_EDGE_STATE = False
@@ -527,9 +529,11 @@ class MainWindow(QMainWindow):
             self.gradient_thickness_window = GradientThicknessWindow(self)
 
     def create_attribute(self):
+        self.create_attribute_dialog = CreateAttributeDialog(self)
         self.create_attribute_dialog.show()
 
     def pop_add_value_dialog(self):
+        self.add_attribute_value_dialog = AddAttributeValueDialog(self)
         self.add_attribute_value_dialog.show()
 
     def toggle_selection_mode(self):
