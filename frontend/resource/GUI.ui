@@ -365,7 +365,6 @@
       <addaction name="actionEdge_Label"/>
      </widget>
      <addaction name="menuBar"/>
-     <addaction name="actionPie_Chart"/>
     </widget>
     <addaction name="menuStatistics"/>
     <addaction name="actionGradient_and_Thickness"/>
