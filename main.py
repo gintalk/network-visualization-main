@@ -141,6 +141,12 @@ class MainWindow(QMainWindow):
         self.button_selection_mode.setToolTip('Selection Mode, click to switch to Drag Mode')
         self.button_selection_mode.clicked.connect(self.toggle_selection_mode)
 
+        self.cluster_button = self.findChild(QComboBox, 'cluster')
+        self.cluster_button.activated.connect(self.cluster_button_clicked)
+
+        self.layout_button = self.findChild(QComboBox, 'layout')
+        self.layout_button.activated.connect(self.layout_button_clicked)
+
         self.input_page = Input(self)
         self.gradient_thickness_window = GradientThicknessWindow(self)
         self.create_attribute_dialog = CreateAttributeDialog(self)
@@ -185,6 +191,10 @@ class MainWindow(QMainWindow):
     def open_gradient_thickness_window(self):
         self.gradient_thickness_window.show()
 
+        self.ADD_EDGE_STATE = False
+        self.button_add_edge.setToolTip("Add Edge")
+        self.SOURCE_TARGET = []
+
     def zoom_in_button(self):
         self.view.zoom_in()
 
@@ -225,6 +235,22 @@ class MainWindow(QMainWindow):
     def set_clustering_algorithm(self, clustering_algorithm):
         self.clustering_algorithm = self.CLUSTERING_ALGORITHMS[clustering_algorithm]
         self.view.update_view()
+
+    def cluster_button_clicked(self):
+        self.set_up(cluster=self.cluster_button.currentText())
+
+        self.gradient_thickness_window = GradientThicknessWindow(self)
+        self.ADD_EDGE_STATE = False
+        self.button_add_edge.setToolTip("Add Edge")
+        self.SOURCE_TARGET = []
+
+    def layout_button_clicked(self):
+        self.set_up(layout=self.layout_button.currentText())
+
+        self.gradient_thickness_window = GradientThicknessWindow(self)
+        self.ADD_EDGE_STATE = False
+        self.button_add_edge.setToolTip("Add Edge")
+        self.SOURCE_TARGET = []
 
     def settings(self, **kwargs):
         self.view.settings(kwargs)
@@ -445,6 +471,7 @@ class MainWindow(QMainWindow):
         if not self.ADD_EDGE_STATE:
             self.ADD_EDGE_STATE = True
             self.button_add_edge.setToolTip("Cancel Add Edge")
+            QMessageBox.about(self, '', 'Please select 2 vertices to add edge')
         else:
             self.ADD_EDGE_STATE = False
             self.button_add_edge.setToolTip("Add Edge")
