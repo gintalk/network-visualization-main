@@ -17,6 +17,7 @@ class MainVertex(QGraphicsEllipseItem):
         self.lines = []
 
         self.setAcceptHoverEvents(True)
+        self.is_highlighted = False
         self._pen = self.pen()
         self._brush = self.brush()
         self._rect = self.rect
@@ -35,7 +36,7 @@ class MainVertex(QGraphicsEllipseItem):
         self.parent.parent.main_window.show_vertex_id(self.vertex)
         self.parent.parent.main_window.show_vertex_id2(self.vertex)
 
-        if (self.parent.parent.main_window.ADD_EDGE_STATE == True):
+        if self.parent.parent.main_window.ADD_EDGE_STATE:
             self.parent.real_add_edge(self.vertex)
 
     def mouseMoveEvent(self, event):
@@ -59,12 +60,14 @@ class MainVertex(QGraphicsEllipseItem):
         pen.setColor(self.parent.COLORS['red'])
         pen.setWidth(self.parent.parent.SETTINGS['point_border_width'] * 4)
         self.setPen(pen)
-        # self.setBrush(self.parent.COLORS[self.parent.parent.SETTINGS['highlight_color']])
         self.setBrush(self.parent.COLORS[self.parent.parent.SETTINGS['highlight_color']])
-
 
     def unhighlight_self(self):
         self.setPen(self._pen)
         self.setBrush(self._brush)
 
+    def update_default_pen(self):
+        self._pen = self.pen()
 
+    def update_default_brush(self):
+        self._brush = self.brush()

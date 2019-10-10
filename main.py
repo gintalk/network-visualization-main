@@ -7,8 +7,6 @@ from PyQt5.QtWidgets import QPushButton, QComboBox
 from igraph import *
 
 from backend.algorithm import get_shortest_paths
-from backend.edge import delete_edges
-from backend.vertex import delete_vertices
 from frontend.create_attribute_dialog import CreateAttributeDialog
 from frontend.add_attribute_value_dialog import AddAttributeValueDialog
 from frontend.databar import DataBar
@@ -164,14 +162,12 @@ class MainWindow(QMainWindow):
 
     def set_color_node(self):
         if self.is_color_change_node:
-            self.color2 = QColorDialog.getColor()
-            self.view.scene.change_color_nodes(self.color2)
+            color2 = QColorDialog.getColor()
+            self.view.scene.change_color_nodes(color2)
             self.selectedNodes2.clear()
             self.is_color_change_node = False
         else:
             self.is_color_change_node = True
-        # if self.menu_action():
-        #     self.is_color_change_node = False
 
     def open_input_window(self):
         self.is_shortest_path_mode = True
@@ -242,8 +238,8 @@ class MainWindow(QMainWindow):
     def highlight_path(self, edge_path):
         self.view.highlight_path(edge_path)
 
-    def shortest_path_highlight(self,edge_path):
-        self.view.shortest_path_highlight(edge_path)
+    def unhighlight_path(self, edge_path):
+        self.view.unhighlight_path(edge_path)
 
     def save_graph(self, graph_path):
         write(self.graph, graph_path)
@@ -367,27 +363,6 @@ class MainWindow(QMainWindow):
         data = self.graph.es['LinkSpeedRaw']
         self.popup_bar(data)
 
-    def picking_source(self):
-        self.hide()
-        self.parent.is_source = True
-
-    def picking_destination(self):
-        self.hide()
-        self.parent.is_source = False
-
-    def closeWindow_cancel(self):
-        self.hide()
-        self.parent.is_shortest_path_mode = False
-
-    def closeWindow_ok(self):
-        # Check if Source value or Destination Value is None ?
-        # If 1 of them is none ,
-
-        self.sp_edge_ids = get_shortest_paths(self.parent.graph, self.source_node, self.destination_node)
-        self.parent.highlight_path(self.sp_edge_ids[0])
-        self.parent.is_shortest_path_mode = False
-        self.hide()
-
     # View -> Statistic -> Bar ->  Edge Weight
     def display_edge_weight_bar(self):
         data = self.graph.es['weight']
@@ -404,10 +379,7 @@ class MainWindow(QMainWindow):
         self.popup_bar(data)
 
     def set_availability(self):
-        if not self.view.scene.show_availability:
-            self.view.scene.show_availability = True
-        else:
-            self.view.scene.show_availability = False
+        self.view.availability = not self.view.availability
         self.view.update_view()
 
     @staticmethod
@@ -532,6 +504,8 @@ class Input(QDialog):
         self.destination = self.findChild(QWidget, 'lineEdit_2')
         self.destination.setReadOnly(True)
 
+        self.sp_edge_ids = None
+
     def picking_source(self):
         self.hide()
         self.parent.is_source = True
@@ -552,10 +526,14 @@ class Input(QDialog):
         elif self.source_node is None or self.destination_node is None:
             QMessageBox.about(self, "Wrong Input", "Please choose 2 nodes to highlight the shortest path")
         elif self.source_node is not None and self.destination_node is not None:
+            if self.sp_edge_ids:
+                self.parent.unhighlight_path(self.sp_edge_ids[0])
+
             self.sp_edge_ids = get_shortest_paths(self.parent.graph, self.source_node, self.destination_node)
             self.parent.highlight_path(self.sp_edge_ids[0])
             self.parent.is_shortest_path_mode = False
             self.hide()
+
 
 # Window for gradient and thickness
 class GradientThicknessWindow(QDialog):
