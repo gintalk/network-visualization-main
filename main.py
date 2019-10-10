@@ -49,7 +49,7 @@ class MainWindow(QMainWindow):
     VERTEX_DISPLAYING = None
     EDGE_DISPLAYING = None
 
-    SELECTION_MODE = True
+    SELECTION_MODE = False
 
     # MODE FOR SHORTEST PATH
     is_shortest_path_mode = False
@@ -138,7 +138,7 @@ class MainWindow(QMainWindow):
         self.button_delete_edge.hide()
 
         self.button_selection_mode = self.findChild(QWidget, 'selectionmode')
-        self.button_selection_mode.setToolTip('Selection Mode, click to switch to Drag Mode')
+        self.button_selection_mode.setToolTip('Drag Mode, click to switch to Selection Mode')
         self.button_selection_mode.clicked.connect(self.toggle_selection_mode)
 
         self.cluster_button = self.findChild(QComboBox, 'cluster')
