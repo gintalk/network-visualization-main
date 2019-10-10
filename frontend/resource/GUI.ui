@@ -351,28 +351,16 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionOpen">
-   <property name="icon">
-    <iconset>
-     <normaloff>../../../Pelfusion-Flat-Folder-Open-Folder.ico</normaloff>../../../Pelfusion-Flat-Folder-Open-Folder.ico</iconset>
-   </property>
    <property name="text">
     <string>Open</string>
    </property>
   </action>
   <action name="actionSave">
-   <property name="icon">
-    <iconset>
-     <normaloff>../../../icons8-save-64.png</normaloff>../../../icons8-save-64.png</iconset>
-   </property>
    <property name="text">
     <string>Save</string>
    </property>
   </action>
   <action name="actionExit">
-   <property name="icon">
-    <iconset>
-     <normaloff>../../../icons8-close-window-100.png</normaloff>../../../icons8-close-window-100.png</iconset>
-   </property>
    <property name="text">
     <string>Exit</string>
    </property>

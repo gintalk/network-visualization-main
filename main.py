@@ -110,6 +110,7 @@ class MainWindow(QMainWindow):
 
         self.button_add_vertex = self.findChild(QWidget, 'addvertex')
         self.button_add_vertex.setToolTip("Add Vertex")
+        self.button_add_vertex.setIcon(QIcon('frontend/resource/add_vertex.png'))
         self.button_add_vertex.clicked.connect(self.add_vertex)
 
         self.color_change_node = self.findChild(QWidget, 'color_change_node')
@@ -119,14 +120,17 @@ class MainWindow(QMainWindow):
 
         self.button_create_attribute_dialog = self.findChild(QWidget, 'add_attribute')
         self.button_create_attribute_dialog.setToolTip("Add Attribute")
+        self.button_create_attribute_dialog.setIcon(QIcon('frontend/resource/add_attribute.png'))
         self.button_create_attribute_dialog.clicked.connect(self.create_attribute)
 
         self.button_add_attribute_value = self.findChild(QWidget, 'add_attribute_value')
         self.button_add_attribute_value.setToolTip("Add value for attribute")
+        self.button_add_attribute_value.setIcon(QIcon('frontend/resource/add_value.png'))
         self.button_add_attribute_value.clicked.connect(self.pop_add_value_dialog)
 
         self.button_add_edge = self.findChild(QWidget, 'addedge')
         self.button_add_edge.setToolTip("Add Edge")
+        self.button_add_edge.setIcon(QIcon('frontend/resource/add_edge.png'))
         self.button_add_edge.clicked.connect(self.add_edge)
 
         self.button_delete_vertex = self.findChild(QWidget, 'deletevertex')
@@ -139,6 +143,7 @@ class MainWindow(QMainWindow):
 
         self.button_selection_mode = self.findChild(QWidget, 'selectionmode')
         self.button_selection_mode.setToolTip('Selection Mode, click to switch to Drag Mode')
+        self.button_selection_mode.setIcon(QIcon('frontend/resource/drag.png'))
         self.button_selection_mode.clicked.connect(self.toggle_selection_mode)
 
         self.input_page = Input(self)
@@ -253,19 +258,21 @@ class MainWindow(QMainWindow):
         # File -> Open
         open_button = self.findChild(QAction, 'actionOpen')
         open_button.triggered.connect(self.open_file_dialog)
+        open_button.setIcon(QIcon('frontend/resource/open.ico'))
         open_shortcut = QShortcut(QKeySequence(self.tr("Ctrl+O", "File|Open")), self)
         open_shortcut.activated.connect(self.open_file_dialog)
 
         # File -> Save
         save_button = self.findChild(QAction, 'actionSave')
         save_button.triggered.connect(self.save_file_dialog)
+        save_button.setIcon(QIcon('frontend/resource/save.png'))
         save_shortcut = QShortcut(QKeySequence(self.tr("Ctrl+S", "File|Save")), self)
         save_shortcut.activated.connect(self.save_file_dialog)
 
         # File -> Exit
         close_button = self.findChild(QAction, 'actionExit')
         close_button.triggered.connect(self.close)
-
+        close_button.setIcon(QIcon('frontend/resource/exit.png'))
         # View -> Statistics -> Bar -> Vertex Label
         vertex_label_bar_button = self.findChild(QAction, 'actionVertex_Label')
         vertex_label_bar_button.triggered.connect(self.display_vertex_label_bar)
