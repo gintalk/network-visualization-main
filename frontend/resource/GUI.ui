@@ -342,8 +342,8 @@
      <addaction name="actionPie_Chart"/>
     </widget>
     <addaction name="menuStatistics"/>
-    <addaction name="actionAvailability"/>
     <addaction name="actionGradient_and_Thickness"/>
+    <addaction name="actionShow_Availability"/>
     <addaction name="actionRevert"/>
    </widget>
    <addaction name="menuFile"/>
@@ -445,6 +445,11 @@
   <action name="actionExport">
    <property name="text">
     <string>Export</string>
+   </property>
+  </action>
+  <action name="actionShow_Availability">
+   <property name="text">
+    <string>Show Availability</string>
    </property>
   </action>
  </widget>

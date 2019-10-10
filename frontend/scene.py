@@ -233,12 +233,6 @@ class MainScene(QGraphicsScene):
                                           )
         point.vertex.update_attributes(x=original_x, y=original_y, pos={'x': dilated_x, 'y': dilated_y})
 
-    def set_availability(self, availability):
-        self.show_availability = True
-
-    def unset_availability(self, availability):
-        self.show_availability = False
-
     def crop(self):
         lines_to_keep = []
         for point in self.rb_selected_points:
@@ -322,6 +316,11 @@ class MainScene(QGraphicsScene):
         self.removeItem(point)
         for line in point.lines:
             self.removeItem(line)
+
+        self.save_cropped()
+
+    def remove_line(self, line):
+        self.removeItem(line)
 
         self.save_cropped()
 

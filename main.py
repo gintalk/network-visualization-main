@@ -237,7 +237,6 @@ class MainWindow(QMainWindow):
             self.input_page.show()
         elif self.is_shortest_path_mode is True and self.is_source is False:
             self.input_page.destination_node = vertex.index
-            # print(self.input_page.destination_node)
             self.input_page.destination.setText(str(vertex.index))
             self.input_page.show()
 
@@ -292,6 +291,10 @@ class MainWindow(QMainWindow):
         edge_key_bar_button = self.findChild(QAction, 'actionEdge_Key')
         edge_key_bar_button.triggered.connect(self.display_edge_key_bar)
 
+        # View -> Availability
+        availability_button = self.findChild(QAction, 'actionShow_Availability')
+        availability_button.triggered.connect(self.set_availability)
+
         # View -> Gradient and Thickness
         gradient_thickness_button = self.findChild(QAction, 'actionGradient_and_Thickness')
         gradient_thickness_button.triggered.connect(self.open_gradient_thickness_window)
@@ -299,6 +302,8 @@ class MainWindow(QMainWindow):
         # View -> Revert View
         revert_button = self.findChild(QAction, 'actionRevert')
         revert_button.triggered.connect(self.revert_view)
+        revert_shortcut = QShortcut(QKeySequence(self.tr("Ctrl+Z", "View|Revert")), self)
+        revert_shortcut.activated.connect(self.revert_view)
 
     # File -> Open
     def open_file_dialog(self):
@@ -399,6 +404,13 @@ class MainWindow(QMainWindow):
         data = self.graph.es['key']
         self.popup_bar(data)
 
+    def set_availability(self):
+        if not self.view.scene.show_availability:
+            self.view.scene.show_availability = True
+        else:
+            self.view.scene.show_availability = False
+        self.view.update_view()
+
     @staticmethod
     def clear_layout(layout):
         for i in range(layout.count()):
@@ -414,11 +426,11 @@ class MainWindow(QMainWindow):
         self.button_delete_edge.hide()
 
     # Display edge information
-    def display_edge(self, edge):
+    def display_edge(self, line):
         self.clear_layout(self.info_layout)
-        edge_info = EdgeInfo(edge, self)
+        edge_info = EdgeInfo(line, self)
         self.info_layout.addWidget(edge_info)
-        self.EDGE_DISPLAYING = edge
+        self.EDGE_DISPLAYING = line
         self.button_delete_edge.show()
         self.button_delete_vertex.hide()
 
@@ -437,6 +449,14 @@ class MainWindow(QMainWindow):
         self.gradient_thickness_window = GradientThicknessWindow(self)
         self.attribute = 'LinkSpeedRaw'
         self.is_color_change_node = False
+        self.clear_layout(self.info_layout)
+        self.button_delete_vertex.hide()
+        self.button_delete_edge.hide()
+        self.VERTEX_DISPLAYING = None
+        self.EDGE_DISPLAYING = None
+        self.ADD_EDGE_STATE = False
+        self.button_add_edge.setToolTip("Add Edge")
+        self.SOURCE_TARGET = []
 
     def add_vertex(self):
         if not self.ADD_VERTEX_STATE:
@@ -474,9 +494,7 @@ class MainWindow(QMainWindow):
         reply = QMessageBox.question(self, '', 'Are you sure want to delete this edge?',
                                      QMessageBox.Yes, QMessageBox.No)
         if reply == QMessageBox.Yes:
-            self.view.scene.removeItem(self.EDGE_DISPLAYING)
-            # delete_edges(self.graph, self.EDGE_DISPLAYING)
-            self.view.update_view()
+            self.view.scene.remove_line(self.EDGE_DISPLAYING)
             self.clear_layout(self.info_layout)
             self.EDGE_DISPLAYING = None
             self.button_delete_edge.hide()
