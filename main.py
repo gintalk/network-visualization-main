@@ -1,6 +1,8 @@
+import time
+
 import numpy as np
 from PyQt5 import uic
-from PyQt5.QtGui import QIcon, QKeySequence
+from PyQt5.QtGui import QIcon, QKeySequence, QPen, QColor
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QFileDialog, QMessageBox, QAction, \
     QDialog, QShortcut, QColorDialog, QGraphicsView
 from PyQt5.QtWidgets import QPushButton, QComboBox
@@ -13,6 +15,7 @@ from frontend.databar import DataBar
 from frontend.edgeinfo import EdgeInfo
 from frontend.vertexinfo import VertexInfo
 from frontend.view import MainView
+from frontend.realtime_thread import RealTimeMode
 
 
 class MainWindow(QMainWindow):
@@ -71,6 +74,7 @@ class MainWindow(QMainWindow):
         self.graph = None
         self.layout = self.DEFAULT_LAYOUT
         self.clustering_algorithm = self.DEFAULT_CLUSTERING_ALGORITHM
+        self.realtimeState = False
 
         # Set up GUI
         self.central_widget = self.findChild(QWidget, 'centralwidget')
@@ -80,6 +84,7 @@ class MainWindow(QMainWindow):
 
         # Pull it up
         self.set_up(graph=self.DEFAULT_GRAPH)
+        self.initial_value = np.random.standard_normal(self.graph.ecount())
 
         # DO NOT REMOVE THIS LINE
         self.view.update_view()
@@ -152,10 +157,19 @@ class MainWindow(QMainWindow):
         self.layout_button = self.findChild(QComboBox, 'layout')
         self.layout_button.activated.connect(self.layout_button_clicked)
 
+        self.button_realtime_mode = self.findChild(QWidget, 'realtime_mode')
+        self.button_realtime_mode.setToolTip("Begin Realtime Mode")
+        self.button_realtime_mode.clicked.connect(self.set_realtime_mode)
+
+        self.button_close_realtime_mode = self.findChild(QWidget, 'close_realtime_mode')
+        self.button_close_realtime_mode.setToolTip("Stop Realtime Mode")
+        self.button_close_realtime_mode.clicked.connect(self.unset_realtime_mode)
+
         self.input_page = Input(self)
         self.gradient_thickness_window = GradientThicknessWindow(self)
         self.create_attribute_dialog = CreateAttributeDialog(self)
         self.add_attribute_value_dialog = AddAttributeValueDialog(self)
+        self.realtime_thread = None
 
     # Check if self.attribute is an attribute in the graph or not
     def search_attribute(self):
@@ -526,6 +540,36 @@ class MainWindow(QMainWindow):
             self.SELECTION_MODE = True
             self.view.setDragMode(QGraphicsView.NoDrag)
             self.button_selection_mode.setToolTip('Selection Mode, click to switch to Drag Mode')
+
+    def set_realtime_mode(self):
+        self.realtimeState = True
+        self.realtime_thread = RealTimeMode(self)
+        self.realtime_thread.update.connect(self.doRealTime)
+        self.realtime_thread.start()
+
+        self.button_realtime_mode.hide()
+        self.button_close_realtime_mode.show()
+
+    def unset_realtime_mode(self):
+        self.realtimeState = False
+        self.realtime_thread.quit()
+
+        self.button_realtime_mode.show()
+        self.button_close_realtime_mode.hide()
+
+    def doRealTime(self):
+        lines = self.view.scene.lines
+        scaled_value = (np.sin(self.initial_value + time.time() * 2) + 1) / 2
+
+        for line in lines:
+            line_index = lines.index(line)
+            line_pen = QPen(
+                QColor(255 - scaled_value[line_index] * 255,
+                       255 - scaled_value[line_index] * 255,
+                       scaled_value[line_index] * 255)
+            )
+            line_pen.setWidthF(line.edge['edge_width'])
+            line.setPen(line_pen)
 
 # Input window for shortest path
 class Input(QDialog):
