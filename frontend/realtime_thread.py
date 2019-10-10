@@ -10,13 +10,13 @@ import time
 class RealTimeMode(QThread):
     update = pyqtSignal()
 
-    def __init__(self, parent):
+    def __init__(self, fps, parent):
         super().__init__()
 
         self.parent = parent
-        self.fps = 20
+        self.fps = fps
 
     def run(self):
         while self.parent.realtimeState:
-            time.sleep(1.0 / self.fps)
             self.update.emit()
+            time.sleep(1.0 / self.fps)

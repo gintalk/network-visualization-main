@@ -289,7 +289,7 @@ class MainWindow(QMainWindow):
         self.view.highlight_path(edge_path)
 
     def unhighlight_path(self, edge_path):
-        self.view.unhighlight_path(edge_path)
+        self.view.unhighlight_path()
 
     def save_graph(self, graph_path):
         write(self.graph, graph_path)
@@ -543,7 +543,7 @@ class MainWindow(QMainWindow):
 
     def set_realtime_mode(self):
         self.realtimeState = True
-        self.realtime_thread = RealTimeMode(self)
+        self.realtime_thread = RealTimeMode(20, self)
         self.realtime_thread.update.connect(self.doRealTime)
         self.realtime_thread.start()
 
@@ -553,6 +553,7 @@ class MainWindow(QMainWindow):
     def unset_realtime_mode(self):
         self.realtimeState = False
         self.realtime_thread.quit()
+        self.realtime_thread = None
 
         self.button_realtime_mode.show()
         self.button_close_realtime_mode.hide()
@@ -570,6 +571,7 @@ class MainWindow(QMainWindow):
             )
             line_pen.setWidthF(line.edge['edge_width'])
             line.setPen(line_pen)
+
 
 # Input window for shortest path
 class Input(QDialog):
@@ -619,7 +621,7 @@ class Input(QDialog):
             QMessageBox.about(self, "Wrong Input", "Please choose 2 nodes to highlight the shortest path")
         elif self.source_node is not None and self.destination_node is not None:
             if self.sp_edge_ids:
-                self.parent.unhighlight_path(self.sp_edge_ids[0])
+                self.unhighlight_path()
 
             self.sp_edge_ids = get_shortest_paths(self.parent.graph, self.source_node, self.destination_node)
             self.parent.highlight_path(self.sp_edge_ids[0])
