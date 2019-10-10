@@ -278,7 +278,7 @@
    <widget class="QPushButton" name="color_change_node">
     <property name="geometry">
      <rect>
-      <x>360</x>
+      <x>320</x>
       <y>0</y>
       <width>40</width>
       <height>40</height>
@@ -288,10 +288,10 @@
      <string/>
     </property>
    </widget>
-   <widget class="QPushButton" name="color_change">
+   <widget class="QPushButton" name="selectionmode">
     <property name="geometry">
      <rect>
-      <x>320</x>
+      <x>360</x>
       <y>0</y>
       <width>40</width>
       <height>40</height>

@@ -2,7 +2,7 @@ import numpy as np
 from PyQt5 import uic
 from PyQt5.QtGui import QIcon, QKeySequence
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QFileDialog, QMessageBox, QAction, \
-    QDialog, QShortcut, QColorDialog
+    QDialog, QShortcut, QColorDialog, QGraphicsView
 from PyQt5.QtWidgets import QPushButton, QComboBox
 from igraph import *
 
@@ -136,6 +136,10 @@ class MainWindow(QMainWindow):
         self.button_delete_edge = self.findChild(QWidget, 'deleteedge')
         self.button_delete_edge.clicked.connect(self.delete_edge)
         self.button_delete_edge.hide()
+
+        self.button_selection_mode = self.findChild(QWidget, 'selectionmode')
+        self.button_selection_mode.setToolTip('Selection Mode, click to switch to Drag Mode')
+        self.button_selection_mode.clicked.connect(self.toggle_selection_mode)
 
         self.input_page = Input(self)
         self.gradient_thickness_window = GradientThicknessWindow(self)
@@ -478,6 +482,15 @@ class MainWindow(QMainWindow):
     def pop_add_value_dialog(self):
         self.add_attribute_value_dialog.show()
 
+    def toggle_selection_mode(self):
+        if self.SELECTION_MODE:
+            self.SELECTION_MODE = False
+            self.view.setDragMode(self.view.drag_mode_hint())
+            self.button_selection_mode.setToolTip('Drag Mode, click to switch to Selection Mode')
+        else:
+            self.SELECTION_MODE = True
+            self.view.setDragMode(QGraphicsView.NoDrag)
+            self.button_selection_mode.setToolTip('Selection Mode, click to switch to Drag Mode')
 
 # Input window for shortest path
 class Input(QDialog):
