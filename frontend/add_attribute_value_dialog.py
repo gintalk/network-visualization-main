@@ -1,5 +1,5 @@
 from PyQt5 import uic
-from PyQt5.QtWidgets import QDialog, QWidget, QTextEdit, QMessageBox, QRadioButton, QComboBox
+from PyQt5.QtWidgets import QDialog, QWidget, QMessageBox, QRadioButton, QComboBox
 
 
 class AddAttributeValueDialog(QDialog):
@@ -66,3 +66,9 @@ class AddAttributeValueDialog(QDialog):
                     elif self.dataType == "Float":
                         self.graph.vs[attribute_name] = -1.
                     QMessageBox.about(self, 'Created', 'Vertex attribute created')
+
+    def on_randomize_clicked(self):
+        pass
+
+    def on_add_file_clicked(self):
+        pass
