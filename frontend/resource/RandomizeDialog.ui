@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>301</width>
-    <height>140</height>
+    <width>400</width>
+    <height>218</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,8 +16,8 @@
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="geometry">
     <rect>
-     <x>-50</x>
-     <y>100</y>
+     <x>30</x>
+     <y>170</y>
      <width>341</width>
      <height>32</height>
     </rect>
@@ -29,12 +29,58 @@
     <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
    </property>
   </widget>
+  <widget class="QComboBox" name="distributionComboBox">
+   <property name="geometry">
+    <rect>
+     <x>70</x>
+     <y>40</y>
+     <width>171</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <item>
+    <property name="text">
+     <string>Normal Distribution</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Uniform Distribution</string>
+    </property>
+   </item>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>70</x>
+     <y>90</y>
+     <width>67</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Mean:</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>70</x>
+     <y>130</y>
+     <width>141</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Standard Deviation:</string>
+   </property>
+  </widget>
   <widget class="QLineEdit" name="lineEdit">
    <property name="geometry">
     <rect>
-     <x>100</x>
-     <y>10</y>
-     <width>101</width>
+     <x>220</x>
+     <y>90</y>
+     <width>113</width>
      <height>25</height>
     </rect>
    </property>
@@ -42,76 +88,11 @@
   <widget class="QLineEdit" name="lineEdit_2">
    <property name="geometry">
     <rect>
-     <x>100</x>
-     <y>60</y>
-     <width>101</width>
+     <x>220</x>
+     <y>130</y>
+     <width>113</width>
      <height>25</height>
     </rect>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label">
-   <property name="geometry">
-    <rect>
-     <x>40</x>
-     <y>10</y>
-     <width>67</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Source</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_2">
-   <property name="geometry">
-    <rect>
-     <x>6</x>
-     <y>60</y>
-     <width>81</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Destination</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pushButton">
-   <property name="geometry">
-    <rect>
-     <x>210</x>
-     <y>10</y>
-     <width>71</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Choose</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pushButton_2">
-   <property name="geometry">
-    <rect>
-     <x>210</x>
-     <y>60</y>
-     <width>71</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Choose</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="stop_button">
-   <property name="geometry">
-    <rect>
-     <x>30</x>
-     <y>90</y>
-     <width>51</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
    </property>
   </widget>
  </widget>

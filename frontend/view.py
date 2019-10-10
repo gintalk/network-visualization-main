@@ -1,7 +1,8 @@
 from PyQt5.QtCore import QRect, Qt
-from PyQt5.QtGui import QTransform
+from PyQt5.QtGui import QTransform, QColor
 from PyQt5.QtWidgets import QGraphicsView
 
+from frontend.realtime_thread import RealTimeMode
 from frontend.scene import MainScene
 
 
@@ -29,11 +30,17 @@ class MainView(QGraphicsView):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
+        self.availability = False
+        self._sp_thread = None
+        self.realtimeState = False
+        self._sp_colors = [QColor(Qt.red), QColor(Qt.green)]
+        self._sp_color_index = 0
+        self._edge_path = None
+        self._vertex_path = None
         self._zoom = 0
 
     def update_view(self):
         self.scene = MainScene(self)
-
         self.setScene(self.scene)
         self.scene.display()
 
@@ -80,6 +87,8 @@ class MainView(QGraphicsView):
             self.scene.reverse_crop()
         elif event.key() == Qt.Key_B:
             self.scene.revert_to_default()
+        elif event.key() == Qt.Key_L:
+            self.unhighlight_path()
         elif event.key() == Qt.Key_R:
             self.scene.display_edges_by_gradient()
         elif event.key() == Qt.Key_T:
@@ -111,8 +120,8 @@ class MainView(QGraphicsView):
 
     def drag_mode_hint(self):
         if (
-            self.verticalScrollBar().value() != 0 or
-            self.horizontalScrollBar().value() != 0
+                self.verticalScrollBar().value() != 0 or
+                self.horizontalScrollBar().value() != 0
         ) and not self.main_window.SELECTION_MODE:
             return QGraphicsView.ScrollHandDrag
         else:
@@ -124,12 +133,41 @@ class MainView(QGraphicsView):
         self.update_view()
 
     def highlight_path(self, edge_path):
-        vertices_along_the_way = []
+        self._edge_path = edge_path
+        self._vertex_path = []
         for i in range(0, len(edge_path)):
-            vertex_id = self.main_window.graph.es[edge_path[i]].source
-            vertices_along_the_way.append(vertex_id)
-        last_vertex_id = self.main_window.graph.es[edge_path[-1]].target
-        vertices_along_the_way.append(last_vertex_id)
+            source_vertex_id = self.main_window.graph.es[edge_path[i]].source
+            if source_vertex_id not in self._vertex_path:
+                self._vertex_path.append(source_vertex_id)
 
-        self.scene.highlight_edges(edge_path)
-        self.scene.highlight_vertices(vertices_along_the_way)
+            target_vertex_id = self.main_window.graph.es[edge_path[i]].target
+            if target_vertex_id not in self._vertex_path:
+                self._vertex_path.append(target_vertex_id)
+
+        self.realtimeState = True
+        self._sp_thread = RealTimeMode(1, self)
+        self._sp_thread.update.connect(self.real_time_highlight)
+        self._sp_thread.start()
+
+    def real_time_highlight(self):
+        if self._sp_color_index == 0:
+            self._sp_color_index = 1
+        else:
+            self._sp_color_index = 0
+
+        for edge_id in self._edge_path:
+            line = self.scene.lines[edge_id]
+            pen = line.pen()
+            pen.setColor(self._sp_colors[self._sp_color_index])
+            line.setPen(pen)
+
+        for vertex_id in self._vertex_path:
+            point = self.scene.points[vertex_id]
+            point.setBrush(self._sp_colors[self._sp_color_index])
+
+    def unhighlight_path(self):
+        self.realtimeState = False
+        self._sp_thread.quit()
+
+        self.scene.unhighlight_edges(self._edge_path)
+        self.scene.unhighlight_vertices(self._vertex_path)

@@ -11,6 +11,7 @@ class MainEdge(QGraphicsLineItem):
         self.setPen(pen)
 
         self.setAcceptHoverEvents(True)
+        self.is_highlighted = False
         self._pen = self.pen()
 
         self.edge = edge
@@ -23,7 +24,7 @@ class MainEdge(QGraphicsLineItem):
         self.setLine(self.point_a.x(), self.point_a.y(), self.point_b.x(), self.point_b.y())
 
     def mousePressEvent(self, event):
-        self.parent.parent.main_window.display_edge(self.edge)
+        self.parent.parent.main_window.display_edge(self)
 
     def mouseMoveEvent(self, event):
         pass
@@ -33,7 +34,6 @@ class MainEdge(QGraphicsLineItem):
 
     def highlight_self(self):
         pen = self.pen()
-        # pen.setWidth(self._pen.width() * 3)
         pen.setColor(self.parent.COLORS[self.parent.parent.SETTINGS['highlight_color']])
         self.setPen(pen)
 
