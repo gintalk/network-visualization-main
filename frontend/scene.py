@@ -1,14 +1,16 @@
 from __future__ import division
+
+import numpy as np
 from PyQt5.QtCore import *
 from PyQt5.QtGui import QPen, QColor, QBrush, QTransform
 from PyQt5.QtWidgets import QGraphicsScene, QRubberBand, QGraphicsView
-from igraph import VertexDendrogram, Graph, summary
+from igraph import VertexDendrogram, Graph
 
+from backend.edge import create_edges
+from backend.vertex import create_vertices
+from frontend.edge import MainEdge
 from frontend.utils import *
 from frontend.vertex import MainVertex
-from frontend.edge import MainEdge
-from backend.vertex import create_vertices
-from backend.edge import create_edges, update_edge
 
 
 class MainScene(QGraphicsScene):
@@ -291,6 +293,7 @@ class MainScene(QGraphicsScene):
         self.graph_to_display = self.default_graph.copy()
         self.parent.main_window.graph = self.graph_to_display
 
+    # For add vertex
     def mouseDoubleClickEvent(self, event):
         if self.parent.main_window.ADD_VERTEX_STATE:
             self.parent.main_window.graph = create_vertices(self.parent.main_window.graph, 1)
@@ -302,6 +305,23 @@ class MainScene(QGraphicsScene):
             self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['pos'] = \
                 {'x': event.scenePos().x(), 'y': event.scenePos().y()}
 
+            # Set default value for new vertex
+            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['geocode_country'] = ""
+            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['hyperedge'] = ""
+            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['Network'] = ""
+            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['GeoLocation'] = ""
+            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['Country'] = ""
+            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['NetworkDate'] = ""
+            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['geocode_id'] = ""
+            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['label'] = ""
+            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['Internal'] = 1.0
+            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['Longitude'] = 20.0
+            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['Latitude'] = 20.0
+            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['type'] = ""
+            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['asn'] = ""
+            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['availability'] = np.random.randint(2)
+            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['cluster'] = ""
+
             self.vertex_to_display.append(self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1])
 
             point_pen = QPen(self.COLORS['black'])
@@ -312,6 +332,52 @@ class MainScene(QGraphicsScene):
             self.points.append(point)
 
             self.parent.main_window.ADD_VERTEX_STATE = False
+            self.parent.main_window.button_add_vertex.setToolTip("Add Vertex")
+
+    # For add edge
+    def real_add_edge(self, vertex):
+        if len(self.parent.main_window.SOURCE_TARGET) == 0:
+            self.parent.main_window.SOURCE_TARGET.append(vertex)
+
+        elif len(self.parent.main_window.SOURCE_TARGET) == 1:
+            self.parent.main_window.SOURCE_TARGET.append(vertex)
+
+            self.parent.main_window.graph = create_edges(
+                self.parent.main_window.graph, [(int(self.parent.main_window.SOURCE_TARGET[0].index),
+                                                 int(self.parent.main_window.SOURCE_TARGET[1].index))])
+
+            # Set default value for new edge
+            self.parent.main_window.graph.es[self.parent.main_window.graph.ecount() - 1]['edge_color'] = ""
+            self.parent.main_window.graph.es[self.parent.main_window.graph.ecount() - 1]['weight'] = 1000.0
+            self.parent.main_window.graph.es[self.parent.main_window.graph.ecount() - 1]['LinkType'] = ""
+            self.parent.main_window.graph.es[self.parent.main_window.graph.ecount() - 1]['LinkNote'] = ""
+            self.parent.main_window.graph.es[self.parent.main_window.graph.ecount() - 1]['LinkSpeedUnits'] = "G"
+            self.parent.main_window.graph.es[self.parent.main_window.graph.ecount() - 1]['label'] = "1000.0 MBit/s"
+            self.parent.main_window.graph.es[self.parent.main_window.graph.ecount() - 1]['LinkLabel'] = ""
+            self.parent.main_window.graph.es[self.parent.main_window.graph.ecount() - 1]['edge_width'] = 1
+            self.parent.main_window.graph.es[self.parent.main_window.graph.ecount() - 1]['LinkSpeedRaw'] = 1000000000.0
+            self.parent.main_window.graph.es[self.parent.main_window.graph.ecount() - 1]['key'] = 0.0
+            self.parent.main_window.graph.es[self.parent.main_window.graph.ecount() - 1]['zorder'] = 1.0
+
+            # Check for attribute delay, if it exists set default value for new edge
+            dictionary = self.parent.main_window.graph.es[0].attributes()
+            for key, value in dictionary.items():
+                if str(key) == "delay":
+                    self.parent.main_window.graph.es[self.parent.main_window.graph.ecount() - 1]['delay'] = 50.0
+
+            self.edge_to_display.append(self.parent.main_window.graph.es[self.parent.main_window.graph.ecount() - 1])
+
+            point_a = self.points[self.edge_to_display[-1].source]
+            point_b = self.points[self.edge_to_display[-1].target]
+            line_pen = QPen(self.COLORS['black'])
+            line_pen.setWidth(1)
+            line = MainEdge(self.edge_to_display[-1], point_a, point_b, line_pen, self)
+            self.addItem(line)
+            self.lines.append(line)
+
+            self.parent.main_window.SOURCE_TARGET = []
+            self.parent.main_window.ADD_EDGE_STATE = False
+            self.parent.main_window.button_add_edge.setToolTip("Add Edge")
 
     def mousePressEvent(self, event):
         self.rb_selected_points.clear()

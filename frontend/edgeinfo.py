@@ -1,7 +1,8 @@
-from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel, QLineEdit, QPushButton, QMessageBox
 from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel, QLineEdit
+
+from backend.edge import update_edge
 from frontend.vertexinfo import EditLabel
-from backend.edge import update_edge, delete_edges
 
 
 class EdgeInfo(QWidget):
@@ -53,18 +54,6 @@ class EdgeInfo(QWidget):
             f = self.text_edited(self.value_items[i], self.edit_items[i])
             self.edit_items[i].editingFinished.connect(f)
             self.edit_items[i].editingFinished.connect(self.save_info)
-
-        delete_button = QPushButton("Delete edge")
-        layout.addWidget(delete_button)
-        delete_button.clicked.connect(lambda: self.delete_clicked())
-
-    def delete_clicked(self):
-        reply = QMessageBox.question(self, '', 'Are you sure want to delete this edge?',
-                                     QMessageBox.Yes, QMessageBox.No)
-        if reply == QMessageBox.Yes:
-            delete_edges(self.parent.graph, self.edge)
-            self.parent.view.update_view()
-            self.parent.clear_layout(self.parent.info_layout)
 
     @staticmethod
     def text_edited(value, edit):

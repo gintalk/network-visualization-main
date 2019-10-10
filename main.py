@@ -1,16 +1,18 @@
 import numpy as np
 from PyQt5 import uic
 from PyQt5.QtGui import QIcon, QKeySequence
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QFileDialog, QMessageBox, QAction,\
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QFileDialog, QMessageBox, QAction, \
     QDialog, QShortcut, QPushButton, QComboBox
 from igraph import *
 
 from backend.algorithm import get_shortest_paths
+from backend.edge import delete_edges
+from backend.vertex import delete_vertices
+from frontend.create_attribute_dialog import CreateAttributeDialog
 from frontend.databar import DataBar
 from frontend.edgeinfo import EdgeInfo
 from frontend.vertexinfo import VertexInfo
 from frontend.view import MainView
-from frontend.create_attribute_dialog import CreateAttributeDialog
 
 
 class MainWindow(QMainWindow):
@@ -38,6 +40,14 @@ class MainWindow(QMainWindow):
     selectedNodes = []
 
     ADD_VERTEX_STATE = False
+    ADD_EDGE_STATE = False
+
+    # For add edge
+    SOURCE_TARGET = []
+
+    VERTEX_DISPLAYING = None
+    EDGE_DISPLAYING = None
+
     SELECTION_MODE = True
 
     # MODE FOR SHORTEST PATH
@@ -107,6 +117,18 @@ class MainWindow(QMainWindow):
         # self.button_add_attribute_value.clicked.connect(self.add_attribute_value)
 
 
+        self.button_add_edge = self.findChild(QWidget, 'addedge')
+        self.button_add_edge.setToolTip("Add Edge")
+        self.button_add_edge.clicked.connect(self.add_edge)
+
+        self.button_delete_vertex = self.findChild(QWidget, 'deletevertex')
+        self.button_delete_vertex.clicked.connect(self.delete_vertex)
+        self.button_delete_vertex.hide()
+
+        self.button_delete_edge = self.findChild(QWidget, 'deleteedge')
+        self.button_delete_edge.clicked.connect(self.delete_edge)
+        self.button_delete_edge.hide()
+
         self.input_page = Input(self)
         self.gradient_thickness_window = GradientThicknessWindow(self)
         self.create_attribute_dialog = CreateAttributeDialog(self)
@@ -124,6 +146,11 @@ class MainWindow(QMainWindow):
     def open_input_window(self):
         self.is_shortest_path_mode = True
         self.input_page.show()
+
+        # Cancel add edge mode when finding shortest path
+        self.ADD_EDGE_STATE = False
+        self.button_add_edge.setToolTip("Add Edge")
+        self.SOURCE_TARGET = []
 
     def open_gradient_thickness_window(self):
         self.gradient_thickness_window.show()
@@ -251,6 +278,17 @@ class MainWindow(QMainWindow):
             self.set_graph(self.file_name)
             self.clear_layout(self.info_layout)
             self.view.update_view()
+            self.button_delete_vertex.hide()
+            self.button_delete_edge.hide()
+            self.VERTEX_DISPLAYING = None
+            self.EDGE_DISPLAYING = None
+
+            self.ADD_VERTEX_STATE = False
+            self.button_add_vertex.setToolTip("Add Vertex")
+            self.ADD_EDGE_STATE = False
+            self.button_add_edge.setToolTip("Add Edge")
+            self.SOURCE_TARGET = []
+
             self.gradient_thickness_window = GradientThicknessWindow(self)
 
     # File -> Save
@@ -280,7 +318,7 @@ class MainWindow(QMainWindow):
         data = self.graph.vs['label']
         self.popup_bar(data)
 
-    # View -> Statistic -> Bar -> Vertex Label
+    # View -> Statistic -> Bar -> Vertex Country
     def display_vertex_country_bar(self):
         data = self.graph.vs['Country']
         self.popup_bar(data)
@@ -308,7 +346,7 @@ class MainWindow(QMainWindow):
 
         self.sp_edge_ids = get_shortest_paths(self.parent.graph,self.source_node,self.destination_node)
         self.parent.highlight_path(self.sp_edge_ids[0])
-        # self.parent.is_shortest_path_mode = False
+        self.parent.is_shortest_path_mode = False
         self.hide()
 
     # View -> Statistic -> Bar ->  Edge Weight
@@ -336,12 +374,18 @@ class MainWindow(QMainWindow):
         self.clear_layout(self.info_layout)
         vertex_info = VertexInfo(vertex, self)
         self.info_layout.addWidget(vertex_info)
+        self.VERTEX_DISPLAYING = vertex
+        self.button_delete_vertex.show()
+        self.button_delete_edge.hide()
 
     # Display edge information
     def display_edge(self, edge):
         self.clear_layout(self.info_layout)
         edge_info = EdgeInfo(edge, self)
         self.info_layout.addWidget(edge_info)
+        self.EDGE_DISPLAYING = edge
+        self.button_delete_edge.show()
+        self.button_delete_vertex.hide()
 
     # pop data bar, data in list, try g.es['label']
     # stackoverflow.com/questions/940555/pyqt-sending-parameter-to-slot-when-connecting-to-a-signal
@@ -359,10 +403,49 @@ class MainWindow(QMainWindow):
         self.attribute = 'LinkSpeedRaw'
 
     def add_vertex(self):
-        self.ADD_VERTEX_STATE = True
+        if not self.ADD_VERTEX_STATE:
+            self.ADD_VERTEX_STATE = True
+            self.button_add_vertex.setToolTip("Cancel Add Vertex")
+        else:
+            self.ADD_VERTEX_STATE = False
+            self.button_add_vertex.setToolTip("Add Vertex")
 
-    def create_attribute(self):
-        self.create_attribute_dialog.show()
+    def add_edge(self):
+        if not self.ADD_EDGE_STATE:
+            self.ADD_EDGE_STATE = True
+            self.button_add_edge.setToolTip("Cancel Add Edge")
+        else:
+            self.ADD_EDGE_STATE = False
+            self.button_add_edge.setToolTip("Add Edge")
+            self.SOURCE_TARGET = []
+
+    def delete_vertex(self):
+        reply = QMessageBox.question(self, '', 'Are you sure want to delete this vertex?',
+                                     QMessageBox.Yes, QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            delete_vertices(self.graph, self.VERTEX_DISPLAYING)
+            self.view.update_view()
+            self.clear_layout(self.info_layout)
+            self.VERTEX_DISPLAYING = None
+            self.button_delete_vertex.hide()
+
+            self.ADD_EDGE_STATE = False
+            self.button_add_edge.setToolTip("Add Edge")
+            self.SOURCE_TARGET = []
+
+            self.gradient_thickness_window = GradientThicknessWindow(self)
+
+    def delete_edge(self):
+        reply = QMessageBox.question(self, '', 'Are you sure want to delete this edge?',
+                                     QMessageBox.Yes, QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            delete_edges(self.graph, self.EDGE_DISPLAYING)
+            self.view.update_view()
+            self.clear_layout(self.info_layout)
+            self.EDGE_DISPLAYING = None
+            self.button_delete_edge.hide()
+
+            self.gradient_thickness_window = GradientThicknessWindow(self)
 
     def create_attribute(self):
         self.create_attribute_dialog.show()
