@@ -172,11 +172,13 @@ class MainWindow(QMainWindow):
     def set_color_node(self):
         if self.is_color_change_node:
             color2 = QColorDialog.getColor()
+
             self.view.scene.change_color_nodes(color2)
             self.selectedNodes2.clear()
             self.is_color_change_node = False
         else:
             self.is_color_change_node = True
+            QMessageBox.about(self, 'You are in color change mode', 'Please pick the nodes you want to change color')
 
     def open_input_window(self):
         self.is_shortest_path_mode = True
