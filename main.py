@@ -2,7 +2,7 @@ import numpy as np
 from PyQt5 import uic
 from PyQt5.QtGui import QIcon, QKeySequence
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QFileDialog, QMessageBox, QAction, \
-    QDialog, QShortcut
+    QDialog, QShortcut, QColorDialog
 from PyQt5.QtWidgets import QPushButton, QComboBox
 from igraph import *
 
@@ -36,12 +36,16 @@ class MainWindow(QMainWindow):
     file_name = 'frontend/resource/NREN.graphml'
 
     selectedNodes = []
+    selectedNodes2 = []
 
     ADD_VERTEX_STATE = False
 
     # MODE FOR SHORTEST PATH
     is_shortest_path_mode = False
     is_source = True
+
+    # MODE FOR COLOR_CHANGE_NODE
+    is_color_change_node = False
 
     # For gradient and thickness
     attribute = 'LinkSpeedRaw'
@@ -97,6 +101,16 @@ class MainWindow(QMainWindow):
         self.button_add_vertex.setToolTip("Add Vertex")
         self.button_add_vertex.clicked.connect(self.add_vertex)
 
+        self.color_change_all_edge = self.findChild(QWidget, 'color_change')
+        self.color_change_all_edge.setToolTip("Change color of all edge")
+        self.color_change_all_edge.setIcon(QIcon('frontend/resource/color_wheel.png'))
+        self.color_change_all_edge.clicked.connect(self.change_color_all_edges)
+
+        self.color_change_node = self.findChild(QWidget, 'color_change_node')
+        self.color_change_node.setToolTip("Change color of node")
+        self.color_change_node.setIcon(QIcon('frontend/resource/color-wheel2.png'))
+        self.color_change_node.clicked.connect(self.set_color_node)
+
         self.input_page = Input(self)
 
         self.gradient_thickness_window = GradientThicknessWindow(self)
@@ -110,6 +124,25 @@ class MainWindow(QMainWindow):
                 return True
 
         return False
+
+    def change_color_all_edges(self):
+        color = QColorDialog.getColor()
+        self.view.scene.change_color_all_edge(color)
+
+    def show_vertex_id2(self, vertex):
+        if self.is_color_change_node:
+            self.selectedNodes2.append(vertex)
+
+    def set_color_node(self):
+        if self.is_color_change_node:
+            self.color2 = QColorDialog.getColor()
+            self.view.scene.change_color_nodes(self.color2)
+            self.selectedNodes2.clear()
+            self.is_color_change_node = False
+        else:
+            self.is_color_change_node = True
+        # if self.menu_action():
+        #     self.is_color_change_node = False
 
     def open_input_window(self):
         self.is_shortest_path_mode = True
@@ -231,6 +264,7 @@ class MainWindow(QMainWindow):
 
     # File -> Open
     def open_file_dialog(self):
+        self.is_color_change_node = False
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         self.file_name, _ = QFileDialog.getOpenFileName(
@@ -296,7 +330,7 @@ class MainWindow(QMainWindow):
         # Check if Source value or Destination Value is None ?
         # If 1 of them is none ,
 
-        self.sp_edge_ids = get_shortest_paths(self.parent.graph,self.source_node,self.destination_node)
+        self.sp_edge_ids = get_shortest_paths(self.parent.graph, self.source_node, self.destination_node)
         self.parent.highlight_path(self.sp_edge_ids[0])
         # self.parent.is_shortest_path_mode = False
         self.hide()
@@ -340,6 +374,7 @@ class MainWindow(QMainWindow):
         bar.show()
 
     def revert_view(self):
+        self.is_color_change_node = False
         if self.file_name:
             self.set_graph(self.file_name)
         else:
