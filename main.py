@@ -49,7 +49,7 @@ class MainWindow(QMainWindow):
     VERTEX_DISPLAYING = None
     EDGE_DISPLAYING = None
 
-    SELECTION_MODE = False
+    SELECTION_MODE = True
 
     # MODE FOR SHORTEST PATH
     is_shortest_path_mode = False

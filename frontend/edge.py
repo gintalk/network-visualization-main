@@ -1,7 +1,6 @@
 from PyQt5.QtWidgets import QGraphicsLineItem
 
 
-
 class MainEdge(QGraphicsLineItem):
     def __init__(self, edge, point_a, point_b, pen, parent):
         x_a, y_a = (point_a.x(), point_a.y())

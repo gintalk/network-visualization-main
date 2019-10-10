@@ -80,8 +80,6 @@ class MainView(QGraphicsView):
             self.scene.reverse_crop()
         elif event.key() == Qt.Key_B:
             self.scene.revert_to_default()
-        elif event.key() == Qt.Key_V:
-            self.main_window.SELECTION_MODE = not self.main_window.SELECTION_MODE
         elif event.key() == Qt.Key_R:
             self.scene.display_edges_by_gradient()
         elif event.key() == Qt.Key_T:
@@ -113,8 +111,8 @@ class MainView(QGraphicsView):
 
     def drag_mode_hint(self):
         if (
-            self.verticalScrollBar().value() != 0 or
-            self.horizontalScrollBar().value() != 0
+                self.verticalScrollBar().value() != 0 or
+                self.horizontalScrollBar().value() != 0
         ) and not self.main_window.SELECTION_MODE:
             return QGraphicsView.ScrollHandDrag
         else:

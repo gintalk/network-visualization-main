@@ -116,12 +116,6 @@ class MainScene(QGraphicsScene):
         if self.parent.availability:
             availability_color_to_vertex()
 
-        # for vertex in self.graph_to_display.vs:
-        #     # if vertex["attribute"] and vertex["min"] <= vertex[vertex["attribute"]] <= vertex["max"]:
-        #     #     self.vertex_to_display.append(vertex)
-        #     # else:
-        #     self.vertex_to_display.append(vertex)
-
         self.display_vertices()
         self.display_edges()
 
@@ -340,7 +334,7 @@ class MainScene(QGraphicsScene):
             self.parent.main_window.graph = create_vertices(self.parent.main_window.graph, 1)
 
             self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['x'], \
-            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['y'] = \
+                self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['y'] = \
                 undilate(event.scenePos().x(), event.scenePos().y(), self.graph_center, self.scale_factor)
 
             self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['pos'] = \
@@ -477,7 +471,7 @@ class MainScene(QGraphicsScene):
                     self.highlighted_item.unhighlight_self()
                 self.highlighted_item = item_under_cursor
             elif item_under_cursor is not None and self.highlighted_item is None:
-                # Whe mouse moves from background into an item
+                # When mouse moves from background into an item
                 self.parent.setDragMode(QGraphicsView.NoDrag)
 
                 self.highlighted_item = item_under_cursor
@@ -533,7 +527,7 @@ class SelectedList:
 
     def clear(self):
         for item in self.SELECTED:
-            if isinstance(item, MainVertex):
+            if isinstance(item, MainVertex) and not item.is_highlighted:
                 item.unhighlight_self()
 
         self.SELECTED.clear()
