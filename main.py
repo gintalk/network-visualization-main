@@ -129,7 +129,6 @@ class MainWindow(QMainWindow):
         # self.button_add_attribute_value.setToolTip("Add value for attribute")
         # self.button_add_attribute_value.clicked.connect(self.add_attribute_value)
 
-
         self.button_add_edge = self.findChild(QWidget, 'addedge')
         self.button_add_edge.setToolTip("Add Edge")
         self.button_add_edge.clicked.connect(self.add_edge)
