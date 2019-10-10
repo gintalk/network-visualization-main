@@ -102,6 +102,10 @@ class MainWindow(QMainWindow):
         self.button_create_attribute_dialog.setToolTip("Add Attribute")
         self.button_create_attribute_dialog.clicked.connect(self.create_attribute)
 
+        # self.button_add_attribute_value = self.findChild(QWidget, 'add_attribute_value')
+        # self.button_add_attribute_value.setToolTip("Add value for attribute")
+        # self.button_add_attribute_value.clicked.connect(self.add_attribute_value)
+
 
         self.input_page = Input(self)
         self.gradient_thickness_window = GradientThicknessWindow(self)
@@ -360,6 +364,8 @@ class MainWindow(QMainWindow):
     def create_attribute(self):
         self.create_attribute_dialog.show()
 
+    def create_attribute(self):
+        self.create_attribute_dialog.show()
 
 
 # Input window for shortest path

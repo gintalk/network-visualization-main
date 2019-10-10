@@ -9,8 +9,11 @@ class CreateAttributeDialog(QDialog):
         uic.loadUi('frontend/resource/CreateAttributeDialog.ui', self)
         self.setWindowTitle("Create Attribute")
 
-        self.comboboxButton = self.findChild(QComboBox, 'comboBox')
-        self.comboboxButton.activated.connect(self.on_element_change)
+        self.componentComboBox = self.findChild(QComboBox, 'componentComboBox')
+        self.componentComboBox.activated.connect(self.on_element_change)
+
+        self.dataTypeComboBox = self.findChild(QComboBox, 'dataTypeComboBox')
+        self.dataTypeComboBox.activated.connect(self.on_data_type_change)
 
         self.textEdit = self.findChild(QTextEdit, 'textEdit')
 
@@ -20,9 +23,13 @@ class CreateAttributeDialog(QDialog):
         self.graph = self.parent.graph
 
         self.element = "Edge"
+        self.dataType = "String"
 
     def on_element_change(self):
-        self.element = self.comboboxButton.currentText()
+        self.element = self.componentComboBox.currentText()
+
+    def on_data_type_change(self):
+        self.dataType = self.dataTypeComboBox.currentText()
 
     def on_click_ok(self):
         attribute_name = self.textEdit.toPlainText()
@@ -34,12 +41,22 @@ class CreateAttributeDialog(QDialog):
                 if attribute_name in self.graph.es.attributes():
                     QMessageBox.about(self, 'Sorry', 'Edge already have this attribute. Please choose another name.')
                 else:
-                    self.graph.es[attribute_name] = None
+                    if self.dataType == "String":
+                        self.graph.es[attribute_name] = ""
+                    elif self.dataType == "Integer":
+                        self.graph.es[attribute_name] = -1
+                    elif self.dataType == "Float":
+                        self.graph.es[attribute_name] = -1.
                     QMessageBox.about(self, 'Created', 'Edge attribute created')
 
             elif self.element == "Vertex":
-                if attribute_name in self.graph.vs:
+                if attribute_name in self.graph.vs.attributes():
                     QMessageBox.about(self, 'Sorry', 'Vertex already have this attribute. Please choose another name.')
                 else:
-                    self.graph.vs[attribute_name] = None
+                    if self.dataType == "String":
+                        self.graph.vs[attribute_name] = ""
+                    elif self.dataType == "Integer":
+                        self.graph.vs[attribute_name] = -1
+                    elif self.dataType == "Float":
+                        self.graph.vs[attribute_name] = -1.
                     QMessageBox.about(self, 'Created', 'Vertex attribute created')
