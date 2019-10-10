@@ -1,10 +1,8 @@
 import numpy as np
 from PyQt5 import uic
 from PyQt5.QtGui import QIcon, QKeySequence
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QFileDialog, QMessageBox, QAction, \
-    QDialog, QShortcut, QPushButton, QComboBox, QColorDialog
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QFileDialog, QMessageBox, QAction, QDialog, QShortcut, QColorDialog
 
-QDialog, QShortcut, QColorDialog
 from PyQt5.QtWidgets import QPushButton, QComboBox
 from igraph import *
 

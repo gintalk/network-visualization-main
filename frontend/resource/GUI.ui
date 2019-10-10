@@ -280,8 +280,8 @@
      <rect>
       <x>240</x>
       <y>0</y>
-      <width>41</width>
-      <height>41</height>
+      <width>40</width>
+      <height>40</height>
      </rect>
     </property>
     <property name="text">
@@ -293,8 +293,8 @@
      <rect>
       <x>280</x>
       <y>0</y>
-      <width>41</width>
-      <height>41</height>
+      <width>40</width>
+      <height>40</height>
      </rect>
     </property>
     <property name="text">
