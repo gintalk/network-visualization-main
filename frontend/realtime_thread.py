@@ -1,5 +1,9 @@
 from threading import Thread
 from time import sleep
+import numpy as np
+from PyQt5.QtGui import QPen, QColor
+from sklearn.preprocessing import MinMaxScaler
+import time
 
 from numpy import random
 
@@ -12,6 +16,7 @@ class RealTimeMode():
         self.realtimeState = None
         self.thread = None
         self.parent = parent
+        self.scaler = MinMaxScaler()
 
     def set(self):
         self.realtimeState = True
@@ -23,23 +28,14 @@ class RealTimeMode():
         self.thread.join()
 
     def doRealTime(self):
-        g = self.parent.graph
-        print("Do real time " ,self.vertexAttr)
+        graph = self.parent.graph
+        initial_value = np.random.standard_normal(graph.ecount())
         while self.realtimeState:
-            if len(self.vertexAttr) > 0:
-                for v in self.vertexAttr:
-                    if v[0] == "Normal Distribution":
-                        g.vs[v[2]] = [abs(random.normal(i, v[1])) for i in g.vs[v[2]]]
-                    else:
-                        g.vs[v[2]] = [abs(random.uniform(i - v[1], i + v[1])) for i in g.vs[v[2]]]
+            scaled_value = (np.sin(initial_value + time.time()) + 1) / 2.
+            for line in self.parent.view.scene.lines:
 
-            if len(self.edgeAttr) > 0:
-                for edge in self.edgeAttr:
-                    if edge[0] == "Normal Distribution":
-                        g.es[edge[2]] = [abs(random.normal(i, edge[1])) for i in g.es[edge[2]]]
-                    else:
-                        g.es[edge[2]] = [abs(random.uniform(i - edge[1], i + edge[1])) for i in g.es[edge[2]]]
-
-            self.canvas.notifyGraphUpdated()
-            self.canvas.update()
+                # line_pen = QPen(QColor(255 - bandwidth[n] * 255, 0, bandwidth[n] * 255))
+                # line_pen.setWidthF(line.edge['edge_width'])
+                # line.setPen(line_pen)
+            self.view.update_view()
             sleep(1.0 / self.fps)

@@ -13,6 +13,7 @@ from frontend.databar import DataBar
 from frontend.edgeinfo import EdgeInfo
 from frontend.vertexinfo import VertexInfo
 from frontend.view import MainView
+from frontend.realtime_thread import RealTimeMode
 
 
 class MainWindow(QMainWindow):
@@ -137,10 +138,19 @@ class MainWindow(QMainWindow):
         self.button_delete_edge.clicked.connect(self.delete_edge)
         self.button_delete_edge.hide()
 
+        self.button_realtime_mode = self.findChild(QWidget, 'realtime_mode')
+        self.button_realtime_mode.setToolTip("Begin Realtime Mode")
+        self.button_realtime_mode.clicked.connect(self.set_realtime_mode)
+
+        self.button_close_realtime_mode = self.findChild(QWidget, 'close_realtime_mode')
+        self.button_close_realtime_mode.setToolTip("Stop Realtime Mode")
+        self.button_close_realtime_mode.clicked.connect(self.unset_realtime_mode)
+
         self.input_page = Input(self)
         self.gradient_thickness_window = GradientThicknessWindow(self)
         self.create_attribute_dialog = CreateAttributeDialog(self)
         self.add_attribute_value_dialog = AddAttributeValueDialog(self)
+        self.realtime_thread = RealTimeMode(self)
 
     # Check if self.attribute is an attribute in the graph or not
     def search_attribute(self):
@@ -477,6 +487,16 @@ class MainWindow(QMainWindow):
 
     def pop_add_value_dialog(self):
         self.add_attribute_value_dialog.show()
+
+    def set_realtime_mode(self):
+        self.realtime_thread.set()
+        self.button_realtime_mode.hide()
+        self.button_close_realtime_mode.show()
+
+    def unset_realtime_mode(self):
+        self.realtime_thread.unset()
+        self.button_realtime_mode.show()
+        self.button_close_realtime_mode.hide()
 
 
 # Input window for shortest path

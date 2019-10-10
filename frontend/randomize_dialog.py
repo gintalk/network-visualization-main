@@ -48,4 +48,3 @@ class RandomizeDialog(QDialog):
                     value = y_value * np.random.standard_normal(self.graph.vcount()) + x_value
                 self.graph.vs[self.attribute] = value
             QMessageBox.about(self, 'Successful', 'Attribute value have been added')
-
