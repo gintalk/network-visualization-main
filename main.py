@@ -167,7 +167,7 @@ class MainWindow(QMainWindow):
 
         self.input_page = Input(self)
         self.gradient_thickness_window = GradientThicknessWindow(self)
-        self.create_attribute_dialog = CreateAttributeDialog(self)
+        self.create_attribute_dialog = None
         self.add_attribute_value_dialog = AddAttributeValueDialog(self)
         self.realtime_thread = None
 
@@ -526,6 +526,7 @@ class MainWindow(QMainWindow):
             self.gradient_thickness_window = GradientThicknessWindow(self)
 
     def create_attribute(self):
+        self.create_attribute_dialog = CreateAttributeDialog(self)
         self.create_attribute_dialog.show()
 
     def pop_add_value_dialog(self):
