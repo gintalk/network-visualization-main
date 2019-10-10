@@ -2,15 +2,11 @@ import numpy as np
 from PyQt5 import uic
 from PyQt5.QtGui import QIcon, QKeySequence
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QFileDialog, QMessageBox, QAction, \
-    QDialog, QShortcut, QPushButton, QComboBox, QColorDialog
-
-QDialog, QShortcut, QColorDialog
+    QDialog, QShortcut, QColorDialog
 from PyQt5.QtWidgets import QPushButton, QComboBox
 from igraph import *
 
 from backend.algorithm import get_shortest_paths
-from backend.edge import delete_edges
-from backend.vertex import delete_vertices
 from frontend.create_attribute_dialog import CreateAttributeDialog
 from frontend.databar import DataBar
 from frontend.edgeinfo import EdgeInfo
@@ -249,6 +245,9 @@ class MainWindow(QMainWindow):
     def highlight_path(self, edge_path):
         self.view.highlight_path(edge_path)
 
+    def shortest_path_highlight(self,edge_path):
+        self.view.shortest_path_highlight(edge_path)
+
     def save_graph(self, graph_path):
         write(self.graph, graph_path)
 
@@ -461,9 +460,7 @@ class MainWindow(QMainWindow):
         reply = QMessageBox.question(self, '', 'Are you sure want to delete this vertex?',
                                      QMessageBox.Yes, QMessageBox.No)
         if reply == QMessageBox.Yes:
-            self.view.scene.removeItem(self.VERTEX_DISPLAYING)
-            # delete_vertices(self.graph, self.VERTEX_DISPLAYING)
-            self.view.update_view()
+            self.view.scene.remove_point(self.VERTEX_DISPLAYING)
             self.clear_layout(self.info_layout)
             self.VERTEX_DISPLAYING = None
             self.button_delete_vertex.hide()
@@ -499,8 +496,8 @@ class Input(QDialog):
         uic.loadUi('frontend/resource/INPUT.ui', self)
         self.setWindowTitle("Input")
 
-        self.source_node = 0
-        self.destination_node = 0
+        self.source_node = None
+        self.destination_node = None
 
         self.button = self.findChild(QWidget, 'buttonBox')
         self.button.rejected.connect(self.closeWindow_cancel)
@@ -531,12 +528,15 @@ class Input(QDialog):
     def closeWindow_ok(self):
         # Check if Source value or Destination Value is None ?
         # If 1 of them is none ,
-
-        self.sp_edge_ids = get_shortest_paths(self.parent.graph, self.source_node, self.destination_node)
-        self.parent.highlight_path(self.sp_edge_ids[0])
-        # self.parent.is_shortest_path_mode = False
-        self.hide()
-
+        if self.source_node == self.destination_node:
+            QMessageBox.about(self, "Wrong Input", "Please choose 2 different nodes.")
+        elif self.source_node is None or self.destination_node is None:
+            QMessageBox.about(self, "Wrong Input", "Please choose 2 nodes to highlight the shortest path")
+        elif self.source_node is not None and self.destination_node is not None:
+            self.sp_edge_ids = get_shortest_paths(self.parent.graph, self.source_node, self.destination_node)
+            self.parent.highlight_path(self.sp_edge_ids[0])
+            self.parent.is_shortest_path_mode = False
+            self.hide()
 
 # Window for gradient and thickness
 class GradientThicknessWindow(QDialog):

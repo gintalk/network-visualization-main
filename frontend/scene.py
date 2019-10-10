@@ -252,6 +252,7 @@ class MainScene(QGraphicsScene):
             if item not in lines_to_keep and not self.rb_selected_points.contains(item):
                 self.removeItem(item)
 
+        self.rb_selected_points.clear()
         self.save_cropped()
 
     def reverse_crop(self):
@@ -262,6 +263,7 @@ class MainScene(QGraphicsScene):
                         self.removeItem(line)
                 self.removeItem(point)
 
+        self.rb_selected_points.clear()
         self.save_cropped()
 
     def save_cropped(self):
@@ -311,8 +313,17 @@ class MainScene(QGraphicsScene):
             if line not in items:
                 self.addItem(line)
 
+        self.rb_selected_points.clear()
+
         self.graph_to_display = self.default_graph.copy()
         self.parent.main_window.graph = self.graph_to_display
+
+    def remove_point(self, point):
+        self.removeItem(point)
+        for line in point.lines:
+            self.removeItem(line)
+
+        self.save_cropped()
 
     # For add vertex
     def mouseDoubleClickEvent(self, event):
