@@ -301,7 +301,7 @@
      <string/>
     </property>
    </widget>
-   <widget class="QPushButton" name="realtime_mode">
+   <widget class="QPushButton" name="close_realtime_mode">
     <property name="geometry">
      <rect>
       <x>400</x>
@@ -314,10 +314,10 @@
      <string/>
     </property>
    </widget>
-   <widget class="QPushButton" name="close_realtime_mode">
+   <widget class="QPushButton" name="realtime_mode">
     <property name="geometry">
      <rect>
-      <x>440</x>
+      <x>400</x>
       <y>0</y>
       <width>40</width>
       <height>40</height>
