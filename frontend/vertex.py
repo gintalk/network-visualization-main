@@ -33,6 +33,7 @@ class MainVertex(QGraphicsEllipseItem):
     def mousePressEvent(self, event):
         self.parent.parent.main_window.display_vertex(self)
         self.parent.parent.main_window.show_vertex_id(self.vertex)
+        self.parent.parent.main_window.show_vertex_id2(self.vertex)
 
         if (self.parent.parent.main_window.ADD_EDGE_STATE == True):
             self.parent.real_add_edge(self.vertex)
@@ -60,6 +61,9 @@ class MainVertex(QGraphicsEllipseItem):
         self.setPen(pen)
         self.setBrush(self.parent.COLORS[self.parent.parent.SETTINGS['highlight_color']])
 
+
     def unhighlight_self(self):
         self.setPen(self._pen)
         self.setBrush(self._brush)
+
+
