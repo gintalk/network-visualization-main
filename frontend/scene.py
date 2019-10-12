@@ -368,7 +368,7 @@ class MainScene(QGraphicsScene):
             self.points.append(point)
 
             self.parent.main_window.ADD_VERTEX_STATE = False
-            self.parent.main_window.button_add_vertex.setToolTip("Add Vertex")
+            # self.parent.main_window.button_add_vertex.setToolTip("Add Vertex")
 
     # For add edge
     def real_add_edge(self, vertex):

@@ -87,7 +87,7 @@
      <string/>
     </property>
    </widget>
-   <widget class="QPushButton" name="addvertex">
+   <widget class="QPushButton" name="addVertex">
     <property name="geometry">
      <rect>
       <x>200</x>
@@ -275,7 +275,7 @@
      <string/>
     </property>
    </widget>
-   <widget class="QPushButton" name="color_change_node">
+   <widget class="QPushButton" name="changeNodeColor">
     <property name="geometry">
      <rect>
       <x>400</x>

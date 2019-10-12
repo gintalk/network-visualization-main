@@ -94,7 +94,6 @@ class MainWindow(QMainWindow):
         self.bind_menu_actions()
         self.bind_buttons()
 
-
         self.input_page = None
         self.gradient_thickness_window = None
         self.create_attribute_dialog = None
@@ -122,15 +121,15 @@ class MainWindow(QMainWindow):
         button_reset_zoom.setIcon(QIcon('frontend/resource/icons/iconResetZoom.png'))
         button_reset_zoom.clicked.connect(self.reset_zoom_button)
 
-        self.button_add_vertex = self.findChild(QWidget, 'addvertex')
-        self.button_add_vertex.setToolTip("Add Vertex")
-        self.button_add_vertex.setIcon(QIcon('frontend/resource/add_vertex.png'))
-        self.button_add_vertex.clicked.connect(self.add_vertex)
+        button_add_vertex = self.findChild(QWidget, 'addVertex')
+        button_add_vertex.setToolTip("Add Vertex")
+        button_add_vertex.setIcon(QIcon('frontend/resource/icons/iconAddVertex.png'))
+        button_add_vertex.clicked.connect(self.add_vertex)
 
-        self.color_change_node = self.findChild(QWidget, 'color_change_node')
-        self.color_change_node.setToolTip("Change color of node")
-        self.color_change_node.setIcon(QIcon('frontend/resource/color-wheel2.png'))
-        self.color_change_node.clicked.connect(self.set_color_node)
+        change_node_color = self.findChild(QWidget, 'changeNodeColor')
+        change_node_color.setToolTip("Change Node(s) Color")
+        change_node_color.setIcon(QIcon('frontend/resource/icons/iconChangeNodeColor.png'))
+        change_node_color.clicked.connect(self.set_color_node)
 
         self.button_create_attribute_dialog = self.findChild(QWidget, 'add_attribute')
         self.button_create_attribute_dialog.setToolTip("Add Attribute")
@@ -142,10 +141,10 @@ class MainWindow(QMainWindow):
         self.button_add_attribute_value.setIcon(QIcon('frontend/resource/add_value.png'))
         self.button_add_attribute_value.clicked.connect(self.pop_add_value_dialog)
 
-        self.button_add_edge = self.findChild(QWidget, 'addedge')
-        self.button_add_edge.setToolTip("Add Edge")
-        self.button_add_edge.setIcon(QIcon('frontend/resource/add_edge.png'))
-        self.button_add_edge.clicked.connect(self.add_edge)
+        button_add_edge = self.findChild(QWidget, 'addedge')
+        button_add_edge.setToolTip("Add Edge")
+        button_add_edge.setIcon(QIcon('frontend/resource/add_edge.png'))
+        button_add_edge.clicked.connect(self.add_edge)
 
         self.button_delete_vertex = self.findChild(QWidget, 'deletevertex')
         self.button_delete_vertex.clicked.connect(self.delete_vertex)
@@ -211,7 +210,7 @@ class MainWindow(QMainWindow):
 
         # Cancel add edge mode when finding shortest path
         self.ADD_EDGE_MODE = False
-        self.button_add_edge.setToolTip("Add Edge")
+        # self.button_add_edge.setToolTip("Add Edge")
         self.SOURCE_TARGET = []
 
     def open_gradient_thickness_window(self):
@@ -219,7 +218,7 @@ class MainWindow(QMainWindow):
         self.gradient_thickness_window.show()
 
         self.ADD_EDGE_MODE = False
-        self.button_add_edge.setToolTip("Add Edge")
+        # self.button_add_edge.setToolTip("Add Edge")
         self.SOURCE_TARGET = []
 
     def zoom_in_button(self):
@@ -268,7 +267,7 @@ class MainWindow(QMainWindow):
 
         self.gradient_thickness_window = GradientThicknessWindow(self)
         self.ADD_EDGE_MODE = False
-        self.button_add_edge.setToolTip("Add Edge")
+        # self.button_add_edge.setToolTip("Add Edge")
         self.SOURCE_TARGET = []
 
     def layout_button_clicked(self):
@@ -276,7 +275,7 @@ class MainWindow(QMainWindow):
 
         self.gradient_thickness_window = GradientThicknessWindow(self)
         self.ADD_EDGE_MODE = False
-        self.button_add_edge.setToolTip("Add Edge")
+        # self.button_add_edge.setToolTip("Add Edge")
         self.SOURCE_TARGET = []
 
     def settings(self, **kwargs):
@@ -377,9 +376,9 @@ class MainWindow(QMainWindow):
             self.EDGE_DISPLAYING = None
 
             self.ADD_VERTEX_MODE = False
-            self.button_add_vertex.setToolTip("Add Vertex")
+            # self.button_add_vertex.setToolTip("Add Vertex")
             self.ADD_EDGE_MODE = False
-            self.button_add_edge.setToolTip("Add Edge")
+            # self.button_add_edge.setToolTip("Add Edge")
             self.SOURCE_TARGET = []
 
             self.gradient_thickness_window = GradientThicknessWindow(self)
@@ -485,25 +484,25 @@ class MainWindow(QMainWindow):
         self.VERTEX_DISPLAYING = None
         self.EDGE_DISPLAYING = None
         self.ADD_EDGE_MODE = False
-        self.button_add_edge.setToolTip("Add Edge")
+        # self.button_add_edge.setToolTip("Add Edge")
         self.SOURCE_TARGET = []
 
     def add_vertex(self):
         if not self.ADD_VERTEX_MODE:
             self.ADD_VERTEX_MODE = True
-            self.button_add_vertex.setToolTip("Cancel Add Vertex")
+            # self.button_add_vertex.setToolTip("Cancel Add Vertex")
         else:
             self.ADD_VERTEX_MODE = False
-            self.button_add_vertex.setToolTip("Add Vertex")
+            # self.button_add_vertex.setToolTip("Add Vertex")
 
     def add_edge(self):
         if not self.ADD_EDGE_MODE:
             self.ADD_EDGE_MODE = True
-            self.button_add_edge.setToolTip("Cancel Add Edge")
+            # self.button_add_edge.setToolTip("Cancel Add Edge")
             QMessageBox.about(self, '', 'Please select 2 vertices to add edge')
         else:
             self.ADD_EDGE_MODE = False
-            self.button_add_edge.setToolTip("Add Edge")
+            # self.button_add_edge.setToolTip("Add Edge")
             self.SOURCE_TARGET = []
 
     def delete_vertex(self):
@@ -516,7 +515,7 @@ class MainWindow(QMainWindow):
             self.button_delete_vertex.hide()
 
             self.ADD_EDGE_MODE = False
-            self.button_add_edge.setToolTip("Add Edge")
+            # self.button_add_edge.setToolTip("Add Edge")
             self.SOURCE_TARGET = []
 
             self.gradient_thickness_window = GradientThicknessWindow(self)
