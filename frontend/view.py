@@ -32,7 +32,7 @@ class MainView(QGraphicsView):
 
         self.availability = False
         self._sp_thread = None
-        self.realtimeState = False
+        self.REAL_TIME_MODE = False
         self._sp_colors = [QColor(Qt.red), QColor(Qt.green)]
         self._sp_color_index = 0
         self._edge_path = None
@@ -144,7 +144,7 @@ class MainView(QGraphicsView):
             if target_vertex_id not in self._vertex_path:
                 self._vertex_path.append(target_vertex_id)
 
-        self.realtimeState = True
+        self.REAL_TIME_MODE = True
         self._sp_thread = RealTimeMode(1, self)
         self._sp_thread.update.connect(self.real_time_highlight)
         self._sp_thread.start()
@@ -166,7 +166,7 @@ class MainView(QGraphicsView):
             point.setBrush(self._sp_colors[self._sp_color_index])
 
     def unhighlight_path(self):
-        self.realtimeState = False
+        self.REAL_TIME_MODE = False
         self._sp_thread.quit()
 
         self.scene.unhighlight_edges(self._edge_path)

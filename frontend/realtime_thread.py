@@ -17,6 +17,6 @@ class RealTimeMode(QThread):
         self.fps = fps
 
     def run(self):
-        while self.parent.realtimeState:
+        while self.parent.REAL_TIME_MODE:
             self.update.emit()
             time.sleep(1.0 / self.fps)

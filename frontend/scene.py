@@ -330,7 +330,7 @@ class MainScene(QGraphicsScene):
 
     # For add vertex
     def mouseDoubleClickEvent(self, event):
-        if self.parent.main_window.ADD_VERTEX_STATE:
+        if self.parent.main_window.ADD_VERTEX_MODE:
             self.parent.main_window.graph = create_vertices(self.parent.main_window.graph, 1)
 
             self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['x'], \

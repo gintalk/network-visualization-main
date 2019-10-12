@@ -36,7 +36,7 @@ class MainVertex(QGraphicsEllipseItem):
         self.parent.parent.main_window.show_vertex_id(self.vertex)
         self.parent.parent.main_window.show_vertex_id2(self.vertex)
 
-        if self.parent.parent.main_window.ADD_EDGE_STATE:
+        if self.parent.parent.main_window.ADD_EDGE_MODE:
             self.parent.real_add_edge(self.vertex)
 
     def mouseMoveEvent(self, event):
