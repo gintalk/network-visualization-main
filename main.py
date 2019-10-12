@@ -104,22 +104,22 @@ class MainWindow(QMainWindow):
     def bind_buttons(self):
         button_shortest_path = self.findChild(QWidget, 'shortestPath')
         button_shortest_path.setToolTip("Find the shortest path between 2 nodes")
-        button_shortest_path.setIcon(QIcon('frontend/resource/iconShortestPath.png'))
+        button_shortest_path.setIcon(QIcon('frontend/resource/icons/iconShortestPath.png'))
         button_shortest_path.clicked.connect(self.open_input_window)
 
         button_zoom_in = self.findChild(QWidget, 'zoomIn')
         button_zoom_in.setToolTip("Zoom In")
-        button_zoom_in.setIcon(QIcon('frontend/resource/iconZoomIn.png'))
+        button_zoom_in.setIcon(QIcon('frontend/resource/icons/iconZoomIn.png'))
         button_zoom_in.clicked.connect(self.zoom_in_button)
 
         button_zoom_out = self.findChild(QWidget, 'zoomOut')
         button_zoom_out.setToolTip("Zoom Out")
-        button_zoom_out.setIcon(QIcon('frontend/resource/iconZoomOut.png'))
+        button_zoom_out.setIcon(QIcon('frontend/resource/icons/iconZoomOut.png'))
         button_zoom_out.clicked.connect(self.zoom_out_button)
 
         button_reset_zoom = self.findChild(QWidget, 'resetZoom')
         button_reset_zoom.setToolTip("Reset Zoom")
-        button_reset_zoom.setIcon(QIcon('frontend/resource/iconResetZoom.png'))
+        button_reset_zoom.setIcon(QIcon('frontend/resource/icons/iconResetZoom.png'))
         button_reset_zoom.clicked.connect(self.reset_zoom_button)
 
         self.button_add_vertex = self.findChild(QWidget, 'addvertex')
