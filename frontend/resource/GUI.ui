@@ -87,7 +87,7 @@
      <string/>
     </property>
    </widget>
-   <widget class="QPushButton" name="addVertex">
+   <widget class="QPushButton" name="addNode">
     <property name="geometry">
      <rect>
       <x>200</x>
@@ -100,7 +100,7 @@
      <string/>
     </property>
    </widget>
-   <widget class="QPushButton" name="addedge">
+   <widget class="QPushButton" name="addLink">
     <property name="geometry">
      <rect>
       <x>250</x>
@@ -223,7 +223,7 @@
      </property>
     </item>
    </widget>
-   <widget class="QPushButton" name="deletevertex">
+   <widget class="QPushButton" name="deleteNode">
     <property name="geometry">
      <rect>
       <x>1330</x>
@@ -236,7 +236,7 @@
      <string>Delete Vertex</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="deleteedge">
+   <widget class="QPushButton" name="deleteLink">
     <property name="geometry">
      <rect>
       <x>1330</x>
@@ -249,7 +249,7 @@
      <string>Delete Edge</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="add_attribute">
+   <widget class="QPushButton" name="addAttribute">
     <property name="geometry">
      <rect>
       <x>300</x>
@@ -262,7 +262,7 @@
      <string/>
     </property>
    </widget>
-   <widget class="QPushButton" name="add_attribute_value">
+   <widget class="QPushButton" name="assignAttributeValue">
     <property name="geometry">
      <rect>
       <x>350</x>
@@ -288,7 +288,7 @@
      <string/>
     </property>
    </widget>
-   <widget class="QPushButton" name="selectionmode">
+   <widget class="QPushButton" name="selectionMode">
     <property name="geometry">
      <rect>
       <x>450</x>
@@ -301,10 +301,10 @@
      <string/>
     </property>
    </widget>
-   <widget class="QPushButton" name="close_realtime_mode">
+   <widget class="QPushButton" name="stopRealTimeMode">
     <property name="geometry">
      <rect>
-      <x>500</x>
+      <x>550</x>
       <y>0</y>
       <width>51</width>
       <height>61</height>
@@ -314,10 +314,10 @@
      <string/>
     </property>
    </widget>
-   <widget class="QPushButton" name="realtime_mode">
+   <widget class="QPushButton" name="realTimeMode">
     <property name="geometry">
      <rect>
-      <x>550</x>
+      <x>500</x>
       <y>0</y>
       <width>51</width>
       <height>61</height>

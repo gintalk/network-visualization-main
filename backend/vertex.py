@@ -16,7 +16,7 @@ def create_vertices(graph, n=None, name=None, **kwargs):
     if name is None and not kwargs:
         graph.add_vertices(n)
     else:
-        graph.add_vertex(name, **kwargs)
+        graph.add_node(name, **kwargs)
 
     return graph
 

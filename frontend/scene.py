@@ -157,7 +157,7 @@ class MainScene(QGraphicsScene):
 
     # This is a more complete way of showing gradient in the edge
     def display_edges_by_gradient(self):
-        if not self.parent.main_window.search_attribute():
+        if not self.parent.main_window.contains_attribute():
             return
         bandwidth = self.scalling()
         n = 0
@@ -173,7 +173,7 @@ class MainScene(QGraphicsScene):
             n += 1
 
     def display_edges_by_thickness(self):
-        if not self.parent.main_window.search_attribute():
+        if not self.parent.main_window.contains_attribute():
             return
         bandwidth = self.scalling()
         n = 0
@@ -413,7 +413,7 @@ class MainScene(QGraphicsScene):
 
             self.parent.main_window.SOURCE_TARGET = []
             self.parent.main_window.ADD_EDGE_STATE = False
-            self.parent.main_window.button_add_edge.setToolTip("Add Edge")
+            # self.parent.main_window.button_add_edge.setToolTip("Add Edge")
 
     def mousePressEvent(self, event):
         self.rb_selected_points.clear()

@@ -1,14 +1,14 @@
 from PyQt5 import uic
-from PyQt5.QtWidgets import QDialog, QWidget, QMessageBox, QRadioButton, QComboBox, QFileDialog
+from PyQt5.QtWidgets import QDialog, QMessageBox, QFileDialog
 from frontend.randomize_dialog import RandomizeDialog
 import numpy as np
 
 
-class AddAttributeValueDialog(QDialog):
+class AssignAttributeValueDialog(QDialog):
     def __init__(self, parent=None):
-        super(AddAttributeValueDialog, self).__init__()
+        super(AssignAttributeValueDialog, self).__init__()
         self.parent = parent
-        uic.loadUi('frontend/resource/AddAttributeValueDialog.ui', self)
+        uic.loadUi('frontend/resource/AssignAttributeValueDialog.ui', self)
         self.setWindowTitle("Add Attribute Value")
 
         self.componentComboBox.activated.connect(self.on_element_change)
