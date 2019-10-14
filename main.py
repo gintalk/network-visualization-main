@@ -297,7 +297,7 @@ class MainWindow(QMainWindow):
 
     # ------------------------------------------------------------------------------------------------------------------
 
-    # ADD NODE
+    # ADD/REMOVE NODE
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     def start_add_node_mode(self):
         self.MODE_ADD_NODE = True
@@ -336,6 +336,15 @@ class MainWindow(QMainWindow):
 
         self.view.add_node(new_vertex)
 
+    def delete_node(self):
+        reply = QMessageBox.question(self, '', 'Are you sure want to delete this vertex?',
+                                     QMessageBox.Yes, QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            self.view.scene.remove_point(self.VERTEX_DISPLAYING)
+            self.clear_layout(self.info_layout)
+            self.VERTEX_DISPLAYING = None
+            self.BUTTON_DELETE_NODE.hide()
+
     def stop_add_node_mode(self):
         self.MODE_ADD_NODE = False
 
@@ -344,7 +353,7 @@ class MainWindow(QMainWindow):
         self.BUTTON_ADD_NODE.setIcon(QIcon('frontend/resource/icons/iconAddNode.png'))
     # ------------------------------------------------------------------------------------------------------------------
 
-    # ADD LINK
+    # ADD/REMOVE LINK
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     LINK_ENDS = None
 
@@ -390,6 +399,15 @@ class MainWindow(QMainWindow):
             self.view.add_link(new_edge)
 
         self.LINK_ENDS.clear()
+
+    def delete_link(self):
+        reply = QMessageBox.question(self, '', 'Are you sure want to delete this edge?',
+                                     QMessageBox.Yes, QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            self.view.scene.remove_line(self.EDGE_DISPLAYING)
+            self.clear_layout(self.info_layout)
+            self.EDGE_DISPLAYING = None
+            self.BUTTON_DELETE_LINK.hide()
 
     def stop_add_link_mode(self):
         self.MODE_ADD_LINK = False
@@ -725,31 +743,9 @@ class MainWindow(QMainWindow):
 
 
 
-    def delete_node(self):
-        reply = QMessageBox.question(self, '', 'Are you sure want to delete this vertex?',
-                                     QMessageBox.Yes, QMessageBox.No)
-        if reply == QMessageBox.Yes:
-            self.view.scene.remove_point(self.VERTEX_DISPLAYING)
-            self.clear_layout(self.info_layout)
-            self.VERTEX_DISPLAYING = None
-            self.BUTTON_DELETE_NODE.hide()
 
-            self.MODE_ADD_LINK = False
-            # self.button_add_edge.setToolTip("Add Edge")
-            self.SOURCE_TARGET = []
 
-            self.gradient_thickness_window = GradientThicknessWindow(self)
 
-    def delete_link(self):
-        reply = QMessageBox.question(self, '', 'Are you sure want to delete this edge?',
-                                     QMessageBox.Yes, QMessageBox.No)
-        if reply == QMessageBox.Yes:
-            self.view.scene.remove_line(self.EDGE_DISPLAYING)
-            self.clear_layout(self.info_layout)
-            self.EDGE_DISPLAYING = None
-            self.BUTTON_DELETE_LINK.hide()
-
-            self.gradient_thickness_window = GradientThicknessWindow(self)
 
     def create_attribute(self):
         self.create_attribute_dialog = CreateAttributeDialog(self)
