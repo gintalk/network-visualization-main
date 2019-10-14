@@ -1,6 +1,5 @@
 from __future__ import division
 
-import numpy as np
 from PyQt5.QtCore import *
 from PyQt5.QtGui import QPen, QColor, QBrush, QTransform
 from PyQt5.QtWidgets import QGraphicsScene, QRubberBand, QGraphicsView

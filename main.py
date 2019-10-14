@@ -21,7 +21,7 @@ from frontend.selection_list import SelectionList
 from frontend.utils import undilate
 from frontend.vertexinfo import VertexInfo
 from frontend.view import MainView
-from frontend.realtime_thread import RealTimeMode
+from frontend.thread import MainThread
 
 # noinspection PyArgumentList,PyCallByClass
 from frontend.shortest_path_input_dialog import ShortestPathInputDialog
@@ -99,7 +99,6 @@ class MainWindow(QMainWindow):
         self.gradient_thickness_window = None
         self.create_attribute_dialog = None
         self.assign_attribute_value_dialog = None
-        self.realtime_thread = None
 
     # BINDING BUTTONS TO THEIR RESPECTIVE FUNCTIONALITY
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -117,8 +116,7 @@ class MainWindow(QMainWindow):
     BUTTON_SELECTION_MODE = None
     BUTTON_CLUSTERING = None
     BUTTON_LAYOUT = None
-    BUTTON_START_REAL_TIME_MODE = None
-    BUTTON_STOP_REAL_TIME_MODE = None
+    BUTTON_REAL_TIME_MODE = None
 
     def bind_buttons(self):
         self.BUTTON_ADD_NODE = self.findChild(QPushButton, 'addNode')
@@ -185,16 +183,10 @@ class MainWindow(QMainWindow):
         self.BUTTON_SELECTION_MODE.setIcon(QIcon('frontend/resource/icons/iconRubberBandMode.png'))
         self.BUTTON_SELECTION_MODE.clicked.connect(self.toggle_selection_mode)
 
-        self.BUTTON_START_REAL_TIME_MODE = self.findChild(QPushButton, 'realTimeMode')
-        self.BUTTON_START_REAL_TIME_MODE.setToolTip("Start Real Time Mode")
-        self.BUTTON_START_REAL_TIME_MODE.setIcon(QIcon('frontend/resource/icons/iconRealTimeMode.png'))
-        self.BUTTON_START_REAL_TIME_MODE.clicked.connect(self.set_real_time_mode)
-
-        self.BUTTON_STOP_REAL_TIME_MODE = self.findChild(QPushButton, 'stopRealTimeMode')
-        self.BUTTON_STOP_REAL_TIME_MODE.setToolTip("Stop Real Time Mode")
-        self.BUTTON_STOP_REAL_TIME_MODE.setIcon(QIcon('frontend/resource/icons/iconStopRealTimeMode.png'))
-        self.BUTTON_STOP_REAL_TIME_MODE.clicked.connect(self.unset_real_time_mode)
-        self.BUTTON_STOP_REAL_TIME_MODE.hide()
+        self.BUTTON_REAL_TIME_MODE = self.findChild(QPushButton, 'realTimeMode')
+        self.BUTTON_REAL_TIME_MODE.setToolTip("Start Real Time Mode")
+        self.BUTTON_REAL_TIME_MODE.setIcon(QIcon('frontend/resource/icons/iconRealTimeMode.png'))
+        self.BUTTON_REAL_TIME_MODE.clicked.connect(self.start_real_time_mode)
 
     # ------------------------------------------------------------------------------------------------------------------
 
@@ -245,7 +237,7 @@ class MainWindow(QMainWindow):
     def highlight_path(self, edge_path):
         self.view.set_edge_path(edge_path)
 
-        self.SP_THREAD = RealTimeMode(fps=1, parent=self)
+        self.SP_THREAD = MainThread(fps=1, parent=self)
         self.SP_THREAD.update.connect(self.view.real_time_highlight)
         self.SP_THREAD.start()
 
@@ -421,6 +413,44 @@ class MainWindow(QMainWindow):
             self.view.setDragMode(QGraphicsView.NoDrag)
 
             self.BUTTON_SELECTION_MODE.setIcon(QIcon('frontend/resource/icons/iconDragMode.png'))
+    # ------------------------------------------------------------------------------------------------------------------
+
+    # REAL TIME
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    THREAD = None
+
+    def start_real_time_mode(self):
+        self.MODE_REAL_TIME = True
+        self.THREAD = MainThread(fps=20, parent=self)
+        self.THREAD.update.connect(self.morph_real_time)
+        self.THREAD.start()
+
+        self.BUTTON_REAL_TIME_MODE.clicked.disconnect()
+        self.BUTTON_REAL_TIME_MODE.clicked.connect(self.stop_real_time_mode)
+        self.BUTTON_REAL_TIME_MODE.setIcon(QIcon('frontend/resource/icons/iconStopMode.png'))
+
+    def stop_real_time_mode(self):
+        self.MODE_REAL_TIME = False
+        self.THREAD.terminate()
+        self.THREAD = None
+
+        self.BUTTON_REAL_TIME_MODE.clicked.disconnect()
+        self.BUTTON_REAL_TIME_MODE.clicked.connect(self.start_real_time_mode)
+        self.BUTTON_REAL_TIME_MODE.setIcon(QIcon('frontend/resource/icons/iconRealTimeMode.png'))
+
+    def morph_real_time(self):
+        lines = self.view.scene.lines
+        scaled_value = (np.sin(self.initial_value + time.time() * 2) + 1) / 2
+
+        for line in lines:
+            line_index = lines.index(line)
+            line_pen = QPen(
+                QColor(255 - scaled_value[line_index] * 255,
+                       255 - scaled_value[line_index] * 255,
+                       scaled_value[line_index] * 255)
+            )
+            line_pen.setWidthF(line.edge['edge_width'])
+            line.setPen(line_pen)
     # ------------------------------------------------------------------------------------------------------------------
 
     # Check if self.attribute is an attribute in the graph or not
@@ -731,36 +761,7 @@ class MainWindow(QMainWindow):
 
 
 
-    def set_real_time_mode(self):
-        self.MODE_REAL_TIME = True
-        self.realtime_thread = RealTimeMode(20, self)
-        self.realtime_thread.update.connect(self.doRealTime)
-        self.realtime_thread.start()
 
-        self.BUTTON_START_REAL_TIME_MODE.hide()
-        self.BUTTON_STOP_REAL_TIME_MODE.show()
-
-    def unset_real_time_mode(self):
-        self.MODE_REAL_TIME = False
-        self.realtime_thread.quit()
-        self.realtime_thread = None
-
-        self.BUTTON_START_REAL_TIME_MODE.show()
-        self.BUTTON_STOP_REAL_TIME_MODE.hide()
-
-    def doRealTime(self):
-        lines = self.view.scene.lines
-        scaled_value = (np.sin(self.initial_value + time.time() * 2) + 1) / 2
-
-        for line in lines:
-            line_index = lines.index(line)
-            line_pen = QPen(
-                QColor(255 - scaled_value[line_index] * 255,
-                       255 - scaled_value[line_index] * 255,
-                       scaled_value[line_index] * 255)
-            )
-            line_pen.setWidthF(line.edge['edge_width'])
-            line.setPen(line_pen)
 
 
 # Window for gradient and thickness

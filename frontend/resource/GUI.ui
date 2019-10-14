@@ -301,19 +301,6 @@
      <string/>
     </property>
    </widget>
-   <widget class="QPushButton" name="stopRealTimeMode">
-    <property name="geometry">
-     <rect>
-      <x>550</x>
-      <y>0</y>
-      <width>51</width>
-      <height>61</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
    <widget class="QPushButton" name="realTimeMode">
     <property name="geometry">
      <rect>
