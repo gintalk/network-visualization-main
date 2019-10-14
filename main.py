@@ -11,11 +11,13 @@ from PyQt5.QtWidgets import QPushButton, QComboBox
 from igraph import *
 
 from backend.algorithm import get_shortest_paths
+from backend.vertex import create_vertices
 from frontend.create_attribute_dialog import CreateAttributeDialog
 from frontend.assign_attribute_value_dialog import AssignAttributeValueDialog
 from frontend.databar import DataBar
 from frontend.edgeinfo import EdgeInfo
 from frontend.selection_list import SelectionList
+from frontend.utils import undilate
 from frontend.vertexinfo import VertexInfo
 from frontend.view import MainView
 from frontend.realtime_thread import RealTimeMode
@@ -121,10 +123,10 @@ class MainWindow(QMainWindow):
         self.BUTTON_ADD_NODE = self.findChild(QPushButton, 'addNode')
         self.BUTTON_ADD_NODE.setToolTip("Add a new node by double clicking on any empty spot on the canvas")
         self.BUTTON_ADD_NODE.setIcon(QIcon('frontend/resource/icons/iconAddNode.png'))
-        self.BUTTON_ADD_NODE.clicked.connect(self.add_node)
+        self.BUTTON_ADD_NODE.clicked.connect(self.start_add_node_mode)
 
         self.BUTTON_ADD_LINK = self.findChild(QPushButton, 'addLink')
-        self.BUTTON_ADD_LINK.setToolTip("Add a link by clicking the source and target node consecutively")
+        self.BUTTON_ADD_LINK.setToolTip("Add a link by clicking two nodes consecutively")
         self.BUTTON_ADD_LINK.setIcon(QIcon('frontend/resource/icons/iconAddLink.png'))
         self.BUTTON_ADD_LINK.clicked.connect(self.add_link)
 
@@ -163,11 +165,11 @@ class MainWindow(QMainWindow):
 
         self.BUTTON_CHANGE_NODE_COLOR = self.findChild(QPushButton, 'changeNodeColor')
         self.BUTTON_CHANGE_NODE_COLOR.setToolTip("Change node(s) color")
-        self.BUTTON_CHANGE_NODE_COLOR.setIcon(QIcon('frontend/resource/icons/iconChangeNodeColor.png'))
-        self.BUTTON_CHANGE_NODE_COLOR.clicked.connect(self.set_node_color)
+        self.BUTTON_CHANGE_NODE_COLOR.setIcon(QIcon('frontend/resource/icons/iconRecolorNode.png'))
+        self.BUTTON_CHANGE_NODE_COLOR.clicked.connect(self.start_recolor_node_mode)
 
         self.BUTTON_SHORTEST_PATH = self.findChild(QPushButton, 'shortestPath')
-        self.BUTTON_SHORTEST_PATH.setToolTip("Find the shortest path between 2 nodes by clicking on them consecutively")
+        self.BUTTON_SHORTEST_PATH.setToolTip("Find the shortest path between 2 nodes")
         self.BUTTON_SHORTEST_PATH.setIcon(QIcon('frontend/resource/icons/iconShortestPath.png'))
         self.BUTTON_SHORTEST_PATH.clicked.connect(self.start_shortest_path_mode)
 
@@ -254,11 +256,26 @@ class MainWindow(QMainWindow):
     def stop_shortest_path_mode(self):
         self.MODE_SHORTEST_PATH = False
         self.unhighlight_path()
+
+        self.SP_INPUT_DIALOG = None
+        self.SP_SOURCE_AND_TARGET = None
+        self.SP_SOURCE_AND_TARGET_INDEX = 0
+        self.SP_THREAD = None
+
     # ------------------------------------------------------------------------------------------------------------------
 
     # RECOLOR NODE(S)
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    RECOLOR_SELECTED = SelectionList()
+    RECOLOR_SELECTED = None
+
+    def start_recolor_node_mode(self):
+        self.MODE_RECOLOR_NODE = True
+        self.RECOLOR_SELECTED = SelectionList()
+
+        QMessageBox.about(self, 'You are in Node Recoloring mode', 'Pick the nodes you want to recolor')
+        self.BUTTON_CHANGE_NODE_COLOR.clicked.disconnect()
+        self.BUTTON_CHANGE_NODE_COLOR.clicked.connect(self.set_node_color)
+        self.BUTTON_CHANGE_NODE_COLOR.setIcon(QIcon('frontend/resource/icons/iconSetNodeColor.png'))
 
     def get_recolor_nodes(self, node):
         if self.MODE_RECOLOR_NODE:
@@ -268,18 +285,70 @@ class MainWindow(QMainWindow):
                 self.RECOLOR_SELECTED.remove(node)
 
     def set_node_color(self):
-        if self.MODE_RECOLOR_NODE:
-            color = QColorDialog.getColor()
+        color = QColorDialog.getColor()
 
-            for point in self.RECOLOR_SELECTED:
-                point.setBrush(color)
-                point.update_default_brush()
+        for point in self.RECOLOR_SELECTED:
+            point.setBrush(color)
+            point.update_default_brush()
 
-            self.RECOLOR_SELECTED.clear()
-            self.MODE_RECOLOR_NODE = False
-        else:
-            self.MODE_RECOLOR_NODE = True
-            QMessageBox.about(self, 'You are in Node Recoloring mode', 'Pick the nodes you want to recolor')
+        self.stop_recolor_node_mode()
+
+    def stop_recolor_node_mode(self):
+        self.MODE_RECOLOR_NODE = False
+        self.RECOLOR_SELECTED.clear()
+        self.RECOLOR_SELECTED = None
+
+        self.BUTTON_CHANGE_NODE_COLOR.clicked.disconnect()
+        self.BUTTON_CHANGE_NODE_COLOR.clicked.connect(self.start_recolor_node_mode)
+        self.BUTTON_CHANGE_NODE_COLOR.setIcon(QIcon('frontend/resource/icons/iconRecolorNode.png'))
+
+    # ------------------------------------------------------------------------------------------------------------------
+
+    # ADD NODE
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    def start_add_node_mode(self):
+        self.MODE_ADD_NODE = True
+
+        self.BUTTON_ADD_NODE.clicked.disconnect()
+        self.BUTTON_ADD_NODE.clicked.connect(self.stop_add_node_mode)
+        self.BUTTON_ADD_NODE.setIcon(QIcon('frontend/resource/icons/iconStopMode.png'))
+
+    def add_node(self, event, graph_center, scale_factor):
+        self.graph = create_vertices(self.graph, 1)
+        new_vertex = self.graph.vs[self.graph.vcount() - 1]
+
+        new_vertex['pos'] = {'x': event.scenePos().x(), 'y': event.scenePos().y()}
+        new_vertex['x'], new_vertex['y'] = undilate(
+            new_vertex['pos']['x'], new_vertex['pos']['y'], graph_center, scale_factor
+        )
+
+        attributes = self.graph.vs[0].attributes()
+        for attr in attributes:
+            if attr == 'Longitude' or attr == 'x':
+                value = new_vertex['x']
+            elif attr == 'Latitude' or attr == 'y':
+                value = new_vertex['y']
+            elif attr == 'pos':
+                value = new_vertex['pos']
+            elif attr == 'availability':
+                value = np.random.randint(2)
+            elif attr == 'id':
+                value = 'n' + str(new_vertex.index)
+            elif attr == 'color':
+                value = QColor(Qt.red)
+            else:
+                value = ''
+
+            new_vertex[attr] = value
+
+        self.view.add_node(new_vertex)
+
+    def stop_add_node_mode(self):
+        self.MODE_ADD_NODE = False
+
+        self.BUTTON_ADD_NODE.clicked.disconnect()
+        self.BUTTON_ADD_NODE.clicked.connect(self.start_add_node_mode)
+        self.BUTTON_ADD_NODE.setIcon(QIcon('frontend/resource/icons/iconAddNode.png'))
     # ------------------------------------------------------------------------------------------------------------------
 
     # Check if self.attribute is an attribute in the graph or not
@@ -295,8 +364,6 @@ class MainWindow(QMainWindow):
     def change_color_all_links(self):
         color = QColorDialog.getColor()
         self.view.scene.change_color_all_links(color)
-
-
 
     def open_gradient_thickness_window(self):
         self.gradient_thickness_window = GradientThicknessWindow(self)
@@ -553,14 +620,6 @@ class MainWindow(QMainWindow):
         self.MODE_ADD_LINK = False
         # self.button_add_edge.setToolTip("Add Edge")
         self.SOURCE_TARGET = []
-
-    def add_node(self):
-        if not self.MODE_ADD_NODE:
-            self.MODE_ADD_NODE = True
-            # self.button_add_vertex.setToolTip("Cancel Add Vertex")
-        else:
-            self.MODE_ADD_NODE = False
-            # self.button_add_vertex.setToolTip("Add Vertex")
 
     def add_link(self):
         if not self.MODE_ADD_LINK:

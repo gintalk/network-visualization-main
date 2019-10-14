@@ -50,6 +50,14 @@ class MainScene(QGraphicsScene):
 
         self.init_variables()
 
+    def add_node(self, vertex):
+        point_pen = QPen(self.COLORS['black'])
+        point_pen.setWidth(self.parent.SETTINGS['point_border_width'])
+        d = self.parent.SETTINGS['point_diameter']
+        point = MainVertex(vertex, d, point_pen, vertex['color'], self)
+        self.addItem(point)
+        self.points.append(point)
+
     def init_variables(self):
         self.graph_to_display = self.parent.main_window.graph
         self.default_graph = self.graph_to_display.copy()
@@ -326,44 +334,7 @@ class MainScene(QGraphicsScene):
     # For add vertex
     def mouseDoubleClickEvent(self, event):
         if self.parent.main_window.MODE_ADD_NODE:
-            self.parent.main_window.graph = create_vertices(self.parent.main_window.graph, 1)
-
-            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['x'], \
-                self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['y'] = \
-                undilate(event.scenePos().x(), event.scenePos().y(), self.graph_center, self.scale_factor)
-
-            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['pos'] = \
-                {'x': event.scenePos().x(), 'y': event.scenePos().y()}
-
-            # Set default value for new vertex
-            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['geocode_country'] = ""
-            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['hyperedge'] = ""
-            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['Network'] = ""
-            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['GeoLocation'] = ""
-            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['Country'] = ""
-            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['NetworkDate'] = ""
-            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['geocode_id'] = ""
-            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['label'] = ""
-            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['Internal'] = 1.0
-            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['Longitude'] = 20.0
-            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['Latitude'] = 20.0
-            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['type'] = ""
-            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['asn'] = ""
-            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1][
-                'availability'] = np.random.randint(2)
-            self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['cluster'] = ""
-
-            self.vertex_to_display.append(self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1])
-
-            point_pen = QPen(self.COLORS['black'])
-            point_pen.setWidth(self.parent.SETTINGS['point_border_width'])
-            d = self.parent.SETTINGS['point_diameter']
-            point = MainVertex(self.vertex_to_display[-1], d, point_pen, QColor(Qt.darkMagenta), self)
-            self.addItem(point)
-            self.points.append(point)
-
-            self.parent.main_window.MODE_ADD_VERTEX = False
-            # self.parent.main_window.button_add_vertex.setToolTip("Add Vertex")
+            self.parent.main_window.add_node(event, self.graph_center, self.scale_factor)
 
     # For add edge
     def real_add_edge(self, vertex):

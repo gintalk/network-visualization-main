@@ -164,3 +164,8 @@ class MainView(QGraphicsView):
         self.scene.unhighlight_edges(self._edge_path)
         self.scene.unhighlight_vertices(self._vertex_path)
     # ------------------------------------------------------------------------------------------------------------------
+
+    # ADD NODE
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    def add_node(self, vertex):
+        self.scene.add_node(vertex)
