@@ -11,6 +11,7 @@ from PyQt5.QtWidgets import QPushButton, QComboBox
 from igraph import *
 
 from backend.algorithm import get_shortest_paths
+from backend.edge import create_edges
 from backend.vertex import create_vertices
 from frontend.create_attribute_dialog import CreateAttributeDialog
 from frontend.assign_attribute_value_dialog import AssignAttributeValueDialog
@@ -128,7 +129,7 @@ class MainWindow(QMainWindow):
         self.BUTTON_ADD_LINK = self.findChild(QPushButton, 'addLink')
         self.BUTTON_ADD_LINK.setToolTip("Add a link by clicking two nodes consecutively")
         self.BUTTON_ADD_LINK.setIcon(QIcon('frontend/resource/icons/iconAddLink.png'))
-        self.BUTTON_ADD_LINK.clicked.connect(self.add_link)
+        self.BUTTON_ADD_LINK.clicked.connect(self.start_add_link_mode)
 
         self.BUTTON_DELETE_NODE = self.findChild(QPushButton, 'deleteNode')
         self.BUTTON_DELETE_NODE.clicked.connect(self.delete_node)
@@ -221,18 +222,18 @@ class MainWindow(QMainWindow):
         # Store source and destination vertex ids in a list. -1 means no choice has been made
         self.SP_SOURCE_AND_TARGET = [-1, -1]
 
-    def get_shortest_path_nodes(self, vertex):
+    def get_shortest_path_nodes(self, point):
         if self.MODE_SHORTEST_PATH:
             if self.SP_SOURCE_AND_TARGET_INDEX == 0:
-                self.SP_SOURCE_AND_TARGET[self.SP_SOURCE_AND_TARGET_INDEX] = vertex.index
+                self.SP_SOURCE_AND_TARGET[self.SP_SOURCE_AND_TARGET_INDEX] = point.vertex.index
 
-                self.SP_INPUT_DIALOG.source_node = vertex.index
-                self.SP_INPUT_DIALOG.textbox_source.setText(str(vertex.index))
+                self.SP_INPUT_DIALOG.source_node = point.vertex.index
+                self.SP_INPUT_DIALOG.textbox_source.setText(str(point.vertex.index))
             else:
-                self.SP_SOURCE_AND_TARGET[self.SP_SOURCE_AND_TARGET_INDEX] = vertex.index
+                self.SP_SOURCE_AND_TARGET[self.SP_SOURCE_AND_TARGET_INDEX] = point.vertex.index
 
-                self.SP_INPUT_DIALOG.destination_node = vertex.index
-                self.SP_INPUT_DIALOG.textbox_destination.setText(str(vertex.index))
+                self.SP_INPUT_DIALOG.destination_node = point.vertex.index
+                self.SP_INPUT_DIALOG.textbox_destination.setText(str(point.vertex.index))
 
             self.SP_SOURCE_AND_TARGET_INDEX = 1 - self.SP_SOURCE_AND_TARGET_INDEX
             self.SP_INPUT_DIALOG.show()
@@ -349,6 +350,62 @@ class MainWindow(QMainWindow):
         self.BUTTON_ADD_NODE.clicked.disconnect()
         self.BUTTON_ADD_NODE.clicked.connect(self.start_add_node_mode)
         self.BUTTON_ADD_NODE.setIcon(QIcon('frontend/resource/icons/iconAddNode.png'))
+    # ------------------------------------------------------------------------------------------------------------------
+
+    # ADD LINK
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    LINK_ENDS = None
+
+    def start_add_link_mode(self):
+        self.MODE_ADD_LINK = True
+        self.LINK_ENDS = SelectionList()
+
+        self.BUTTON_ADD_LINK.clicked.disconnect()
+        self.BUTTON_ADD_LINK.clicked.connect(self.stop_add_link_mode)
+        self.BUTTON_ADD_LINK.setIcon(QIcon('frontend/resource/icons/iconStopMode.png'))
+
+    def get_add_link_nodes(self, point):
+        if self.MODE_ADD_LINK:
+            self.LINK_ENDS.append(point)
+
+            if self.LINK_ENDS.length() >= 2:
+                self.add_link()
+
+    def add_link(self):
+        source_id = self.LINK_ENDS[0].vertex.index
+        target_id = self.LINK_ENDS[1].vertex.index
+
+        existed_edge = self.graph.get_eid(source_id, target_id, error=False)
+        if existed_edge == -1:
+            self.graph = create_edges(self.graph, [(source_id, target_id)])
+            new_edge = self.graph.es[self.graph.ecount() - 1]
+
+            attributes = self.graph.es[0].attributes()
+            for attr in attributes:
+                if attr == 'edge_width':
+                    value = self.view.SETTINGS['edge_width']
+                elif attr == 'edge_color':
+                    value = self.view.SETTINGS['edge_color']
+                elif attr == 'LinkSpeedRaw':
+                    value = 1000000000.0
+                elif attr == 'delay':
+                    value = 50.0
+                else:
+                    value = ''
+
+                new_edge[attr] = value
+
+            self.view.add_link(new_edge)
+
+        self.LINK_ENDS.clear()
+
+    def stop_add_link_mode(self):
+        self.MODE_ADD_LINK = False
+        self.LINK_ENDS = None
+
+        self.BUTTON_ADD_LINK.clicked.disconnect()
+        self.BUTTON_ADD_LINK.clicked.connect(self.start_add_link_mode)
+        self.BUTTON_ADD_LINK.setIcon(QIcon('frontend/resource/icons/iconAddLink.png'))
     # ------------------------------------------------------------------------------------------------------------------
 
     # Check if self.attribute is an attribute in the graph or not
@@ -621,15 +678,7 @@ class MainWindow(QMainWindow):
         # self.button_add_edge.setToolTip("Add Edge")
         self.SOURCE_TARGET = []
 
-    def add_link(self):
-        if not self.MODE_ADD_LINK:
-            self.MODE_ADD_LINK = True
-            # self.button_add_edge.setToolTip("Cancel Add Edge")
-            QMessageBox.about(self, '', 'Please select 2 vertices to add edge')
-        else:
-            self.MODE_ADD_LINK = False
-            # self.button_add_edge.setToolTip("Add Edge")
-            self.SOURCE_TARGET = []
+
 
     def delete_node(self):
         reply = QMessageBox.question(self, '', 'Are you sure want to delete this vertex?',

@@ -18,6 +18,12 @@ class SelectionList:
     def __iter__(self):
         return self
 
+    def __getitem__(self, index):
+        return self.SELECTED[index]
+
+    def length(self):
+        return len(self.SELECTED)
+
     def append(self, item):
         self.SELECTED.append(item)
 

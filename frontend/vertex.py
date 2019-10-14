@@ -34,11 +34,9 @@ class MainVertex(QGraphicsEllipseItem):
 
     def mousePressEvent(self, event):
         self.parent.parent.main_window.display_vertex(self)
-        self.parent.parent.main_window.get_shortest_path_nodes(self.vertex)
+        self.parent.parent.main_window.get_shortest_path_nodes(self)
         self.parent.parent.main_window.get_recolor_nodes(self)
-
-        if self.parent.parent.main_window.MODE_ADD_LINK:
-            self.parent.real_add_edge(self.vertex)
+        self.parent.parent.main_window.get_add_link_nodes(self)
 
     def mouseMoveEvent(self, event):
         cursor_pos = event.scenePos()

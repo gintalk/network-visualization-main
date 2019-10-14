@@ -50,6 +50,15 @@ class MainScene(QGraphicsScene):
 
         self.init_variables()
 
+    def add_link(self, edge):
+        point_a = self.points[edge.source]
+        point_b = self.points[edge.target]
+        line_pen = QPen(self.COLORS[edge['edge_color']])
+        line_pen.setWidth(edge['edge_width'])
+        line = MainEdge(edge, point_a, point_b, line_pen, self)
+        self.addItem(line)
+        self.lines.append(line)
+
     def add_node(self, vertex):
         point_pen = QPen(self.COLORS['black'])
         point_pen.setWidth(self.parent.SETTINGS['point_border_width'])
@@ -334,7 +343,11 @@ class MainScene(QGraphicsScene):
     # For add vertex
     def mouseDoubleClickEvent(self, event):
         if self.parent.main_window.MODE_ADD_NODE:
-            self.parent.main_window.add_node(event, self.graph_center, self.scale_factor)
+            cursor_pos = event.scenePos().toPoint()
+            item_under_cursor = self.itemAt(cursor_pos, QTransform())
+
+            if item_under_cursor is None:
+                self.parent.main_window.add_node(event, self.graph_center, self.scale_factor)
 
     # For add edge
     def real_add_edge(self, vertex):
