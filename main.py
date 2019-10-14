@@ -15,11 +15,16 @@ from frontend.create_attribute_dialog import CreateAttributeDialog
 from frontend.assign_attribute_value_dialog import AssignAttributeValueDialog
 from frontend.databar import DataBar
 from frontend.edgeinfo import EdgeInfo
+from frontend.selection_list import SelectionList
 from frontend.vertexinfo import VertexInfo
 from frontend.view import MainView
 from frontend.realtime_thread import RealTimeMode
 
+# noinspection PyArgumentList,PyCallByClass
+from frontend.shortest_path_input_dialog import ShortestPathInputDialog
 
+
+# noinspection PyCallByClass
 class MainWindow(QMainWindow):
     DEFAULT_GRAPH = 'frontend/resource/NREN.graphml'
     DEFAULT_LAYOUT = 'large'
@@ -43,25 +48,17 @@ class MainWindow(QMainWindow):
     file_name = 'frontend/resource/NREN.graphml'
 
     selectedNodes = []
-    selectedNodes2 = []
 
     # Operation modes
-    ADD_VERTEX_MODE = False
-    ADD_EDGE_MODE = False
-    SELECTION_MODE = False
-    SHORTEST_PATH_MODE = False
-    REAL_TIME_MODE = False
-
-    # For add edge
-    SOURCE_TARGET = []
+    MODE_ADD_NODE = False
+    MODE_ADD_LINK = False
+    MODE_RUBBER_BAND = False
+    MODE_SHORTEST_PATH = False
+    MODE_RECOLOR_NODE = False
+    MODE_REAL_TIME = False
 
     VERTEX_DISPLAYING = None
     EDGE_DISPLAYING = None
-
-    is_source = True
-
-    # MODE FOR COLOR_CHANGE_NODE
-    is_color_change_node = False
 
     # For gradient and thickness
     attribute = 'LinkSpeedRaw'
@@ -91,99 +88,199 @@ class MainWindow(QMainWindow):
         self.view.update_view()
 
         # Buttons that span across functions
-        self.button_delete_node = None
-        self.button_delete_link = None
-        self.button_selection_mode = None
-        self.button_clustering = None
-        self.button_layout = None
-        self.button_start_real_time_mode = None
-        self.button_stop_real_time_mode = None
 
-        # Bind action into menu button
+        # Bind action into menu button_box
         self.bind_menu_actions()
         self.bind_buttons()
 
-        self.input_page = None
         self.gradient_thickness_window = None
         self.create_attribute_dialog = None
         self.assign_attribute_value_dialog = None
         self.realtime_thread = None
 
+    # BINDING BUTTONS TO THEIR RESPECTIVE FUNCTIONALITY
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    BUTTON_ADD_NODE = None
+    BUTTON_ADD_LINK = None
+    BUTTON_DELETE_NODE = None
+    BUTTON_DELETE_LINK = None
+    BUTTON_ADD_ATTRIBUTE = None
+    BUTTON_ASSIGN_ATTRIBUTE_VALUE = None
+    BUTTON_ZOOM_IN = None
+    BUTTON_ZOOM_OUT = None
+    BUTTON_RESET_ZOOM = None
+    BUTTON_CHANGE_NODE_COLOR = None
+    BUTTON_SHORTEST_PATH = None
+    BUTTON_SELECTION_MODE = None
+    BUTTON_CLUSTERING = None
+    BUTTON_LAYOUT = None
+    BUTTON_START_REAL_TIME_MODE = None
+    BUTTON_STOP_REAL_TIME_MODE = None
+
     def bind_buttons(self):
-        button_add_node = self.findChild(QPushButton, 'addNode')
-        button_add_node.setToolTip("Add a new node by double clicking on any empty spot on the canvas")
-        button_add_node.setIcon(QIcon('frontend/resource/icons/iconAddNode.png'))
-        button_add_node.clicked.connect(self.add_node)
+        self.BUTTON_ADD_NODE = self.findChild(QPushButton, 'addNode')
+        self.BUTTON_ADD_NODE.setToolTip("Add a new node by double clicking on any empty spot on the canvas")
+        self.BUTTON_ADD_NODE.setIcon(QIcon('frontend/resource/icons/iconAddNode.png'))
+        self.BUTTON_ADD_NODE.clicked.connect(self.add_node)
 
-        button_add_link = self.findChild(QPushButton, 'addLink')
-        button_add_link.setToolTip("Add a link by clicking the source and target node consecutively")
-        button_add_link.setIcon(QIcon('frontend/resource/icons/iconAddLink.png'))
-        button_add_link.clicked.connect(self.add_link)
+        self.BUTTON_ADD_LINK = self.findChild(QPushButton, 'addLink')
+        self.BUTTON_ADD_LINK.setToolTip("Add a link by clicking the source and target node consecutively")
+        self.BUTTON_ADD_LINK.setIcon(QIcon('frontend/resource/icons/iconAddLink.png'))
+        self.BUTTON_ADD_LINK.clicked.connect(self.add_link)
 
-        self.button_delete_node = self.findChild(QPushButton, 'deleteNode')
-        self.button_delete_node.clicked.connect(self.delete_node)
-        self.button_delete_node.hide()
+        self.BUTTON_DELETE_NODE = self.findChild(QPushButton, 'deleteNode')
+        self.BUTTON_DELETE_NODE.clicked.connect(self.delete_node)
+        self.BUTTON_DELETE_NODE.hide()
 
-        self.button_delete_link = self.findChild(QPushButton, 'deleteLink')
-        self.button_delete_link.clicked.connect(self.delete_link)
-        self.button_delete_link.hide()
+        self.BUTTON_DELETE_LINK = self.findChild(QPushButton, 'deleteLink')
+        self.BUTTON_DELETE_LINK.clicked.connect(self.delete_link)
+        self.BUTTON_DELETE_LINK.hide()
 
-        button_add_attribute = self.findChild(QPushButton, 'addAttribute')
-        button_add_attribute.setToolTip("Add a new attribute to nodes or links")
-        button_add_attribute.setIcon(QIcon('frontend/resource/icons/iconAddAttribute.png'))
-        button_add_attribute.clicked.connect(self.create_attribute)
+        self.BUTTON_ADD_ATTRIBUTE = self.findChild(QPushButton, 'addAttribute')
+        self.BUTTON_ADD_ATTRIBUTE.setToolTip("Add a new attribute to nodes or links")
+        self.BUTTON_ADD_ATTRIBUTE.setIcon(QIcon('frontend/resource/icons/iconAddAttribute.png'))
+        self.BUTTON_ADD_ATTRIBUTE.clicked.connect(self.create_attribute)
 
-        button_assign_attribute_value = self.findChild(QPushButton, 'assignAttributeValue')
-        button_assign_attribute_value.setToolTip("Assign value to an attribute")
-        button_assign_attribute_value.setIcon(QIcon('frontend/resource//icons/iconAssignValue.png'))
-        button_assign_attribute_value.clicked.connect(self.pop_assign_value_dialog)
+        self.BUTTON_ASSIGN_ATTRIBUTE_VALUE = self.findChild(QPushButton, 'assignAttributeValue')
+        self.BUTTON_ASSIGN_ATTRIBUTE_VALUE.setToolTip("Assign value to an attribute")
+        self.BUTTON_ASSIGN_ATTRIBUTE_VALUE.setIcon(QIcon('frontend/resource//icons/iconAssignValue.png'))
+        self.BUTTON_ASSIGN_ATTRIBUTE_VALUE.clicked.connect(self.pop_assign_value_dialog)
 
-        button_zoom_in = self.findChild(QPushButton, 'zoomIn')
-        button_zoom_in.setToolTip("Zoom in")
-        button_zoom_in.setIcon(QIcon('frontend/resource/icons/iconZoomIn.png'))
-        button_zoom_in.clicked.connect(self.zoom_in_button)
+        self.BUTTON_ZOOM_IN = self.findChild(QPushButton, 'zoomIn')
+        self.BUTTON_ZOOM_IN.setToolTip("Zoom in")
+        self.BUTTON_ZOOM_IN.setIcon(QIcon('frontend/resource/icons/iconZoomIn.png'))
+        self.BUTTON_ZOOM_IN.clicked.connect(self.zoom_in_button)
 
-        button_zoom_out = self.findChild(QPushButton, 'zoomOut')
-        button_zoom_out.setToolTip("Zoom out")
-        button_zoom_out.setIcon(QIcon('frontend/resource/icons/iconZoomOut.png'))
-        button_zoom_out.clicked.connect(self.zoom_out_button)
+        self.BUTTON_ZOOM_OUT = self.findChild(QPushButton, 'zoomOut')
+        self.BUTTON_ZOOM_OUT.setToolTip("Zoom out")
+        self.BUTTON_ZOOM_OUT.setIcon(QIcon('frontend/resource/icons/iconZoomOut.png'))
+        self.BUTTON_ZOOM_OUT.clicked.connect(self.zoom_out_button)
 
-        button_reset_zoom = self.findChild(QPushButton, 'resetZoom')
-        button_reset_zoom.setToolTip("Reset zoom")
-        button_reset_zoom.setIcon(QIcon('frontend/resource/icons/iconResetZoom.png'))
-        button_reset_zoom.clicked.connect(self.reset_zoom_button)
+        self.BUTTON_RESET_ZOOM = self.findChild(QPushButton, 'resetZoom')
+        self.BUTTON_RESET_ZOOM.setToolTip("Reset zoom")
+        self.BUTTON_RESET_ZOOM.setIcon(QIcon('frontend/resource/icons/iconResetZoom.png'))
+        self.BUTTON_RESET_ZOOM.clicked.connect(self.reset_zoom_button)
 
-        button_change_node_color = self.findChild(QPushButton, 'changeNodeColor')
-        button_change_node_color.setToolTip("Change node(s) color")
-        button_change_node_color.setIcon(QIcon('frontend/resource/icons/iconChangeNodeColor.png'))
-        button_change_node_color.clicked.connect(self.set_color_node)
+        self.BUTTON_CHANGE_NODE_COLOR = self.findChild(QPushButton, 'changeNodeColor')
+        self.BUTTON_CHANGE_NODE_COLOR.setToolTip("Change node(s) color")
+        self.BUTTON_CHANGE_NODE_COLOR.setIcon(QIcon('frontend/resource/icons/iconChangeNodeColor.png'))
+        self.BUTTON_CHANGE_NODE_COLOR.clicked.connect(self.set_node_color)
 
-        button_shortest_path = self.findChild(QPushButton, 'shortestPath')
-        button_shortest_path.setToolTip("Find the shortest path between 2 nodes by clicking on them consecutively")
-        button_shortest_path.setIcon(QIcon('frontend/resource/icons/iconShortestPath.png'))
-        button_shortest_path.clicked.connect(self.open_input_window)
+        self.BUTTON_SHORTEST_PATH = self.findChild(QPushButton, 'shortestPath')
+        self.BUTTON_SHORTEST_PATH.setToolTip("Find the shortest path between 2 nodes by clicking on them consecutively")
+        self.BUTTON_SHORTEST_PATH.setIcon(QIcon('frontend/resource/icons/iconShortestPath.png'))
+        self.BUTTON_SHORTEST_PATH.clicked.connect(self.start_shortest_path_mode)
 
-        self.button_clustering = self.findChild(QComboBox, 'cluster')
-        self.button_clustering.activated.connect(self.cluster_button_clicked)
+        self.BUTTON_CLUSTERING = self.findChild(QComboBox, 'cluster')
+        self.BUTTON_CLUSTERING.activated.connect(self.cluster_button_clicked)
 
-        self.button_layout = self.findChild(QComboBox, 'layout')
-        self.button_layout.activated.connect(self.layout_button_clicked)
+        self.BUTTON_LAYOUT = self.findChild(QComboBox, 'layout')
+        self.BUTTON_LAYOUT.activated.connect(self.layout_button_clicked)
 
-        self.button_selection_mode = self.findChild(QPushButton, 'selectionMode')
-        self.button_selection_mode.setToolTip('Drag Mode. Click to switch to Selection Mode')
-        self.button_selection_mode.setIcon(QIcon('frontend/resource/icons/iconDragMode.png'))
-        self.button_selection_mode.clicked.connect(self.toggle_selection_mode)
+        self.BUTTON_SELECTION_MODE = self.findChild(QPushButton, 'selectionMode')
+        self.BUTTON_SELECTION_MODE.setToolTip('Drag Mode. Click to switch to Selection Mode')
+        self.BUTTON_SELECTION_MODE.setIcon(QIcon('frontend/resource/icons/iconDragMode.png'))
+        self.BUTTON_SELECTION_MODE.clicked.connect(self.toggle_selection_mode)
 
-        self.button_start_real_time_mode = self.findChild(QPushButton, 'realTimeMode')
-        self.button_start_real_time_mode.setToolTip("Start Real Time Mode")
-        self.button_start_real_time_mode.setIcon(QIcon('frontend/resource/icons/iconRealTimeMode.png'))
-        self.button_start_real_time_mode.clicked.connect(self.set_real_time_mode)
+        self.BUTTON_START_REAL_TIME_MODE = self.findChild(QPushButton, 'realTimeMode')
+        self.BUTTON_START_REAL_TIME_MODE.setToolTip("Start Real Time Mode")
+        self.BUTTON_START_REAL_TIME_MODE.setIcon(QIcon('frontend/resource/icons/iconRealTimeMode.png'))
+        self.BUTTON_START_REAL_TIME_MODE.clicked.connect(self.set_real_time_mode)
 
-        self.button_stop_real_time_mode = self.findChild(QPushButton, 'stopRealTimeMode')
-        self.button_stop_real_time_mode.setToolTip("Stop Real Time Mode")
-        self.button_stop_real_time_mode.setIcon(QIcon('frontend/resource/icons/iconStopRealTimeMode.png'))
-        self.button_stop_real_time_mode.clicked.connect(self.unset_real_time_mode)
-        self.button_stop_real_time_mode.hide()
+        self.BUTTON_STOP_REAL_TIME_MODE = self.findChild(QPushButton, 'stopRealTimeMode')
+        self.BUTTON_STOP_REAL_TIME_MODE.setToolTip("Stop Real Time Mode")
+        self.BUTTON_STOP_REAL_TIME_MODE.setIcon(QIcon('frontend/resource/icons/iconStopRealTimeMode.png'))
+        self.BUTTON_STOP_REAL_TIME_MODE.clicked.connect(self.unset_real_time_mode)
+        self.BUTTON_STOP_REAL_TIME_MODE.hide()
+
+    # ------------------------------------------------------------------------------------------------------------------
+
+    # SHORTEST PATH (SP)
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    SP_INPUT_DIALOG = None
+    SP_SOURCE_AND_TARGET = None
+    SP_SOURCE_AND_TARGET_INDEX = 0
+    SP_THREAD = None
+
+    def start_shortest_path_mode(self):
+        # Only show one path at a time
+        if self.MODE_SHORTEST_PATH:
+            self.stop_shortest_path_mode()
+
+        # Initialization steps
+        self.MODE_SHORTEST_PATH = True
+        self.SP_INPUT_DIALOG = ShortestPathInputDialog(self)
+        self.SP_INPUT_DIALOG.show()
+
+        # Disable any other modes that might cause conflict
+        self.MODE_ADD_LINK = False
+        self.MODE_ADD_NODE = False
+
+        # Store source and destination vertex ids in a list. -1 means no choice has been made
+        self.SP_SOURCE_AND_TARGET = [-1, -1]
+
+    def get_shortest_path_nodes(self, vertex):
+        if self.MODE_SHORTEST_PATH:
+            if self.SP_SOURCE_AND_TARGET_INDEX == 0:
+                self.SP_SOURCE_AND_TARGET[self.SP_SOURCE_AND_TARGET_INDEX] = vertex.index
+
+                self.SP_INPUT_DIALOG.source_node = vertex.index
+                self.SP_INPUT_DIALOG.textbox_source.setText(str(vertex.index))
+            else:
+                self.SP_SOURCE_AND_TARGET[self.SP_SOURCE_AND_TARGET_INDEX] = vertex.index
+
+                self.SP_INPUT_DIALOG.destination_node = vertex.index
+                self.SP_INPUT_DIALOG.textbox_destination.setText(str(vertex.index))
+
+            self.SP_SOURCE_AND_TARGET_INDEX = 1 - self.SP_SOURCE_AND_TARGET_INDEX
+            self.SP_INPUT_DIALOG.show()
+
+    def show_path(self):
+        edge_path = get_shortest_paths(self.graph, self.SP_SOURCE_AND_TARGET[0], self.SP_SOURCE_AND_TARGET[1])[0]
+        self.highlight_path(edge_path)
+
+    def highlight_path(self, edge_path):
+        self.view.set_edge_path(edge_path)
+
+        self.SP_THREAD = RealTimeMode(fps=1, parent=self)
+        self.SP_THREAD.update.connect(self.view.real_time_highlight)
+        self.SP_THREAD.start()
+
+    def unhighlight_path(self):
+        if self.SP_THREAD is not None:
+            self.SP_THREAD.terminate()
+            self.view.unhighlight_path()
+
+    def stop_shortest_path_mode(self):
+        self.MODE_SHORTEST_PATH = False
+        self.unhighlight_path()
+    # ------------------------------------------------------------------------------------------------------------------
+
+    # RECOLOR NODE(S)
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    RECOLOR_SELECTED = SelectionList()
+
+    def get_recolor_nodes(self, node):
+        if self.MODE_RECOLOR_NODE:
+            if not self.RECOLOR_SELECTED.contains(node):
+                self.RECOLOR_SELECTED.append(node)
+            else:
+                self.RECOLOR_SELECTED.remove(node)
+
+    def set_node_color(self):
+        if self.MODE_RECOLOR_NODE:
+            color = QColorDialog.getColor()
+
+            for point in self.RECOLOR_SELECTED:
+                point.setBrush(color)
+                point.update_default_brush()
+
+            self.RECOLOR_SELECTED.clear()
+            self.MODE_RECOLOR_NODE = False
+        else:
+            self.MODE_RECOLOR_NODE = True
+            QMessageBox.about(self, 'You are in Node Recoloring mode', 'Pick the nodes you want to recolor')
+    # ------------------------------------------------------------------------------------------------------------------
 
     # Check if self.attribute is an attribute in the graph or not
     def contains_attribute(self):
@@ -197,39 +294,15 @@ class MainWindow(QMainWindow):
 
     def change_color_all_links(self):
         color = QColorDialog.getColor()
-        self.view.scene.change_color_all_edge(color)
+        self.view.scene.change_color_all_links(color)
 
-    def show_vertex_id2(self, vertex):
-        if self.is_color_change_node:
-            self.selectedNodes2.append(vertex)
 
-    def set_color_node(self):
-        if self.is_color_change_node:
-            color2 = QColorDialog.getColor()
-            self.view.scene.change_color_nodes(color2)
-            self.selectedNodes2.clear()
-            self.is_color_change_node = False
-        else:
-            self.is_color_change_node = True
-            QMessageBox.about(self, 'You are in color change mode', 'Please pick the nodes you want to change color')
-
-    def open_input_window(self):
-        self.SHORTEST_PATH_MODE = True
-        self.input_page = Input(self)
-        self.input_page.show()
-
-        # Cancel add edge mode when finding shortest path
-        self.ADD_EDGE_MODE = False
-        # self.button_add_edge.setToolTip("Add Edge")
-        self.SOURCE_TARGET = []
 
     def open_gradient_thickness_window(self):
         self.gradient_thickness_window = GradientThicknessWindow(self)
         self.gradient_thickness_window.show()
 
-        self.ADD_EDGE_MODE = False
-        # self.button_add_edge.setToolTip("Add Edge")
-        self.SOURCE_TARGET = []
+        self.MODE_ADD_LINK = False
 
     def zoom_in_button(self):
         self.view.zoom_in()
@@ -273,44 +346,28 @@ class MainWindow(QMainWindow):
         self.view.update_view()
 
     def cluster_button_clicked(self):
-        self.set_up(cluster=self.button_clustering.currentText())
+        self.set_up(cluster=self.BUTTON_CLUSTERING.currentText())
 
         self.gradient_thickness_window = GradientThicknessWindow(self)
-        self.ADD_EDGE_MODE = False
+        self.MODE_ADD_LINK = False
         # self.button_add_edge.setToolTip("Add Edge")
         self.SOURCE_TARGET = []
 
     def layout_button_clicked(self):
-        self.set_up(layout=self.button_layout.currentText())
+        self.set_up(layout=self.BUTTON_LAYOUT.currentText())
 
         self.gradient_thickness_window = GradientThicknessWindow(self)
-        self.ADD_EDGE_MODE = False
+        self.MODE_ADD_LINK = False
         # self.button_add_edge.setToolTip("Add Edge")
         self.SOURCE_TARGET = []
 
     def settings(self, **kwargs):
         self.view.settings(kwargs)
 
-    def show_vertex_id(self, vertex):
-        if self.SHORTEST_PATH_MODE is True and self.is_source is True:
-            self.input_page.source_node = vertex.index
-            self.input_page.source.setText(str(vertex.index))
-            self.input_page.show()
-        elif self.SHORTEST_PATH_MODE is True and self.is_source is False:
-            self.input_page.destination_node = vertex.index
-            self.input_page.destination.setText(str(vertex.index))
-            self.input_page.show()
-
-    def highlight_path(self, edge_path):
-        self.view.highlight_path(edge_path)
-
-    def unhighlight_path(self):
-        self.view.unhighlight_path()
-
     def save_graph(self, graph_path):
         write(self.graph, graph_path)
 
-    # Bind action into menu button
+    # Bind action into menu button_box
     def bind_menu_actions(self):
         # File -> Open
         open_button = self.findChild(QAction, 'actionOpen')
@@ -380,19 +437,19 @@ class MainWindow(QMainWindow):
             self.set_graph(self.file_name)
             self.clear_layout(self.info_layout)
             self.view.update_view()
-            self.button_delete_node.hide()
-            self.button_delete_link.hide()
+            self.BUTTON_DELETE_NODE.hide()
+            self.BUTTON_DELETE_LINK.hide()
             self.VERTEX_DISPLAYING = None
             self.EDGE_DISPLAYING = None
 
-            self.ADD_VERTEX_MODE = False
+            self.MODE_ADD_NODE = False
             # self.button_add_vertex.setToolTip("Add Vertex")
-            self.ADD_EDGE_MODE = False
+            self.MODE_ADD_LINK = False
             # self.button_add_edge.setToolTip("Add Edge")
             self.SOURCE_TARGET = []
 
             self.gradient_thickness_window = GradientThicknessWindow(self)
-            self.is_color_change_node = False
+            self.MODE_RECOLOR_NODE = False
 
     # File -> Save
     def save_file_dialog(self):
@@ -461,8 +518,8 @@ class MainWindow(QMainWindow):
         vertex_info = VertexInfo(point, self)
         self.info_layout.addWidget(vertex_info)
         self.VERTEX_DISPLAYING = point
-        self.button_delete_node.show()
-        self.button_delete_link.hide()
+        self.BUTTON_DELETE_NODE.show()
+        self.BUTTON_DELETE_LINK.hide()
 
     # Display edge information
     def display_edge(self, line):
@@ -470,8 +527,8 @@ class MainWindow(QMainWindow):
         edge_info = EdgeInfo(line, self)
         self.info_layout.addWidget(edge_info)
         self.EDGE_DISPLAYING = line
-        self.button_delete_link.show()
-        self.button_delete_node.hide()
+        self.BUTTON_DELETE_LINK.show()
+        self.BUTTON_DELETE_NODE.hide()
 
     # pop data bar, data in list, try g.es['label']
     # stackoverflow.com/questions/940555/pyqt-sending-parameter-to-slot-when-connecting-to-a-signal
@@ -487,31 +544,31 @@ class MainWindow(QMainWindow):
         self.view.update_view()
         self.gradient_thickness_window = GradientThicknessWindow(self)
         self.attribute = 'LinkSpeedRaw'
-        self.is_color_change_node = False
+        self.MODE_RECOLOR_NODE = False
         self.clear_layout(self.info_layout)
-        self.button_delete_node.hide()
-        self.button_delete_link.hide()
+        self.BUTTON_DELETE_NODE.hide()
+        self.BUTTON_DELETE_LINK.hide()
         self.VERTEX_DISPLAYING = None
         self.EDGE_DISPLAYING = None
-        self.ADD_EDGE_MODE = False
+        self.MODE_ADD_LINK = False
         # self.button_add_edge.setToolTip("Add Edge")
         self.SOURCE_TARGET = []
 
     def add_node(self):
-        if not self.ADD_VERTEX_MODE:
-            self.ADD_VERTEX_MODE = True
+        if not self.MODE_ADD_NODE:
+            self.MODE_ADD_NODE = True
             # self.button_add_vertex.setToolTip("Cancel Add Vertex")
         else:
-            self.ADD_VERTEX_MODE = False
+            self.MODE_ADD_NODE = False
             # self.button_add_vertex.setToolTip("Add Vertex")
 
     def add_link(self):
-        if not self.ADD_EDGE_MODE:
-            self.ADD_EDGE_MODE = True
+        if not self.MODE_ADD_LINK:
+            self.MODE_ADD_LINK = True
             # self.button_add_edge.setToolTip("Cancel Add Edge")
             QMessageBox.about(self, '', 'Please select 2 vertices to add edge')
         else:
-            self.ADD_EDGE_MODE = False
+            self.MODE_ADD_LINK = False
             # self.button_add_edge.setToolTip("Add Edge")
             self.SOURCE_TARGET = []
 
@@ -522,9 +579,9 @@ class MainWindow(QMainWindow):
             self.view.scene.remove_point(self.VERTEX_DISPLAYING)
             self.clear_layout(self.info_layout)
             self.VERTEX_DISPLAYING = None
-            self.button_delete_node.hide()
+            self.BUTTON_DELETE_NODE.hide()
 
-            self.ADD_EDGE_MODE = False
+            self.MODE_ADD_LINK = False
             # self.button_add_edge.setToolTip("Add Edge")
             self.SOURCE_TARGET = []
 
@@ -537,7 +594,7 @@ class MainWindow(QMainWindow):
             self.view.scene.remove_line(self.EDGE_DISPLAYING)
             self.clear_layout(self.info_layout)
             self.EDGE_DISPLAYING = None
-            self.button_delete_link.hide()
+            self.BUTTON_DELETE_LINK.hide()
 
             self.gradient_thickness_window = GradientThicknessWindow(self)
 
@@ -550,31 +607,31 @@ class MainWindow(QMainWindow):
         self.assign_attribute_value_dialog.show()
 
     def toggle_selection_mode(self):
-        if self.SELECTION_MODE:
-            self.SELECTION_MODE = False
+        if self.MODE_RUBBER_BAND:
+            self.MODE_RUBBER_BAND = False
             self.view.setDragMode(self.view.drag_mode_hint())
-            self.button_selection_mode.setToolTip('Drag Mode, click to switch to Selection Mode')
+            self.BUTTON_SELECTION_MODE.setToolTip('Drag Mode, click to switch to Selection Mode')
         else:
-            self.SELECTION_MODE = True
+            self.MODE_RUBBER_BAND = True
             self.view.setDragMode(QGraphicsView.NoDrag)
-            self.button_selection_mode.setToolTip('Selection Mode, click to switch to Drag Mode')
+            self.BUTTON_SELECTION_MODE.setToolTip('Selection Mode, click to switch to Drag Mode')
 
     def set_real_time_mode(self):
-        self.REAL_TIME_MODE = True
+        self.MODE_REAL_TIME = True
         self.realtime_thread = RealTimeMode(20, self)
         self.realtime_thread.update.connect(self.doRealTime)
         self.realtime_thread.start()
 
-        self.button_start_real_time_mode.hide()
-        self.button_stop_real_time_mode.show()
+        self.BUTTON_START_REAL_TIME_MODE.hide()
+        self.BUTTON_STOP_REAL_TIME_MODE.show()
 
     def unset_real_time_mode(self):
-        self.REAL_TIME_MODE = False
+        self.MODE_REAL_TIME = False
         self.realtime_thread.quit()
         self.realtime_thread = None
 
-        self.button_start_real_time_mode.show()
-        self.button_stop_real_time_mode.hide()
+        self.BUTTON_START_REAL_TIME_MODE.show()
+        self.BUTTON_STOP_REAL_TIME_MODE.hide()
 
     def doRealTime(self):
         lines = self.view.scene.lines
@@ -589,67 +646,6 @@ class MainWindow(QMainWindow):
             )
             line_pen.setWidthF(line.edge['edge_width'])
             line.setPen(line_pen)
-
-
-# Input window for shortest path
-class Input(QDialog):
-    def __init__(self, parent=None):
-        super(Input, self).__init__()
-        self.parent = parent
-        uic.loadUi('frontend/resource/INPUT.ui', self)
-        self.setWindowTitle("Input")
-
-        self.source_node = None
-        self.destination_node = None
-
-        self.button = self.findChild(QWidget, 'buttonBox')
-        self.button.rejected.connect(self.closeWindow_cancel)
-        self.button.accepted.connect(self.closeWindow_ok)
-
-        self.source_button = self.findChild(QWidget, 'pushButton')
-        self.source_button.clicked.connect(self.picking_source)
-        self.destination_button = self.findChild(QWidget, 'pushButton_2')
-        self.destination_button.clicked.connect(self.picking_destination)
-
-        self.stop_button = self.findChild(QWidget, 'stop_button')
-        self.stop_button.clicked.connect(self.parent.unhighlight_path)
-        self.stop_button.setToolTip("Stop highlight")
-        self.stop_button.setIcon(QIcon('frontend/resource/stop.png'))
-
-        self.source = self.findChild(QWidget, 'lineEdit')
-        self.source.setReadOnly(True)
-        self.destination = self.findChild(QWidget, 'lineEdit_2')
-        self.destination.setReadOnly(True)
-
-        self.sp_edge_ids = None
-
-    def picking_source(self):
-        self.hide()
-        self.parent.is_source = True
-
-    def picking_destination(self):
-        self.hide()
-        self.parent.is_source = False
-
-    def closeWindow_cancel(self):
-        self.hide()
-        self.parent.is_shortest_path_mode = False
-
-    def closeWindow_ok(self):
-        # Check if Source value or Destination Value is None ?
-        # If 1 of them is none ,
-        if self.source_node == self.destination_node:
-            QMessageBox.about(self, "Wrong Input", "Please choose 2 different nodes.")
-        elif self.source_node is None or self.destination_node is None:
-            QMessageBox.about(self, "Wrong Input", "Please choose 2 nodes to highlight the shortest path")
-        elif self.source_node is not None and self.destination_node is not None:
-            if self.sp_edge_ids:
-                self.parent.unhighlight_path()
-
-            self.sp_edge_ids = get_shortest_paths(self.parent.graph, self.source_node, self.destination_node)
-            self.parent.highlight_path(self.sp_edge_ids[0])
-            self.parent.is_shortest_path_mode = False
-            self.hide()
 
 
 # Window for gradient and thickness

@@ -9,6 +9,7 @@ from igraph import VertexDendrogram, Graph
 from backend.edge import create_edges
 from backend.vertex import create_vertices
 from frontend.edge import MainEdge
+from frontend.selection_list import SelectionList
 from frontend.utils import *
 from frontend.vertex import MainVertex
 
@@ -43,7 +44,7 @@ class MainScene(QGraphicsScene):
         self._move = False
         self.highlighted_item = None
         self.selected_item = None
-        self.rb_selected_points = SelectedList()
+        self.rb_selected_points = SelectionList()
         self.rb_origin = None
         self.rubber_band = None
 
@@ -188,7 +189,7 @@ class MainScene(QGraphicsScene):
             line._pen = line_pen
             n += 1
 
-    def change_color_all_edge(self, the_color):
+    def change_color_all_links(self, the_color):
         for edge in self.graph_to_display.es:
             line = self.lines[edge.index]
             line.edge['edge_color'] = the_color
@@ -197,35 +198,29 @@ class MainScene(QGraphicsScene):
             line.setPen(line_pen)
             line._pen = line_pen
 
-    def change_color_nodes(self, color):
-        for point in self.points:
-            if point.vertex in self.parent.main_window.selectedNodes2:
-                point.setBrush(color)
-                point.update_default_brush()
-
     def highlight_edges(self, edge_path):
         for edge_id in edge_path:
             line = self.lines[edge_id]
             line.highlight_self()
-            line.is_highlighted = True
+            line.setHighlighted(True)
 
     def unhighlight_edges(self, edge_path):
         for edge_id in edge_path:
             line = self.lines[edge_id]
             line.unhighlight_self()
-            line.is_highlighted = False
+            line.setHighlighted(False)
 
     def highlight_vertices(self, vertex_path):
         for vertex_id in vertex_path:
             point = self.points[vertex_id]
             point.highlight_self()
-            point.is_highlighted = True
+            point.setHighlighted(True)
 
     def unhighlight_vertices(self, vertex_path):
         for vertex_id in vertex_path:
             point = self.points[vertex_id]
             point.unhighlight_self()
-            point.is_highlighted = False
+            point.setHighlighted(False)
 
     def update_vertex(self, point):
         dilated_x, dilated_y = point.x(), point.y()
@@ -330,7 +325,7 @@ class MainScene(QGraphicsScene):
 
     # For add vertex
     def mouseDoubleClickEvent(self, event):
-        if self.parent.main_window.ADD_VERTEX_MODE:
+        if self.parent.main_window.MODE_ADD_NODE:
             self.parent.main_window.graph = create_vertices(self.parent.main_window.graph, 1)
 
             self.parent.main_window.graph.vs[self.parent.main_window.graph.vcount() - 1]['x'], \
@@ -367,7 +362,7 @@ class MainScene(QGraphicsScene):
             self.addItem(point)
             self.points.append(point)
 
-            self.parent.main_window.ADD_VERTEX_STATE = False
+            self.parent.main_window.MODE_ADD_VERTEX = False
             # self.parent.main_window.button_add_vertex.setToolTip("Add Vertex")
 
     # For add edge
@@ -422,28 +417,33 @@ class MainScene(QGraphicsScene):
         item_under_cursor = self.itemAt(cursor_pos, QTransform())
 
         if item_under_cursor is not None:
-            if self.highlighted_item is not None and not self.highlighted_item.is_highlighted:
+            if self.highlighted_item is not None and \
+                    not self.highlighted_item.isHighlighted() and \
+                    not self.highlighted_item.isPersistent():
                 self.highlighted_item.unhighlight_self()
-            if self.selected_item is not None and not self.selected_item.is_highlighted:
+            if self.selected_item is not None and \
+                    not self.selected_item.isHighlighted() and \
+                    not self.selected_item.isPersistent():
                 self.selected_item.unhighlight_self()
 
             self.selected_item = item_under_cursor
             self.selected_item.mousePressEvent(event)
-            self.highlighted_item = item_under_cursor
-            self.highlighted_item.highlight_self()
+            if not self.parent.main_window.MODE_RECOLOR_NODE:
+                self.highlighted_item = item_under_cursor
+                self.highlighted_item.highlight_self()
             self._move = True
         else:
             # Clicking else where resets any selection previously made
             if self.highlighted_item is not None:
-                if not self.highlighted_item.is_highlighted:
+                if not self.highlighted_item.isHighlighted() and not self.highlighted_item.isPersistent():
                     self.highlighted_item.unhighlight_self()
             if self.selected_item is not None:
-                if not self.selected_item.is_highlighted:
+                if not self.selected_item.isHighlighted() and not self.selected_item.isPersistent():
                     self.selected_item.unhighlight_self()
             self.highlighted_item = None
             self.selected_item = None
 
-            if self.parent.main_window.SELECTION_MODE:
+            if self.parent.main_window.MODE_RUBBER_BAND:
                 # Initializing rubber band
                 self.rb_origin = self.parent.mapFromScene(cursor_pos)
                 self.rubber_band = QRubberBand(QRubberBand.Rectangle, self.parent)
@@ -456,18 +456,18 @@ class MainScene(QGraphicsScene):
         if self.selected_item is not None and self._move:
             self.selected_item.highlight_self()
             self.selected_item.mouseMoveEvent(event)
-        elif self.parent.main_window.SELECTION_MODE and self.rb_origin is not None:
+        elif self.parent.main_window.MODE_RUBBER_BAND and self.rb_origin is not None:
             if self.rb_origin is not None:
                 adjusted_cursor_pos = self.parent.mapFromScene(cursor_pos)
                 self.rubber_band.setGeometry(QRect(self.rb_origin, adjusted_cursor_pos).normalized())
-        elif not self.parent.main_window.SELECTION_MODE:
+        elif not self.parent.main_window.MODE_RUBBER_BAND and not self.parent.main_window.MODE_RECOLOR_NODE:
             item_under_cursor = self.itemAt(cursor_pos, QTransform())
 
             if item_under_cursor is None and self.highlighted_item is not None:
                 # When mouse moves out of an item into background
                 self.parent.setDragMode(self.parent.drag_mode_hint())
 
-                if self.highlighted_item != self.selected_item and not self.highlighted_item.is_highlighted:
+                if self.highlighted_item != self.selected_item and not self.highlighted_item.isHighlighted():
                     self.highlighted_item.unhighlight_self()
                 self.highlighted_item = item_under_cursor
             elif item_under_cursor is not None and self.highlighted_item is None:
@@ -478,15 +478,16 @@ class MainScene(QGraphicsScene):
                 self.highlighted_item.highlight_self()
             elif item_under_cursor is not None and self.highlighted_item is not None:
                 # When mouse moves out of one item into another item
-                if self.highlighted_item != self.selected_item and not self.highlighted_item.is_highlighted:
+                if self.highlighted_item != self.selected_item and not self.highlighted_item.isHighlighted():
                     self.highlighted_item.unhighlight_self()
+
                 self.highlighted_item = item_under_cursor
                 self.highlighted_item.highlight_self()
 
     def mouseReleaseEvent(self, event):
         if self.selected_item is not None:
             self._move = False
-        elif self.parent.main_window.SELECTION_MODE and self.rb_origin is not None:
+        elif self.parent.main_window.MODE_RUBBER_BAND and self.rb_origin is not None:
             self.rubber_band.hide()
             rect = self.rubber_band.geometry()
             rect_scene = self.parent.mapToScene(rect).boundingRect()
@@ -497,41 +498,3 @@ class MainScene(QGraphicsScene):
 
             self.rb_origin = None
             self.rubber_band = None
-
-
-class SelectedList:
-    SELECTED = None
-
-    def __init__(self):
-        self.SELECTED = []
-        self.index = 0
-
-    def __next__(self):
-        if self.index < len(self.SELECTED):
-            index = self.index
-            self.index += 1
-            return self.SELECTED[index]
-        raise StopIteration()
-
-    def __iter__(self):
-        return self
-
-    def append(self, item):
-        self.SELECTED.append(item)
-
-        if isinstance(item, MainVertex):
-            item.highlight_self()
-
-    def contains(self, item):
-        return item in self.SELECTED
-
-    def clear(self):
-        for item in self.SELECTED:
-            if isinstance(item, MainVertex) and not item.is_highlighted:
-                item.unhighlight_self()
-
-        self.SELECTED.clear()
-        self.index = 0
-
-    def is_empty(self):
-        return self.SELECTED == []

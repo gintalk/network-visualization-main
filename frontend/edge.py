@@ -11,7 +11,7 @@ class MainEdge(QGraphicsLineItem):
         self.setPen(pen)
 
         self.setAcceptHoverEvents(True)
-        self.is_highlighted = False
+        self._highlighted = False
         self._pen = self.pen()
 
         self.edge = edge
@@ -39,3 +39,13 @@ class MainEdge(QGraphicsLineItem):
 
     def unhighlight_self(self):
         self.setPen(self._pen)
+
+    def setHighlighted(self, boolean):
+        self._highlighted = boolean
+
+    def isHighlighted(self):
+        return self._highlighted
+
+    @staticmethod
+    def isPersistent():
+        return False

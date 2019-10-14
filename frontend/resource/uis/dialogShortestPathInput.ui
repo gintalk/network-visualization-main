@@ -14,6 +14,9 @@
    <string>Dialog</string>
   </property>
   <widget class="QDialogButtonBox" name="buttonBox">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>-50</x>
@@ -29,7 +32,7 @@
     <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
    </property>
   </widget>
-  <widget class="QLineEdit" name="lineEdit">
+  <widget class="QLineEdit" name="sourceText">
    <property name="geometry">
     <rect>
      <x>100</x>
@@ -39,7 +42,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QLineEdit" name="lineEdit_2">
+  <widget class="QLineEdit" name="destinationText">
    <property name="geometry">
     <rect>
      <x>100</x>
@@ -49,7 +52,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QLabel" name="label">
+  <widget class="QLabel" name="sourceLabel">
    <property name="geometry">
     <rect>
      <x>40</x>
@@ -62,7 +65,7 @@
     <string>Source</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label_2">
+  <widget class="QLabel" name="destinationLabel">
    <property name="geometry">
     <rect>
      <x>6</x>
@@ -75,7 +78,7 @@
     <string>Destination</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton">
+  <widget class="QPushButton" name="source">
    <property name="geometry">
     <rect>
      <x>210</x>
@@ -88,7 +91,7 @@
     <string>Choose</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_2">
+  <widget class="QPushButton" name="destination">
    <property name="geometry">
     <rect>
      <x>210</x>
@@ -99,19 +102,6 @@
    </property>
    <property name="text">
     <string>Choose</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="stop_button">
-   <property name="geometry">
-    <rect>
-     <x>30</x>
-     <y>90</y>
-     <width>51</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
    </property>
   </widget>
  </widget>

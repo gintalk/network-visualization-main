@@ -2,7 +2,6 @@ from PyQt5.QtCore import QRect, Qt
 from PyQt5.QtGui import QTransform, QColor
 from PyQt5.QtWidgets import QGraphicsView
 
-from frontend.realtime_thread import RealTimeMode
 from frontend.scene import MainScene
 
 
@@ -31,8 +30,6 @@ class MainView(QGraphicsView):
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
         self.availability = False
-        self._sp_thread = None
-        self.REAL_TIME_MODE = False
         self._sp_colors = [QColor(Qt.red), QColor(Qt.green)]
         self._sp_color_index = 0
         self._edge_path = None
@@ -122,7 +119,7 @@ class MainView(QGraphicsView):
         if (
                 self.verticalScrollBar().value() != 0 or
                 self.horizontalScrollBar().value() != 0
-        ) and not self.main_window.SELECTION_MODE:
+        ) and not self.main_window.MODE_RUBBER_BAND:
             return QGraphicsView.ScrollHandDrag
         else:
             return QGraphicsView.NoDrag
@@ -132,9 +129,12 @@ class MainView(QGraphicsView):
             self.SETTINGS[key] = kwargs[key]
         self.update_view()
 
-    def highlight_path(self, edge_path):
+    # SHORTEST PATH
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    def set_edge_path(self, edge_path):
         self._edge_path = edge_path
         self._vertex_path = []
+
         for i in range(0, len(edge_path)):
             source_vertex_id = self.main_window.graph.es[edge_path[i]].source
             if source_vertex_id not in self._vertex_path:
@@ -143,11 +143,6 @@ class MainView(QGraphicsView):
             target_vertex_id = self.main_window.graph.es[edge_path[i]].target
             if target_vertex_id not in self._vertex_path:
                 self._vertex_path.append(target_vertex_id)
-
-        self.REAL_TIME_MODE = True
-        self._sp_thread = RealTimeMode(1, self)
-        self._sp_thread.update.connect(self.real_time_highlight)
-        self._sp_thread.start()
 
     def real_time_highlight(self):
         if self._sp_color_index == 0:
@@ -166,8 +161,6 @@ class MainView(QGraphicsView):
             point.setBrush(self._sp_colors[self._sp_color_index])
 
     def unhighlight_path(self):
-        self.REAL_TIME_MODE = False
-        self._sp_thread.quit()
-
         self.scene.unhighlight_edges(self._edge_path)
         self.scene.unhighlight_vertices(self._vertex_path)
+    # ------------------------------------------------------------------------------------------------------------------
