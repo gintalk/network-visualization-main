@@ -182,7 +182,7 @@ class MainWindow(QMainWindow):
 
         self.BUTTON_SELECTION_MODE = self.findChild(QPushButton, 'selectionMode')
         self.BUTTON_SELECTION_MODE.setToolTip('Drag Mode. Click to switch to Selection Mode')
-        self.BUTTON_SELECTION_MODE.setIcon(QIcon('frontend/resource/icons/iconDragMode.png'))
+        self.BUTTON_SELECTION_MODE.setIcon(QIcon('frontend/resource/icons/iconRubberBandMode.png'))
         self.BUTTON_SELECTION_MODE.clicked.connect(self.toggle_selection_mode)
 
         self.BUTTON_START_REAL_TIME_MODE = self.findChild(QPushButton, 'realTimeMode')
@@ -406,6 +406,21 @@ class MainWindow(QMainWindow):
         self.BUTTON_ADD_LINK.clicked.disconnect()
         self.BUTTON_ADD_LINK.clicked.connect(self.start_add_link_mode)
         self.BUTTON_ADD_LINK.setIcon(QIcon('frontend/resource/icons/iconAddLink.png'))
+    # ------------------------------------------------------------------------------------------------------------------
+
+    # RUBBER BAND - DRAG
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    def toggle_selection_mode(self):
+        if self.MODE_RUBBER_BAND:
+            self.MODE_RUBBER_BAND = False
+            self.view.setDragMode(self.view.drag_mode_hint())
+
+            self.BUTTON_SELECTION_MODE.setIcon(QIcon('frontend/resource/icons/iconRubberBandMode.png'))
+        else:
+            self.MODE_RUBBER_BAND = True
+            self.view.setDragMode(QGraphicsView.NoDrag)
+
+            self.BUTTON_SELECTION_MODE.setIcon(QIcon('frontend/resource/icons/iconDragMode.png'))
     # ------------------------------------------------------------------------------------------------------------------
 
     # Check if self.attribute is an attribute in the graph or not
@@ -714,15 +729,7 @@ class MainWindow(QMainWindow):
         self.assign_attribute_value_dialog = AssignAttributeValueDialog(self)
         self.assign_attribute_value_dialog.show()
 
-    def toggle_selection_mode(self):
-        if self.MODE_RUBBER_BAND:
-            self.MODE_RUBBER_BAND = False
-            self.view.setDragMode(self.view.drag_mode_hint())
-            self.BUTTON_SELECTION_MODE.setToolTip('Drag Mode, click to switch to Selection Mode')
-        else:
-            self.MODE_RUBBER_BAND = True
-            self.view.setDragMode(QGraphicsView.NoDrag)
-            self.BUTTON_SELECTION_MODE.setToolTip('Selection Mode, click to switch to Drag Mode')
+
 
     def set_real_time_mode(self):
         self.MODE_REAL_TIME = True
