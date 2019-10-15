@@ -48,7 +48,7 @@ class MainWindow(QMainWindow):
         'Reingold Tilford Circular': 'rt_circular', 'Sphere': 'sphere'
     }
 
-    file_name = 'frontend/resource/NREN.graphml'
+    # FILE = 'frontend/resource/NREN.graphml'
 
     # Operation modes
     MODE_ADD_NODE = False
@@ -61,9 +61,6 @@ class MainWindow(QMainWindow):
     # Currently displayed items
     VERTEX_DISPLAYING = None
     EDGE_DISPLAYING = None
-
-    # For gradient and thickness
-    attribute = 'LinkSpeedRaw'
 
     def __init__(self):
         super().__init__(parent=None, flags=Qt.WindowCloseButtonHint)
@@ -84,35 +81,34 @@ class MainWindow(QMainWindow):
 
         # Pull it up
         self.set_up(graph=self.DEFAULT_GRAPH)
-        self.initial_value = np.random.standard_normal(self.graph.ecount())
 
         # DO NOT REMOVE THIS LINE
         self.view.update_view()
-
-        # Buttons that span across functions
 
         # Bind action into menu button_box
         self.bind_menu_actions()
         self.bind_buttons()
 
-        self.gradient_thickness_window = None
-        self.create_attribute_dialog = None
-        self.assign_attribute_value_dialog = None
-
     # ADD ATTRIBUTE
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    def create_attribute(self):
-        self.create_attribute_dialog = CreateAttributeDialog(self)
-        self.create_attribute_dialog.show()
+    ADD_ATTRIBUTE_DIALOG = None
+    ASSIGN_ATTRIBUTE_DIALOG = None
+
+    def add_attribute(self):
+        self.ADD_ATTRIBUTE_DIALOG = CreateAttributeDialog(self)
+        self.ADD_ATTRIBUTE_DIALOG.show()
 
     def pop_assign_value_dialog(self):
-        self.assign_attribute_value_dialog = AssignAttributeValueDialog(self)
-        self.assign_attribute_value_dialog.show()
+        self.ASSIGN_ATTRIBUTE_DIALOG = AssignAttributeValueDialog(self)
+        self.ASSIGN_ATTRIBUTE_DIALOG.show()
 
     # ------------------------------------------------------------------------------------------------------------------
 
     # AUXILIARY FUNCTIONS
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    GRADIENT_AND_THICKNESS_DIALOG = None
+    DEFAULT_ATTRIBUTE = 'LinkSpeedRaw'
+
     def change_color_all_links(self):
         color = QColorDialog.getColor()
         self.view.scene.change_color_all_links(color)
@@ -126,23 +122,23 @@ class MainWindow(QMainWindow):
         attributes = self.graph.es[0].attributes()
 
         for attr in attributes:
-            if attr == self.attribute:
+            if attr == self.DEFAULT_ATTRIBUTE:
                 return True
 
         return False
 
     def open_gradient_thickness_window(self):
-        self.gradient_thickness_window = GradientAndThicknessDialog(self)
-        self.gradient_thickness_window.show()
+        self.GRADIENT_AND_THICKNESS_DIALOG = GradientAndThicknessDialog(self)
+        self.GRADIENT_AND_THICKNESS_DIALOG.show()
 
     def revert_view(self):
-        if self.file_name:
-            self.set_graph(self.file_name)
+        if self.FILE:
+            self.set_graph(self.FILE)
         else:
             self.set_graph(self.DEFAULT_GRAPH)
         self.view.update_view()
-        self.gradient_thickness_window = GradientAndThicknessDialog(self)
-        self.attribute = 'LinkSpeedRaw'
+        self.GRADIENT_AND_THICKNESS_DIALOG = GradientAndThicknessDialog(self)
+        # self.attribute = 'LinkSpeedRaw'
         self.MODE_RECOLOR_NODE = False
         self.clear_layout(self.info_layout)
         self.BUTTON_DELETE_NODE.hide()
@@ -196,7 +192,7 @@ class MainWindow(QMainWindow):
         self.BUTTON_ADD_ATTRIBUTE = self.findChild(QPushButton, 'addAttribute')
         self.BUTTON_ADD_ATTRIBUTE.setToolTip("Add a new attribute to nodes or links")
         self.BUTTON_ADD_ATTRIBUTE.setIcon(QIcon('frontend/resource/icons/iconAddAttribute.png'))
-        self.BUTTON_ADD_ATTRIBUTE.clicked.connect(self.create_attribute)
+        self.BUTTON_ADD_ATTRIBUTE.clicked.connect(self.add_attribute)
 
         self.BUTTON_ASSIGN_ATTRIBUTE_VALUE = self.findChild(QPushButton, 'assignAttributeValue')
         self.BUTTON_ASSIGN_ATTRIBUTE_VALUE.setToolTip("Assign value to an attribute")
@@ -383,15 +379,17 @@ class MainWindow(QMainWindow):
 
     # LOAD/SAVE FILE
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    FILE = None
+
     def open_file_dialog(self):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        self.file_name, _ = QFileDialog.getOpenFileName(
+        self.FILE, _ = QFileDialog.getOpenFileName(
             self, "Open", "",
             "All Files (*);;GraphML Files (*.graphml)", options=options
         )
-        if self.file_name:
-            self.set_graph(self.file_name)
+        if self.FILE:
+            self.set_graph(self.FILE)
             self.clear_layout(self.info_layout)
             self.view.update_view()
             self.BUTTON_DELETE_NODE.hide()
@@ -492,9 +490,12 @@ class MainWindow(QMainWindow):
     # REAL TIME
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     THREAD = None
+    INITIAL_VALUE = None
 
     def start_real_time_mode(self):
         self.MODE_REAL_TIME = True
+        self.INITIAL_VALUE = np.random.standard_normal(self.graph.ecount())
+
         self.THREAD = MainThread(fps=20, parent=self)
         self.THREAD.update.connect(self.morph)
         self.THREAD.start()
@@ -505,7 +506,7 @@ class MainWindow(QMainWindow):
 
     def morph(self):
         lines = self.view.scene.lines
-        scaled_value = (np.sin(self.initial_value + time.time() * 2) + 1) / 2
+        scaled_value = (np.sin(self.INITIAL_VALUE + time.time() * 2) + 1) / 2
 
         for line in lines:
             line_index = lines.index(line)
@@ -521,6 +522,7 @@ class MainWindow(QMainWindow):
         self.MODE_REAL_TIME = False
         self.THREAD.terminate()
         self.THREAD = None
+        self.INITIAL_VALUE = None
 
         self.BUTTON_REAL_TIME_MODE.clicked.disconnect()
         self.BUTTON_REAL_TIME_MODE.clicked.connect(self.start_real_time_mode)

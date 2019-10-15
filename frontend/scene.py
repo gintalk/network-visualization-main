@@ -159,7 +159,7 @@ class MainScene(QGraphicsScene):
 
     def scalling(self):
         bandwidth = []
-        attribute = self.parent.main_window.attribute
+        attribute = self.parent.main_window.DEFAULT_ATTRIBUTE
 
         for edge in self.graph_to_display.es:
             bandwidth.append(edge[attribute])

@@ -36,6 +36,12 @@ class MainView(QGraphicsView):
         self._vertex_path = None
         self._zoom = 0
 
+    def add_node(self, vertex):
+        self.scene.add_node(vertex)
+
+    def add_link(self, edge):
+        self.scene.add_link(edge)
+
     def update_view(self):
         self.scene = MainScene(self)
         self.setScene(self.scene)
@@ -163,16 +169,4 @@ class MainView(QGraphicsView):
     def unhighlight_path(self):
         self.scene.unhighlight_edges(self._edge_path)
         self.scene.unhighlight_vertices(self._vertex_path)
-    # ------------------------------------------------------------------------------------------------------------------
-
-    # ADD NODE
-    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    def add_node(self, vertex):
-        self.scene.add_node(vertex)
-    # ------------------------------------------------------------------------------------------------------------------
-
-    # ADD LINK
-    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    def add_link(self, edge):
-        self.scene.add_link(edge)
     # ------------------------------------------------------------------------------------------------------------------
