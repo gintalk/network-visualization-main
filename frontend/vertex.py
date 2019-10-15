@@ -33,7 +33,7 @@ class MainVertex(QGraphicsEllipseItem):
         return self.rect.y() + self.diameter / 2
 
     def mousePressEvent(self, event):
-        self.parent.parent.main_window.display_vertex(self)
+        self.parent.parent.main_window.display_node(self)
         self.parent.parent.main_window.get_shortest_path_nodes(self)
         self.parent.parent.main_window.get_recolor_nodes(self)
         self.parent.parent.main_window.get_add_link_nodes(self)
@@ -49,7 +49,7 @@ class MainVertex(QGraphicsEllipseItem):
         self.parent.update_vertex(self)
         [line.stick() for line in self.lines]
 
-        self.parent.parent.main_window.display_vertex(self)
+        self.parent.parent.main_window.display_node(self)
 
     def mouseReleaseEvent(self, event):
         pass
