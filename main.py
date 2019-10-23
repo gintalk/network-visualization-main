@@ -146,8 +146,12 @@ class MainWindow(QMainWindow):
         self.VERTEX_DISPLAYING = None
         self.EDGE_DISPLAYING = None
 
-    def set_availability(self):
+    def set_availability_mode(self):
         self.view.availability = not self.view.availability
+        if self.availability_button.text() == "Show Availability":
+            self.availability_button.setText("Exit Availability")
+        else:
+            self.availability_button.setText("Show Availability")
         self.view.update_view()
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -288,8 +292,8 @@ class MainWindow(QMainWindow):
         edge_key_bar_button.triggered.connect(self.display_edge_key_bar)
 
         # View -> Availability
-        availability_button = self.findChild(QAction, 'actionShow_Availability')
-        availability_button.triggered.connect(self.set_availability)
+        self.availability_button = self.findChild(QAction, 'actionShow_Availability')
+        self.availability_button.triggered.connect(self.set_availability_mode)
 
         # View -> Gradient and Thickness
         gradient_thickness_button = self.findChild(QAction, 'actionGradient_and_Thickness')
@@ -607,10 +611,13 @@ class MainWindow(QMainWindow):
         if 'x' not in self.graph.vs.attributes() or 'nan' in str(self.graph.vs['x']):
             self.set_layout('Random')
 
-        np.random.seed(0)
-        self.graph.vs["availability"] = np.random.randint(2, size=len(self.graph.vs))
+        self.setup_availability()
 
         self.view.update()
+
+    def setup_availability(self):
+        np.random.seed(0)
+        self.graph.vs["availability"] = np.random.randint(2, size=len(self.graph.vs))
 
     def set_layout(self, layout):
         graph_layout = self.graph.layout(layout=self.LAYOUTS[layout])
