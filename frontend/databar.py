@@ -30,6 +30,7 @@ class DataBar(FigureCanvas):
         data = self.data
 
         value = list(set(data))
+        value = [str(x) for x in value]
         height = [data.count(x) for x in set(data)]
 
         self.figure.clear()
