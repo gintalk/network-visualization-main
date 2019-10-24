@@ -166,6 +166,8 @@ class MainWindow(QMainWindow):
     BUTTON_CHANGE_NODE_COLOR = None
     BUTTON_SHORTEST_PATH = None
     BUTTON_SELECTION_MODE = None
+    BUTTON_CROP = None
+    BUTTON_REVERSE_CROP = None
     BUTTON_CLUSTERING = None
     BUTTON_LAYOUT = None
     BUTTON_REAL_TIME_MODE = None
@@ -235,6 +237,16 @@ class MainWindow(QMainWindow):
         self.BUTTON_SELECTION_MODE.setIcon(QIcon('frontend/resource/icons/iconRubberBandMode.png'))
         self.BUTTON_SELECTION_MODE.clicked.connect(self.toggle_selection_mode)
 
+        self.BUTTON_CROP = self.findChild(QPushButton, 'Crop')
+        self.BUTTON_CROP.setToolTip('Remove all but selected nodes')
+        self.BUTTON_CROP.setIcon(QIcon('frontend/resource/icons/iconCrop.png'))
+        self.BUTTON_CROP.clicked.connect(self.crop)
+
+        self.BUTTON_REVERSE_CROP = self.findChild(QPushButton, 'reverseCrop')
+        self.BUTTON_REVERSE_CROP.setToolTip('Remove selected nodes')
+        self.BUTTON_REVERSE_CROP.setIcon(QIcon('frontend/resource/icons/iconReverseCrop.png'))
+        self.BUTTON_REVERSE_CROP.clicked.connect(self.reverse_crop)
+
         self.BUTTON_REAL_TIME_MODE = self.findChild(QPushButton, 'realTimeMode')
         self.BUTTON_REAL_TIME_MODE.setToolTip("Start Real Time Mode")
         self.BUTTON_REAL_TIME_MODE.setIcon(QIcon('frontend/resource/icons/iconRealTimeMode.png'))
@@ -300,6 +312,16 @@ class MainWindow(QMainWindow):
         revert_button.triggered.connect(self.revert_view)
         revert_shortcut = QShortcut(QKeySequence(self.tr("Ctrl+Z", "View|Revert")), self)
         revert_shortcut.activated.connect(self.revert_view)
+
+    # ------------------------------------------------------------------------------------------------------------------
+
+    # CROPPING
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    def crop(self):
+        self.view.crop()
+
+    def reverse_crop(self):
+        self.view.reverse_crop()
 
     # ------------------------------------------------------------------------------------------------------------------
 
@@ -507,6 +529,8 @@ class MainWindow(QMainWindow):
     def morph(self):
         lines = self.view.scene.lines
         scaled_value = (np.sin(self.INITIAL_VALUE + time.time() * 2) + 1) / 2
+
+        print(len(scaled_value), len(self.graph.es))
 
         for line in lines:
             line_index = lines.index(line)

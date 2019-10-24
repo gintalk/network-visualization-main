@@ -36,6 +36,8 @@ class MainView(QGraphicsView):
         self._vertex_path = None
         self._zoom = 0
 
+    # AUXILIARY FUNCTIONS
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     def add_node(self, vertex):
         self.scene.add_node(vertex)
 
@@ -47,6 +49,25 @@ class MainView(QGraphicsView):
         self.setScene(self.scene)
         self.scene.display()
 
+    def settings(self, kwargs):
+        for key in kwargs.keys():
+            self.SETTINGS[key] = kwargs[key]
+        self.update_view()
+
+    # ------------------------------------------------------------------------------------------------------------------
+
+    # CROPPING
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    def crop(self):
+        self.scene.crop()
+
+    def reverse_crop(self):
+        self.scene.reverse_crop()
+
+    # ------------------------------------------------------------------------------------------------------------------
+
+    # EVENT HANDLING
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     def wheelEvent(self, event):
         old_cursor_pos = self.mapToScene(event.pos())
 
@@ -97,43 +118,7 @@ class MainView(QGraphicsView):
         elif event.key() == Qt.Key_T:
             self.scene.display_edges_by_thickness()
 
-    def zoom_in(self):
-        if self._zoom <= self.ZOOM_IN_LIMIT:
-            self.scale(self.ZOOM_IN_FACTOR, self.ZOOM_IN_FACTOR)
-            self.setDragMode(self.drag_mode_hint())
-            self._zoom += 1
-
-    def zoom_out(self):
-        if self._zoom >= self.ZOOM_OUT_LIMIT:
-            self.scale(self.ZOOM_OUT_FACTOR, self.ZOOM_OUT_FACTOR)
-            self.setDragMode(self.drag_mode_hint())
-            self._zoom -= 1
-
-    def rotate_clockwise(self):
-        self.rotate(1)
-        self.setDragMode(self.drag_mode_hint())
-
-    def rotate_anti_clockwise(self):
-        self.rotate(-1)
-        self.setDragMode(self.drag_mode_hint())
-
-    def reset_view(self):
-        self.setTransform(QTransform())
-        self._zoom = 0
-
-    def drag_mode_hint(self):
-        if (
-                self.verticalScrollBar().value() != 0 or
-                self.horizontalScrollBar().value() != 0
-        ) and not self.main_window.MODE_RUBBER_BAND:
-            return QGraphicsView.ScrollHandDrag
-        else:
-            return QGraphicsView.NoDrag
-
-    def settings(self, kwargs):
-        for key in kwargs.keys():
-            self.SETTINGS[key] = kwargs[key]
-        self.update_view()
+    # ------------------------------------------------------------------------------------------------------------------
 
     # SHORTEST PATH
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -169,4 +154,41 @@ class MainView(QGraphicsView):
     def unhighlight_path(self):
         self.scene.unhighlight_edges(self._edge_path)
         self.scene.unhighlight_vertices(self._vertex_path)
+
+    # ------------------------------------------------------------------------------------------------------------------
+
+    # VIEW CONTROL
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    def zoom_in(self):
+        if self._zoom <= self.ZOOM_IN_LIMIT:
+            self.scale(self.ZOOM_IN_FACTOR, self.ZOOM_IN_FACTOR)
+            self.setDragMode(self.drag_mode_hint())
+            self._zoom += 1
+
+    def zoom_out(self):
+        if self._zoom >= self.ZOOM_OUT_LIMIT:
+            self.scale(self.ZOOM_OUT_FACTOR, self.ZOOM_OUT_FACTOR)
+            self.setDragMode(self.drag_mode_hint())
+            self._zoom -= 1
+
+    def rotate_clockwise(self):
+        self.rotate(1)
+        self.setDragMode(self.drag_mode_hint())
+
+    def rotate_anti_clockwise(self):
+        self.rotate(-1)
+        self.setDragMode(self.drag_mode_hint())
+
+    def reset_view(self):
+        self.setTransform(QTransform())
+        self._zoom = 0
+
+    def drag_mode_hint(self):
+        if (
+                self.verticalScrollBar().value() != 0 or
+                self.horizontalScrollBar().value() != 0
+        ) and not self.main_window.MODE_RUBBER_BAND:
+            return QGraphicsView.ScrollHandDrag
+        else:
+            return QGraphicsView.NoDrag
     # ------------------------------------------------------------------------------------------------------------------

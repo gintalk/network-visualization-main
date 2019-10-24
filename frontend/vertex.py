@@ -1,4 +1,4 @@
-from PyQt5.QtCore import *
+from PyQt5.QtCore import QRectF, QPointF, QSizeF
 from PyQt5.QtWidgets import QGraphicsEllipseItem
 
 
@@ -40,7 +40,7 @@ class MainVertex(QGraphicsEllipseItem):
 
     def mouseMoveEvent(self, event):
         cursor_pos = event.scenePos()
-        adjusted_cursor_pos = QPointF(cursor_pos.x() - self.diameter / 2, float(cursor_pos.y() - self.diameter / 2))
+        adjusted_cursor_pos = QPointF(cursor_pos.x() - self.diameter / 2, cursor_pos.y() - self.diameter / 2)
 
         self.rect.moveTopLeft(adjusted_cursor_pos)
         self.rect.setTopLeft(adjusted_cursor_pos)

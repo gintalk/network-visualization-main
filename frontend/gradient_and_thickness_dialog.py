@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QDialog, QPushButton, QComboBox, QMessageBox
 
 class GradientAndThicknessDialog(QDialog):
     def __init__(self, parent):
-        super().__init__()
+        super(GradientAndThicknessDialog, self).__init__()
         self.parent = parent
         uic.loadUi('frontend/resource/uis/dialogGradientAndThickness.ui', self)
         self.setWindowTitle("Gradient and Thickness")
@@ -19,6 +19,6 @@ class GradientAndThicknessDialog(QDialog):
         self.combobox_button.activated.connect(self.selection_change)
 
     def selection_change(self):
-        self.parent.attribute = self.combobox_button.currentText()
+        self.parent.DEFAULT_ATTRIBUTE = self.combobox_button.currentText()
         if not self.parent.contains_attribute():
             QMessageBox.about(self, 'Sorry', 'This attribute is not available for this graph')
