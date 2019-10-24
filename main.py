@@ -148,10 +148,10 @@ class MainWindow(QMainWindow):
 
     def set_availability_mode(self):
         self.view.availability = not self.view.availability
-        if self.availability_button.text() == "Show Availability":
-            self.availability_button.setText("Exit Availability")
+        if self.BUTTON_AVAILABILITY.text() == "Show Availability":
+            self.BUTTON_AVAILABILITY.setText("Exit Availability")
         else:
-            self.availability_button.setText("Show Availability")
+            self.BUTTON_AVAILABILITY.setText("Show Availability")
         self.view.update_view()
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -260,6 +260,8 @@ class MainWindow(QMainWindow):
 
     # BINDING MENU ACTIONS TO THEIR RESPECTIVE FUNCTIONALITY
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    BUTTON_AVAILABILITY = None
+
     def bind_menu_actions(self):
         # File -> Open
         open_button = self.findChild(QAction, 'actionOpen')
@@ -304,8 +306,8 @@ class MainWindow(QMainWindow):
         edge_key_bar_button.triggered.connect(self.display_edge_key_bar)
 
         # View -> Availability
-        self.availability_button = self.findChild(QAction, 'actionShow_Availability')
-        self.availability_button.triggered.connect(self.set_availability_mode)
+        self.BUTTON_AVAILABILITY = self.findChild(QAction, 'actionShow_Availability')
+        self.BUTTON_AVAILABILITY.triggered.connect(self.set_availability_mode)
 
         # View -> Gradient and Thickness
         gradient_thickness_button = self.findChild(QAction, 'actionGradient_and_Thickness')
@@ -534,8 +536,6 @@ class MainWindow(QMainWindow):
         lines = self.view.scene.lines
         scaled_value = (np.sin(self.INITIAL_VALUE + time.time() * 2) + 1) / 2
 
-        print(len(scaled_value), len(self.graph.es))
-
         for line in lines:
             line_index = lines.index(line)
             line_pen = QPen(
@@ -550,7 +550,7 @@ class MainWindow(QMainWindow):
         self.MODE_REAL_TIME = False
         self.THREAD.terminate()
         self.THREAD = None
-        self.INITIAL_VALUE = None
+        # self.INITIAL_VALUE = None
 
         self.BUTTON_REAL_TIME_MODE.clicked.disconnect()
         self.BUTTON_REAL_TIME_MODE.clicked.connect(self.start_real_time_mode)

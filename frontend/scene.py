@@ -279,6 +279,7 @@ class MainScene(QGraphicsScene):
         graph = Graph()
         items = self.items()
 
+        points = []
         point_index = 0
         for point in self.points:
             if point in items:
@@ -287,8 +288,11 @@ class MainScene(QGraphicsScene):
                 created_vertex = graph.vs[point_index]
                 created_vertex.update_attributes(point.vertex.attributes())
 
+                points.append(point)
                 point_index += 1
+        self.points = points
 
+        lines = []
         line_index = 0
         for line in self.lines:
             if line in items:
@@ -306,7 +310,10 @@ class MainScene(QGraphicsScene):
 
                 created_edge = graph.es[line_index]
                 created_edge.update_attributes(line.edge.attributes())
+
+                lines.append(line)
                 line_index += 1
+        self.lines = lines
 
         self.rb_selected_points.clear()
         self.parent.main_window.graph = graph
