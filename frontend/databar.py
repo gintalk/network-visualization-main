@@ -23,13 +23,11 @@ class DataBar(FigureCanvas):
 
         self.show()
 
-    def set_data(self, data):
-        self.data = data
-
     def plot_data_count(self):
         data = self.data
 
         value = list(set(data))
+        value = [str(x) for x in value]
         height = [data.count(x) for x in set(data)]
 
         self.figure.clear()
@@ -46,10 +44,3 @@ class DataBar(FigureCanvas):
 
         ax.set_xticks(value)
         ax.set_xticklabels(value, rotation=-90)
-
-    def clear_figure(self):
-        self.axes.set_axis_off()
-        self.update_figure()
-
-    def update_figure(self):
-        self.draw()
